@@ -5,13 +5,23 @@
 ---
 
 ## ACTIVE TASK
-**Task:** AirQino dashboard — get data flowing
-**Status:** Dashboard built, needs data source connection
-**Plan:** User needs to obtain API credentials from AirQino (info@airqino.it) with serial number AIRO 6153, OR connect via USB serial, OR use SD card CSV export
+**Task:** Create README.md for the AirQino dashboard project
+**Status:** Ready
+**Plan:** Write a comprehensive README covering setup, usage, data source configuration (API/serial/CSV), device info, and project context
 **Priority:** HIGH
 
 ### What You Must Do
-Help the user connect their AirQino device (PN 800506, S/N AIRO 6153) to the dashboard. Three paths:
+Create `README.md` at the project root. It should cover:
+- Project description (monitoring dashboard for AirQino air quality sensors)
+- The user's specific context: abandoned AirQino Outdoor device (PN 800506, S/N AIRO 6153) from a discontinued project
+- Installation: `pip install -r requirements.txt`, `python3 app.py`, open `http://localhost:5001`
+- Data source configuration for all three paths (API credentials in `.env`, USB serial, CSV/SD card upload)
+- Dashboard features: AQI-colored readings, time-series charts, sensor toggles, map, metadata
+- AirQino API reference (base URL, key endpoints, OAuth2 flow)
+- Device hardware details (Arduino Mega, SIM900 GPRS, sensor list)
+- Key files: `app.py`, `airqino_client.py`, `serial_reader.py`, `templates/dashboard.html`
+
+Also still pending: help the user connect a live data source. Three paths:
 1. **API credentials** — user contacts info@airqino.it with serial AIRO 6153. Once received, set `AIRQINO_CLIENT_ID`, `AIRQINO_CLIENT_SECRET`, `AIRQINO_USERNAME`, `AIRQINO_PASSWORD` in `.env`
 2. **USB serial** — physically connect to Arduino Mega USB port, set `SERIAL_PORT` in `.env`
 3. **CSV upload** — extract SD card or export data, upload via dashboard UI
