@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AirQino Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div>
+        <h1>Air<span>Qino</span> Dashboard</h1>
+        <div class="station-info">
+            {% if station_name %}
+                Station: {{ station_name }}
+                {% if project_name %} &middot; Project: {{ project_name }}{% endif %}
+            {% else %}
+                Device S/N: AIRO 6153
+            {% endif %}
+        </div>
+    </div>
+    <div class="header-right">
+        {% if source == 'api' %}
+            <span class="source-badge active">API Connected</span>
+        {% elif source == 'serial' %}
+            <span class="source-badge active">Serial</span>
+        {% elif source == 'csv' %}
+            <span class="source-badge active">CSV Data</span>
+        {% else %}
+            <span class="source-badge">No Data Source</span>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Setup banner (shown when no data source) -->
+    {% if not source %}
+    <div class="setup-banner">
+        <h2>Connect Your AirQino</h2>
+        <p>
+            Your device (PN 800506 / S/N AIRO 6153) can provide data through three methods.
+            Configure one to get started.
+        </p>
+        <div class="options">
+            <div class="setup-option">
+                <h3>1. Cloud API</h3>
+                <p>Contact <code>info@airqino.it</code> with your serial number AIRO 6153 to request OAuth2 credentials. Then set them in <code>.env</code></p>
+            </div>
+            <div class="setup-option">
+                <h3>2. USB Serial</h3>
+                <p>Open the enclosure and connect a USB cable to the Arduino Mega port. Set <code>SERIAL_PORT</code> in <code>.env</code></p>
+            </div>
+            <div class="setup-option">
+                <h3>3. SD Card / CSV</h3>
+                <p>Extract the SD card from the device or export data as CSV. Upload it below.</p>
+            </div>
+        </div>
+        <div class="upload-area" id="uploadArea">
+            <input type="file" id="csvInput" accept=".csv,.tsv,.txt">
+            <p>Drop a CSV file here or click to upload</p>
+            <div class="upload-status" id="uploadStatus"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Current readings -->
+    <div class="readings-grid" id="readingsGrid">
+        <div class="placeholder" style="grid-column: 1 / -1;">
+            {% if source %}
+                Loading readings...
+            {% else %}
+                Configure a data source to see readings
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Time-series chart -->
+    <div class="chart-panel">
+        <div class="chart-header">
+            <h2>Time Series</h2>
+            <div class="chart-controls">
+                <button data-hours="6">6h</button>
+                <button data-hours="12">12h</button>
+                <button data-hours="24" class="active">24h</button>
+                <button data-hours="72">3d</button>
+                <button data-hours="168">7d</button>
+                <button data-hours="720">30d</button>
+            </div>
+        </div>
+        <div class="sensor-toggles" id="sensorToggles"></div>
+        <div class="chart-wrap">
+            <canvas id="mainChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Bottom panels -->
+    <div class="bottom-grid">
+        <!-- Metadata -->
+        <div class="panel">
+            <h2>Device Metadata</h2>
+            <div id="metadataPanel">
+                <div class="meta-row"><span class="key">Part Number</span><span class="val">800506</span></div>
+                <div class="meta-row"><span class="key">Serial Number</span><span class="val">AIRO 6153</span></div>
+                <div class="meta-row"><span class="key">Model</span><span class="val">AirQino Outdoor</span></div>
+                <div class="meta-row"><span class="key">Manufacturer</span><span class="val">TEA Group / CNR-IBE</span></div>
+                <div class="meta-row"><span class="key">Station Name</span><span class="val">{{ station_name or 'Unknown (contact info@airqino.it)' }}</span></div>
+                {% if source == 'api' %}
+                <div class="meta-row"><span class="key">Project</span><span class="val">{{ project_name }}</span></div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div class="panel">
+            <h2>Location</h2>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- CSV upload (always available at bottom when source is active) -->
+    {% if source %}
+    <div class="chart-panel" style="margin-top: 16px;">
+        <h2 style="font-size: 15px; font-weight: 600; margin-bottom: 12px;">Import CSV Data</h2>
+        <div class="upload-area" id="uploadArea">
+            <input type="file" id="csvInput" accept=".csv,.tsv,.txt">
+            <p>Drop a CSV file here or click to upload</p>
+            <div class="upload-status" id="uploadStatus"></div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>
