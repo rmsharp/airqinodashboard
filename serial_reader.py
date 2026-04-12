@@ -1,4 +1,17 @@
-"""Read sensor data from AirQino device via USB serial connection."""
+"""Read sensor data from AirQino device via serial connection.
+
+The AirQino REV6 board (gen-2022, by Quantit) does NOT have a USB port.
+Connect using a USB-to-TTL serial adapter (CP2102 or FT232RL recommended)
+wired to the board's TX/RX pins. Set adapter to 3.3V logic level.
+
+Wiring:
+    AirQino TX  -> Adapter RX
+    AirQino GND -> Adapter GND
+    Do NOT connect VCC (board has its own power supply).
+
+The adapter appears as /dev/tty.usbserial-* (macOS) or /dev/ttyUSB* (Linux).
+Set SERIAL_PORT in .env to this device path.
+"""
 
 import json
 import re
