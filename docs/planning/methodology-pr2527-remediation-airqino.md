@@ -2,7 +2,9 @@
 
 *Generated 2026-06-07 from the methodology-repo master plan (`~/Development/methodology/docs/planning/adopter-pr25-27-remediation-plan.md`, §5). Anchors/counts **independently re-measured and CONFIRMED** by an adversarial recon on 2026-06-07.*
 
-> airqino is the **re-vendor case** (decision O2), not a patch case. Its vendored methodology is a partial **v2.1** copy. The brief has two parts: **PART 1 (NOW)** preserves airqino's 2 hand-authored learnings and adds the receptacle — do this immediately; **PART 2 (RE-VENDOR)** lifts the whole methodology tree v2.1 → current, which *supersedes* targeted C1/C2/C3 patches. PART 1 must precede PART 2 or the 2 learnings are lost when `SESSION_RUNNER.md` is overwritten.
+> airqino is the **re-vendor case** (decision O2), not a patch case. Its vendored methodology is a partial **v2.1** copy. The brief has two parts: **PART 1 (NOW)** preserves airqino's 2 hand-authored learnings and adds the receptacle — do this immediately and it is complete on its own; **PART 2 (RE-VENDOR)** lifts the whole methodology tree v2.1 → current. PART 1 must precede PART 2 or the 2 learnings are lost when `SESSION_RUNNER.md` is overwritten.
+>
+> **⚠ 2026-06-08 correction:** PART 2 as originally written pointed at a local `integration/pr2527` branch — **that branch does not exist and was never built.** PART 2 is **recommended DEFERRED** until PR #25/#27 merge upstream (see the corrected decision point below). PART 1 already secured the only at-risk data, so deferring PART 2 costs nothing. If you only have one session, **PART 1 is the deliverable and PART 2 waits.**
 
 ## Verified current state (2026-06-07 — CONFIRMED)
 
@@ -64,17 +66,17 @@ Delete lines `:269–270` (airqino rows 2–3), leaving row 1 (the seed). This d
 
 ## PART 2 — RE-VENDOR (the lift): v2.1 → current
 
-> **Decision point (yours):** the master plan scheduled the re-vendor "at-merge from `origin/main` once it carries PR #25/#27." Since PRs #25/#27 are still OPEN upstream and decision O4 committed to "apply from the PR branches now," the **recommended source** is a local integration tree = `origin/main` + PR #25 + PR #27. Two options:
-> - **(a) Re-vendor now** from a local integration branch built in the methodology repo (`integration/pr2527` = main + PR25 + PR27). Ask the methodology-repo session to build it; vendor from that checkout. ← recommended (O4 already chose "now").
-> - **(b) Wait** until KJ5HST merges #25/#27, then re-vendor from `origin/main`.
+> **Decision point (yours) — recommended: DEFER (option b).** PART 1 already secured the only at-risk data (the 2 learnings), so there is no urgency. A *full-tree* re-vendor is cleanest done ONCE from a stable, merged canonical — sourcing it from unmerged PR wording means re-touching the whole tree if upstream review changes #25/#27. Unlike the targeted-patch projects (where O4 said "apply the 3-line wording now"), airqino's full re-vendor is genuinely better deferred.
+> - **(b) DEFER until merge — RECOMMENDED.** PR #25 + #27 are OPEN on `KJ5HST/methodology` as of 2026-06-08 (filed from `rmsharp:fix/3c-learnings-destination` and `rmsharp:fix/claude-md-learnings-overflow`; **not** local PRs on the fork). When they merge into `KJ5HST/main`: sync `origin/main` from upstream, then re-vendor airqino from `origin/main` in one pass — the new 3C/caption/HOW_TO_USE wording arrives for free, no patching.
+> - **(a) Re-vendor now — only if airqino must be current immediately.** **There is NO `integration/pr2527` branch — do not wait on one.** Re-vendor from current `origin/main` (already far ahead of v2.1), then apply the three small wording edits **C1/C2/C3 by hand** (the unmerged PR-25/27 delta — see the wsfct/mpc/mts briefs for the exact verbatim text). Accept that you may re-touch those three when #25/#27 finalize. This is the only "now" path; it does not need a methodology-side branch build.
 
 ### Re-vendor procedure
 1. **Confirm PART 1 is committed** (the 2 learnings are safe in `CLAUDE.md`).
 2. **Inventory what you have vs. what's coming.** Current vendored tree is the 8 files listed above. A full re-vendor brings the *entire* current framework — at minimum: `starter-kit/` (SESSION_RUNNER.md, SAFEGUARDS.md, BOOTSTRAP.md, CLAUDE_TEMPLATE.md, CONTEXT_TEMPLATE.md, RECOMMENDED_SKILLS.md, CHANGELOG/ROADMAP templates, methodology_dashboard.py), `bin/sync`+`bin/status`, the Research-Documentation workstream, the two campaign templates, and updated HOW_TO_USE/ITERATIVE_METHODOLOGY/README.
 3. **Replace** airqino's `docs/methodology/` tree **and** the root operational files (`SESSION_RUNNER.md`, `SAFEGUARDS.md`, `methodology_dashboard.py`) with the integration-tree versions. Because there are **no local edits** in `docs/methodology/` (recon-confirmed), this is a clean overwrite — the only project content to protect is the 2 learnings (already in `CLAUDE.md` from PART 1) and `SESSION_NOTES.md` (project state — do NOT overwrite it).
-4. **The re-vendor delivers the PR-25/27 wording automatically** — the new 3C body (C1), caption (C2), and `HOW_TO_USE.md` 3C bullet (C3) all arrive as part of canonical, so no targeted C1/C2/C3 patching is needed.
+4. **Wording:** if you took the recommended **DEFER** path, the new 3C body (C1), caption (C2), and `HOW_TO_USE.md` 3C bullet (C3) arrive as part of merged canonical — no patching. If you took the **now** path (re-vendor from pre-merge `origin/main`), apply C1/C2/C3 by hand after the re-vendor.
 5. **Re-validate** root `CLAUDE.md` against the newly-arrived `starter-kit/CLAUDE_TEMPLATE.md` shape (your receptacle from PART 1 should already match it). Consider wiring up `bin/sync` so future updates are friction-free (airqino would become the 2nd adopter with sync, after wsfct).
-6. **Spot-check** the dashboard still runs and `SESSION_RUNNER.md` is byte-identical to the integration tree's `starter-kit/SESSION_RUNNER.md` (with canonical's 6 seed rows + C1/C2).
+6. **Spot-check** the dashboard still runs and `SESSION_RUNNER.md` matches the source `origin/main` `starter-kit/SESSION_RUNNER.md` (with canonical's 6 seed rows; +C1/C2 already present if deferred-until-merge, or applied by hand if you took the "now" path).
 
 ---
 
