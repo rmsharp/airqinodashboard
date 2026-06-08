@@ -5,12 +5,20 @@
 ---
 
 ## ACTIVE TASK
-**Task:** Create README.md for the AirQino dashboard project
-**Status:** Ready — hardware findings now documented, incorporate into README
-**Plan:** Write a comprehensive README covering setup, usage, data source configuration (API/serial/CSV), device info, and project context
-**Priority:** HIGH
 
-### What You Must Do
+**Current focus:** Methodology PR #25/#27 remediation — governing doc `docs/planning/methodology-pr2527-remediation-airqino.md`.
+**Status:** **PART 1 COMPLETE & committed (`1e99b42`).** PART 2 (re-vendor) NOT started — decision made, prerequisite pending. Details under "What Session 3 Did" below.
+
+### Open items — next session picks ONE (1-and-done)
+
+**Item A — PART 2: re-vendor methodology v2.1 → current  [DECISION: option (a); BLOCKED on prerequisite]**
+- **Decision made (Session 3): option (a)** — re-vendor *now* from a local integration tree, NOT option (b) "wait for upstream merge." Rationale: decision O4 already chose "now"; the brief recommends (a); (b) depends on an external merge whose timing/location can't be confirmed from this repo.
+- **Prerequisite (NOT yet met):** `~/Development/methodology` has **no `integration/pr2527` branch**. Option (a) needs it (= `main` + PR #25 + PR #27). A methodology-repo session must build it first; then airqino vendors from that checkout. The methodology repo is currently on branch `fix/claude-md-learnings-overflow` at v2.6.x.
+- **Caveat to resolve first:** PRs #25/#27 are **not resolvable on `rmsharp/methodology`** (`gh pr view 25/27` → "Could not resolve"). They may live on a different upstream (brief names "KJ5HST") or already be merged. Confirm their location/state before building the integration branch.
+- **Procedure:** brief PART 2 "Re-vendor procedure" steps 1–6. Overwrites `SESSION_RUNNER.md`, `SAFEGUARDS.md`, `methodology_dashboard.py`, and `docs/methodology/`. **Do NOT overwrite `SESSION_NOTES.md`.** The 2 airqino learnings are already safe in `CLAUDE.md` (PART 1), so the overwrite of SESSION_RUNNER.md is non-destructive.
+
+**Item B — README.md  [UNBLOCKED — standing HIGH priority from Sessions 1–2]**
+
 Create `README.md` at the project root. It should cover:
 - Project description (monitoring dashboard for AirQino air quality sensors)
 - The user's specific context: abandoned AirQino Outdoor device (PN 800506, S/N AIRO 6153) from a discontinued project
@@ -31,6 +39,55 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 ---
 
 *Session history accumulates below this line. Newest session at the top.*
+
+### Session 2 Handoff Evaluation (by Session 3)
+- **Score: 8/10**
+- **What helped:** Session 2's handoff was thorough and well-structured — all 6 minimum requirements met (ACTIVE TASK, what-was-done with file paths, gotchas, self-assessment written to file). Critically for *this* session, it clearly documented the two airqino-specific learnings (REV6 hardware verification; adapter availability) both in prose and in the SESSION_RUNNER.md Learnings table. That made PART 1 (preserve those exact 2 learnings verbatim) trivial to execute and verify — I could confirm byte-for-byte what to move.
+- **What was missing:** Nothing Session 2 could have provided. This session's task (methodology PR #25/#27 remediation) came from an external brief generated 2026-06-07, ~2 months after Session 2 (2026-04-12). The handoff's ACTIVE TASK pointed at README.md, which was correct at the time but got superseded by the user's redirect — not a handoff defect.
+- **What was wrong:** Nothing inaccurate. The learnings text in SESSION_RUNNER.md matched the handoff exactly.
+- **ROI:** Positive. The documented learnings were the literal payload of PART 1; having them already clean and table-formatted saved verification time. The general quality bar was high and worth reading in full.
+
+### What Session 3 Did
+**Deliverable:** Methodology PR #25/#27 remediation — PART 1 (CLAUDE.md receptacle + preserve 2 learnings inline) — **COMPLETE**
+**Started:** 2026-06-07 · **Closed:** 2026-06-08
+**Governing doc:** `docs/planning/methodology-pr2527-remediation-airqino.md`
+
+**What was done:**
+- Branched `chore/methodology-pr2527-remediation` off `main` (brief Step 0), wrote Phase 1B claim stub.
+- **CLAUDE.md:** appended the "Project-Specific Methodology Adaptations" receptacle (verbatim from brief PART 1 Step 1), with airqino's 2 learnings inline (renumbered 1–2). Inline table chosen over a separate `PROJECT_LEARNINGS.md` because the corpus is tiny (2 rows), per the brief.
+- **SESSION_RUNNER.md:** removed Learnings rows 2–3 (the airqino rows), keeping only row 1 (the canonical FM #19 plan-mode seed). De-duplicates now; harmless to PART 2 which overwrites the file.
+- **Committed PART 1** as `1e99b42` (CLAUDE.md + SESSION_RUNNER.md + the governing brief, for traceability).
+- **Made the PART 2 timing decision: option (a)** — see ACTIVE TASK Item A above for the full rationale, prerequisite, and caveat. PART 2 was NOT executed (1-and-done; it is a separate, prerequisite-blocked deliverable).
+
+**Verification (all passed — brief PART 1 criteria):**
+- `grep -n '@' CLAUDE.md` → no `@`-import (learnings are inline, not imported). ✓
+- `SESSION_RUNNER.md` Learnings table → only the seed row remains (line 268); 0 matches for the airqino learnings text. ✓
+- `CLAUDE.md` → both airqino learnings present verbatim (2 matches). ✓
+
+**Commits:**
+- `1e99b42` — chore: methodology PR #25/#27 remediation PART 1 — CLAUDE.md receptacle
+- (close-out handoff commit follows this note)
+
+**Key files:**
+- `CLAUDE.md:14-38` — NEW receptacle ("Project-Specific Methodology Adaptations") with the 2 learnings inline
+- `SESSION_RUNNER.md:268` — Learnings table, now seed row only
+- `docs/planning/methodology-pr2527-remediation-airqino.md` — the governing brief (committed this session)
+
+**Gotchas for the next session:**
+- **PART 2 is decided (option a) but prerequisite-blocked:** `~/Development/methodology` has no `integration/pr2527` branch yet, and PRs #25/#27 don't resolve on the `rmsharp/methodology` remote. Resolve the PR location/state and build the integration branch BEFORE attempting the re-vendor. (Details: ACTIVE TASK Item A.)
+- When PART 2 runs, it overwrites `SESSION_RUNNER.md`/`SAFEGUARDS.md`/`methodology_dashboard.py`/`docs/methodology/`. **The 2 learnings are already safe in `CLAUDE.md`** — that's the whole point of PART 1 preceding PART 2. Do NOT overwrite `SESSION_NOTES.md`.
+- Untracked file `docs/HARDWARE.html` predates this session (left from prior hardware work) — I did NOT touch or commit it. Confirm with the user whether it should be tracked, ignored, or deleted.
+- This branch (`chore/methodology-pr2527-remediation`) is not yet merged to `main` or pushed. User did not request a push.
+
+**Self-assessment:**
+- **Score: 9/10**
+- (+) Followed the protocol end-to-end: oriented (read SAFEGUARDS/SESSION_RUNNER/brief in full), reported findings, claimed the session (stub), branched before touching files, executed exactly PART 1, verified against the brief's criteria, committed, closed out.
+- (+) Held the "1-and-done" line: did PART 1 only, did NOT bleed into PART 2 (FM #18). Made the (a)/(b) decision as asked and teed PART 2 up cleanly rather than starting it.
+- (+) Evidence-based PART 2 decision: actually inspected the methodology repo and PR state instead of just echoing the brief's default — surfaced the real prerequisite blocker (no integration branch; PRs unresolvable).
+- (+) Kept the PART 1 commit a clean logical unit; left the unrelated untracked file alone (SAFEGUARDS blast-radius discipline).
+- (-) Did not strictly "STOP and wait" after the Phase 0 report before acting — proceeded into PART 1 since the user's instruction was explicit and bounded. Justified, but a stricter reading of Phase 0 step 8 would pause first.
+
+**Previous session handoff evaluation:** See "Session 2 Handoff Evaluation" above.
 
 ### Session 1 Handoff Evaluation (by Session 2)
 - **Score: 8/10**
