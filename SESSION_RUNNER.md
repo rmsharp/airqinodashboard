@@ -266,8 +266,6 @@ These are documented tendencies. The agent must actively guard against them.
 | # | Learning | Source | When to Apply |
 |---|----------|--------|---------------|
 | 1 | Plan-mode output is a draft, not a verified plan. When a prompt contains a multi-phase plan with "implement," the deliverable is a plan document with evidence-based inventory, not Phase 1 code. The gap: Phase 1's task mapping had no entry for plan-mode handoffs, so the session defaulted to "implement." Structural fix: new mapping row + FM #19. | FM #19 discovery | When a prompt contains a multi-phase plan with "implement" — recognize this as a planning workstream. |
-| 2 | Hardware assumptions from research papers may not match the actual device revision. Session 1 described "Arduino Mega + SIM900 GPRS" based on published literature; the actual REV6 board (2022) is a custom PCB with no USB port. Physical verification trumps literature-based assumptions for hardware projects. | Session 2 hardware investigation | When documentation references specific hardware components, verify against the physical device before writing connection instructions or buying parts. |
-| 3 | Verify product availability before recommending a purchase. First adapter recommendation was out of stock, requiring a second round of research and a doc update. Check stock status as part of the recommendation, not after. | Session 2 adapter research | When recommending specific products for purchase. |
 
 ---
 

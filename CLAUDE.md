@@ -10,3 +10,28 @@
 3. **Auto-close** — When done: evaluate previous handoff, self-assess, document learnings, write handoff notes, commit, report, STOP.
 
 `SESSION_RUNNER.md` documents known failure modes and their countermeasures. The protocol compensates for documented tendencies to skip orientation, skip close-out, and continue past the deliverable.
+
+---
+
+## Project-Specific Methodology Adaptations
+
+*Additions and overrides to the base methodology at `SESSION_RUNNER.md` and `SAFEGUARDS.md` (synced from canonical, not project-owned). The base files govern unless explicitly overridden here. **Do not edit the synced files** — put customizations here.*
+
+### Additional Phase 0 steps
+
+(none)
+
+### Additional task-to-workstream mappings
+
+(none)
+
+### Project-specific Learnings
+
+| # | Learning | Source | When to Apply |
+|---|----------|--------|---------------|
+| 1 | Hardware assumptions from research papers may not match the actual device revision. Session 1 described "Arduino Mega + SIM900 GPRS" based on published literature; the actual REV6 board (2022) is a custom PCB with no USB port. Physical verification trumps literature-based assumptions for hardware projects. | Session 2 hardware investigation | When documentation references specific hardware components, verify against the physical device before writing connection instructions or buying parts. |
+| 2 | Verify product availability before recommending a purchase. First adapter recommendation was out of stock, requiring a second round of research and a doc update. Check stock status as part of the recommendation, not after. | Session 2 adapter research | When recommending specific products for purchase. |
+
+### Project-specific Failure Modes
+
+(none — the base failure modes in `SESSION_RUNNER.md` apply.)
