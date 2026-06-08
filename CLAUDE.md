@@ -31,6 +31,7 @@
 |---|----------|--------|---------------|
 | 1 | Hardware assumptions from research papers may not match the actual device revision. Session 1 described "Arduino Mega + SIM900 GPRS" based on published literature; the actual REV6 board (2022) is a custom PCB with no USB port. Physical verification trumps literature-based assumptions for hardware projects. | Session 2 hardware investigation | When documentation references specific hardware components, verify against the physical device before writing connection instructions or buying parts. |
 | 2 | Verify product availability before recommending a purchase. First adapter recommendation was out of stock, requiring a second round of research and a doc update. Check stock status as part of the recommendation, not after. | Session 2 adapter research | When recommending specific products for purchase. |
+| 3 | A factual correction landed in one surface but not its duplicates. Session 2 fixed the "no USB / Arduino Mega" hardware claim in `serial_reader.py`, `.env.example`, and `docs/HARDWARE.md`, but the same stale "connect a USB cable to the Arduino Mega port" copy still lives in the UI (`templates/dashboard.html:54-55`). Doc fixes don't auto-propagate to user-facing strings. | Session 4 (found while writing README) | When correcting a factual/hardware claim, grep ALL surfaces for the old wording — templates, JS, docs, comments — not just the module that prompted the fix. |
 
 ### Project-specific Failure Modes
 

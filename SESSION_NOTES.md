@@ -6,20 +6,20 @@
 
 ## ACTIVE TASK
 
-**Current focus:** Methodology PR #25/#27 remediation — governing doc `docs/planning/methodology-pr2527-remediation-airqino.md`.
-**Status:** **PART 1 COMPLETE & committed (`1e99b42`).** PART 2 (re-vendor) NOT started — decision made, prerequisite pending. Details under "What Session 3 Did" below.
+**Current focus:** Open. Session 4 delivered `README.md`. Next session picks from Open items below.
+**Status:** Methodology PR #25/#27 remediation — **PART 1 COMPLETE & committed (`1e99b42`)**; **PART 2 DEFERRED** until PR #25/#27 merge upstream on `KJ5HST/main` (option b — see Item A). **Item B (README.md) COMPLETE** (Session 4).
 
 ### Open items — next session picks ONE (1-and-done)
 
-**Item A — PART 2: re-vendor methodology v2.1 → current  [DECISION: option (a); BLOCKED on prerequisite]**
-- **Decision made (Session 3): option (a)** — re-vendor *now* from a local integration tree, NOT option (b) "wait for upstream merge." Rationale: decision O4 already chose "now"; the brief recommends (a); (b) depends on an external merge whose timing/location can't be confirmed from this repo.
-- **Prerequisite (NOT yet met):** `~/Development/methodology` has **no `integration/pr2527` branch**. Option (a) needs it (= `main` + PR #25 + PR #27). A methodology-repo session must build it first; then airqino vendors from that checkout. The methodology repo is currently on branch `fix/claude-md-learnings-overflow` at v2.6.x.
-- **Caveat to resolve first:** PRs #25/#27 are **not resolvable on `rmsharp/methodology`** (`gh pr view 25/27` → "Could not resolve"). They may live on a different upstream (brief names "KJ5HST") or already be merged. Confirm their location/state before building the integration branch.
-- **Procedure:** brief PART 2 "Re-vendor procedure" steps 1–6. Overwrites `SESSION_RUNNER.md`, `SAFEGUARDS.md`, `methodology_dashboard.py`, and `docs/methodology/`. **Do NOT overwrite `SESSION_NOTES.md`.** The 2 airqino learnings are already safe in `CLAUDE.md` (PART 1), so the overwrite of SESSION_RUNNER.md is non-destructive.
+**Item A — PART 2: re-vendor methodology v2.1 → current  [DECISION: option (b) DEFER; NOT actionable until upstream merge]**
+- **Decision (corrected out-of-session 2026-06-08): option (b) — DEFER until PR #25/#27 merge upstream.** Supersedes Session 3's option (a). Reason: the option-(a) prerequisite (a local `integration/pr2527` branch) **never existed and was never built**, and PART 1 already secured the only at-risk data (the 2 learnings, now in `CLAUDE.md`), so deferring costs nothing. A full-tree re-vendor is cleanest done ONCE from a stable, merged canonical.
+- **Trigger to make this actionable again:** PR #25 + PR #27 merge into `KJ5HST/main` (they are OPEN there as of 2026-06-08, filed from `rmsharp:fix/3c-learnings-destination` and `rmsharp:fix/claude-md-learnings-overflow` — they are NOT local PRs on the `rmsharp` fork, which is why `gh pr view 25/27` does not resolve here). Until that merge happens, do not pick this item up.
+- **When unblocked:** sync `origin/main` from upstream, then re-vendor airqino from `origin/main` in one pass — the PR-25/27 wording (3C body, caption, `HOW_TO_USE.md` bullet) arrives for free, no hand-patching.
+- **Procedure:** corrected brief PART 2 "Re-vendor procedure" steps 1–6 in `docs/planning/methodology-pr2527-remediation-airqino.md` (corrected `a5fdd12`). Overwrites `SESSION_RUNNER.md`, `SAFEGUARDS.md`, `methodology_dashboard.py`, and `docs/methodology/`. **Do NOT overwrite `SESSION_NOTES.md`.** The 2 airqino learnings are already safe in `CLAUDE.md` (PART 1), so the overwrite of SESSION_RUNNER.md is non-destructive.
 
-**Item B — README.md  [UNBLOCKED — standing HIGH priority from Sessions 1–2]**
+**Item B — README.md  [✅ DONE — Session 4, commit pending close-out]**
 
-Create `README.md` at the project root. It should cover:
+~~Create `README.md` at the project root.~~ Delivered Session 4 at `/Users/rmsharp/Development/airqino/README.md`, written from a read of the actual implementation files (not just this spec). Original spec retained below for reference:
 - Project description (monitoring dashboard for AirQino air quality sensors)
 - The user's specific context: abandoned AirQino Outdoor device (PN 800506, S/N AIRO 6153) from a discontinued project
 - Installation: `pip install -r requirements.txt`, `python3 app.py`, open `http://localhost:5001`
@@ -39,6 +39,52 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 ---
 
 *Session history accumulates below this line. Newest session at the top.*
+
+### Session 3 Handoff Evaluation (by Session 4)
+- **Score: 9/10**
+- **What helped:** The Item B (README) spec was effectively a ready-made checklist — project description, the data-path summary, install steps, API reference, hardware summary, and the exact key-file list all transferred almost verbatim into the README's section structure. Key files were given with line numbers. The gotcha that `docs/HARDWARE.html` is untracked-and-leave-it told me exactly what NOT to touch. The "Connecting a Live Data Source" block fed the README's data-source section directly. All 6 minimum handoff requirements were met.
+- **What was missing:** Nothing material for this session's deliverable. Session 3 documented both open items thoroughly enough that picking Item B required zero discovery.
+- **What was wrong:** Session 3's PART 2 recommendation (option a, re-vendor now) was superseded out-of-session by option b (DEFER) — the option-(a) prerequisite (`integration/pr2527` branch) never existed. To Session 3's credit, it explicitly flagged that exact blocker ("no integration branch; PRs #25/#27 don't resolve") and said to confirm before building, so the reversal was a refinement of a risk Session 3 already surfaced — not an inaccuracy it hid.
+- **ROI:** Strongly positive. The README spec saved the bulk of the planning work; I spent my time reading implementation files for accuracy rather than figuring out what to write.
+
+### What Session 4 Did
+**Deliverable:** Root `README.md` (Item B) — **COMPLETE**
+**Started / Closed:** 2026-06-08
+
+**What was done:**
+- **Bookkeeping first (per user):** (1) committed the out-of-session correction to `docs/planning/methodology-pr2527-remediation-airqino.md` on its own as `a5fdd12` (PART 2 reclassified to DEFER — the `integration/pr2527` branch never existed); (2) verified the claim before committing — Phase 0 `git status` showed a clean tree, so I re-ran `git status` and confirmed the file was genuinely modified out-of-session. (3) Reclassified Item A (PART 2 re-vendor) in this file from **BLOCKED → DEFERRED** so it stops surfacing as actionable.
+- **Deliverable:** Wrote `README.md` from a direct read of `app.py`, `airqino_client.py`, `serial_reader.py`, `.env.example`, `requirements.txt`, `static/js/dashboard.js`, `templates/dashboard.html`, and `docs/HARDWARE.md` — not from the handoff description. Covers: project background (abandoned PN 800506 / S/N AIRO 6153 device), quick start, all three data sources (CSV/SD, cloud API, serial), feature list, full API endpoint + Flask route tables, hardware summary, key-file map, and a config-variable reference.
+- **Left `docs/HARDWARE.html` untouched** (per user — separate decision).
+
+**Verification:**
+- `app.py` confirms port **5001**, host `0.0.0.0`, env var names, and route list → README matches.
+- API base/token URLs, endpoint paths, and the 30-day/CSV/401-empty quirks taken verbatim from `airqino_client.py`.
+- Sensor units and chart ranges (6h/12h/24h/3d/7d/30d) taken from `static/js/dashboard.js` and `templates/dashboard.html`.
+
+**Commits:**
+- `a5fdd12` — docs: correct airqino PART 2 — defer re-vendor until PR #25/#27 merge (no integration branch)
+- (close-out commit for README + SESSION_NOTES + CLAUDE.md follows this note)
+
+**Key files:**
+- `README.md` — NEW, the deliverable
+- `CLAUDE.md:34` — added project learning #3 (factual corrections must be grepped across ALL surfaces)
+- `docs/planning/methodology-pr2527-remediation-airqino.md` — corrected (committed `a5fdd12`)
+
+**Gotchas for the next session:**
+- **Stale UI copy (NOT fixed — deliberate scope hold):** `templates/dashboard.html:54-55` still tells the user to "connect a USB cable to the Arduino Mega port" — the pre-Session-2 hardware claim that Session 2 corrected everywhere else (`serial_reader.py`, `.env.example`, `docs/HARDWARE.md`). This is the setup-banner "USB Serial" option. A good, bounded next deliverable: fix that banner text to match the USB-to-TTL/REV6 reality. (Logged as CLAUDE.md project learning #3.)
+- **PART 2 is DEFERRED, not actionable:** do not pick up Item A until PR #25/#27 merge into `KJ5HST/main`. See Item A for the trigger and the one-pass re-vendor procedure.
+- `docs/HARDWARE.html` is still untracked and still undecided (track / ignore / delete?) — Session 4 left it alone per instruction, same as Session 3.
+- Branch `chore/methodology-pr2527-remediation` is not merged to `main` or pushed. No push was requested.
+
+**Self-assessment:**
+- **Score: 9/10**
+- (+) Verified the out-of-session edit before committing instead of trusting the description — caught that my own Phase 0 snapshot was stale and confirmed against a fresh `git status`.
+- (+) Wrote the README from the actual code, so endpoint names, env vars, port, sensor units, and chart ranges are accurate rather than paraphrased from the handoff.
+- (+) Held the line on scope: spotted the stale `dashboard.html` Arduino text but did NOT fix it (FM #8) — flagged it as a clean next-session deliverable and logged the root-cause learning instead.
+- (+) Did the bookkeeping in the exact order requested, committed the correction as its own logical unit, and left `HARDWARE.html` untouched.
+- (-) Did not boot the Flask app to confirm it serves (it's a blocking debug server); relied on reading `app.py`. The install/run steps are standard, but a runtime smoke test would have been stronger evidence.
+
+**Previous session handoff evaluation:** See "Session 3 Handoff Evaluation (by Session 4)" above.
 
 ### Session 2 Handoff Evaluation (by Session 3)
 - **Score: 8/10**
