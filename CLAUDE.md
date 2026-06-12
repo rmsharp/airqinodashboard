@@ -27,6 +27,10 @@
 
 ### Project-specific Learnings
 
+<!-- This table is loaded every session and grows with no cap. When CLAUDE.md nears its
+     size budget, extract these rows to a committed PROJECT_LEARNINGS.md at the project
+     root and replace them with a one-line pointer (read on demand). See BOOTSTRAP.md Step 5. -->
+
 | # | Learning | Source | When to Apply |
 |---|----------|--------|---------------|
 | 1 | Hardware assumptions from research papers may not match the actual device revision. Session 1 described "Arduino Mega + SIM900 GPRS" based on published literature; the actual REV6 board (2022) is a custom PCB with no USB port. Physical verification trumps literature-based assumptions for hardware projects. | Session 2 hardware investigation | When documentation references specific hardware components, verify against the physical device before writing connection instructions or buying parts. |
