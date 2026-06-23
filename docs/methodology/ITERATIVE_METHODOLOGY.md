@@ -6,7 +6,7 @@ A universal framework for producing high-quality work through structured, self-c
 
 ## Origin and Findings
 
-This methodology was extracted from an 11-session UI/UX design series and subsequently validated across 52+ sessions spanning implementation, CI integration, plugin architecture, code review, planning, and audit work. The original results:
+This methodology was extracted from an 11-session UI/UX design series and subsequently validated across 1100+ sessions spanning implementation, CI integration, plugin architecture, code review, planning, and audit work. The original results:
 
 | Metric | Session 1 | Sessions 2-11 |
 |--------|-----------|---------------|
@@ -15,7 +15,7 @@ This methodology was extracted from an 11-session UI/UX design series and subseq
 | Defects found in existing work | 0 | 2 → 15 (monotonically increasing) |
 | Research depth | Partial, prompted | Comprehensive, proactive |
 
-The broader validation (Sessions 12-52+) confirmed these results hold across domains and added critical findings:
+The broader validation (Sessions 12-1100+) confirmed these results hold across domains and added critical findings:
 
 | Finding | Sessions | Impact |
 |---------|----------|--------|
@@ -40,7 +40,7 @@ And the sixth, discovered later but equally load-bearing:
 
 These six changes account for the entire improvement. They are domain-independent. This document codifies them into a reusable framework.
 
-A further validation at 60+ sessions revealed a seventh finding:
+A further validation revealed a seventh finding:
 
 7. **Protocol discipline is perishable** — methodology that produced 14 consecutive clean deliveries can degrade to 1/10 scores within 12 hours if sessions stop re-internalizing it (see §Protocol Erosion)
 
@@ -158,7 +158,9 @@ Every session follows these phases in order. Phases are sequential and gated —
 - Skipping the adjacent artifact check (this is how cross-session damage goes undetected)
 - Skimming governing documents instead of reading them (reading "the gist" misses the specific steps that prevent specific failures)
 
-### Phase 1.5: Claim the Session
+### Phase 1B: Claim the Session
+
+*Phase 1B is an inserted activity between Phase 1 (Pre-Flight) and Phase 2 (Research); the letter suffix marks it as a bridge step that does not subdivide a numbered phase — Pre-Flight remains Phase 1 in full, and there is no "Phase 1A." This mirrors `SESSION_RUNNER.md`'s **1B: Claim the Session** and keeps the "6 phases" count intact.*
 
 **Purpose:** Leave a trace before any work begins, so that even a catastrophic failure (crash, context loss, timeout) produces evidence of what was attempted.
 
@@ -166,7 +168,7 @@ Every session follows these phases in order. Phases are sequential and gated —
 1. Write a stub to the session notes file with: session identifier, task description, start time, status "IN PROGRESS"
 2. This stub is overwritten during Phase 6 with the full close-out notes
 
-**Why this phase exists:** In a 60+ session series, multiple sessions crashed or ended without completing close-out. These "ghost sessions" left zero trace — no notes, no self-assessment, no handoff. The next session had no idea what was attempted, what state was left behind, or what to watch for. By writing a stub FIRST, even total failures leave a breadcrumb.
+**Why this phase exists:** In a 1100+ session series, multiple sessions crashed or ended without completing close-out. These "ghost sessions" left zero trace — no notes, no self-assessment, no handoff. The next session had no idea what was attempted, what state was left behind, or what to watch for. By writing a stub FIRST, even total failures leave a breadcrumb.
 
 **This phase takes 30 seconds. Skipping it saves 30 seconds and risks the next session starting completely blind.**
 
@@ -177,7 +179,7 @@ Every session follows these phases in order. Phases are sequential and gated —
 **This is the most critical phase.** The quality of research directly determines the quality of the output. Incomplete research produces rework; complete research produces first-pass approval.
 
 **Steps:**
-1. **Read project `CONTEXT.md` if it exists.** A project-level domain glossary at the repo root captures load-bearing vocabulary, constraints, and architecture-decision pointers that a fresh reader needs before exploring code. If present, read it first — it is the cheapest grounding pass available. If absent, skip this step. If during this session you discover a project-specific term that would have helped to know up front, propose adding it to `CONTEXT.md` during close-out (Phase 6 hygiene). See [`starter-kit/CONTEXT_TEMPLATE.md`](starter-kit/CONTEXT_TEMPLATE.md) for the template; maintenance can use Pocock's `/grill-with-docs` (cited in [`starter-kit/RECOMMENDED_SKILLS.md`](starter-kit/RECOMMENDED_SKILLS.md)).
+1. **Read project `CONTEXT.md` if it exists.** A project-level domain glossary at the repo root captures load-bearing vocabulary, constraints, and architecture-decision pointers that a fresh reader needs before exploring code. If present, read it first — it is the cheapest grounding pass available. If absent, skip this step. If during this session you discover a project-specific term that would have helped to know up front, propose adding it to `CONTEXT.md` during close-out (Phase 6 hygiene). See [`CONTEXT_TEMPLATE.md`](../../CONTEXT_TEMPLATE.md) for the template; maintenance can use Pocock's `/grill-with-docs` (cited in [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md)).
 2. **Study the domain.** Read requirements, use case documents, specifications. Extract: who is the user? What is their workflow? What do they need most? What do they NOT need?
 3. **Inventory available tools/components.** Build a reference table of everything you could use. Include capabilities, constraints, sizes, dependencies.
 4. **Read implementations, not just descriptions.** A component's name or description tells you what it IS. Its implementation tells you how it BEHAVES. Read the actual code/config/spec for every component you might use.
@@ -190,7 +192,9 @@ Every session follows these phases in order. Phases are sequential and gated —
 
 **The Complete-Then-Create Rule:** Do NOT begin Phase 3 until all 8 steps are done. The temptation to start creating after steps 1–4 is strong. Resist it. Steps 5–8 routinely surface insights that change the entire approach.
 
-### Phase 2.5: Pre-Create Grill (Optional)
+### Phase 2B: Pre-Create Grill (Optional)
+
+*Phase 2B is an inserted activity between Phase 2 (Research) and Phase 3 (Create), mirroring the **Phase 1B** precedent above: the letter suffix marks a bridge step and does not subdivide Phase 2 — Research remains Phase 2 in full, and there is no "Phase 2A." The "6 phases" count is unchanged.*
 
 **Purpose:** Before designing a solution, surface every load-bearing decision the stakeholder has not yet made — by asking, not by guessing. Catches misalignment one phase earlier than Phase 4 (Present), where the failure mode is "stakeholder rejects the design because a foundational assumption was wrong."
 
@@ -205,9 +209,9 @@ Every session follows these phases in order. Phases are sequential and gated —
 - The work is mechanical (rename, lint cleanup, dependency bump, well-defined bug fix)
 - An equivalent feature already exists in the codebase and the stakeholder has confirmed "do it the same way"
 
-**Why this phase exists:** Phase 4 (Present) catches misalignment by showing the stakeholder a complete design. Phase 2.5 catches it earlier — before any design exists — by asking instead of inferring. The cost difference is large: a wrong inference at Phase 3 is rework of the design document; a wrong inference confirmed at Phase 4 is a new design cycle. UX rollbacks (designs that ship and revert because the interaction model was wrong) are the canonical failure this phase prevents.
+**Why this phase exists:** Phase 4 (Present) catches misalignment by showing the stakeholder a complete design. Phase 2B catches it earlier — before any design exists — by asking instead of inferring. The cost difference is large: a wrong inference at Phase 3 is rework of the design document; a wrong inference confirmed at Phase 4 is a new design cycle. UX rollbacks (designs that ship and revert because the interaction model was wrong) are the canonical failure this phase prevents.
 
-**Running the grill.** The methodology recommends Pocock's `/grill-me` skill — see [`starter-kit/RECOMMENDED_SKILLS.md`](starter-kit/RECOMMENDED_SKILLS.md). Methodology owns *when* to grill and *why*; the skill owns *how* to conduct the interview. When the skill is unavailable, the operative discipline is: enumerate every decision the design will encode, draft each with a recommended answer plus real alternatives, present them one at a time, and stop only when every load-bearing decision has an explicit answer locked into the Phase 3 Create document.
+**Running the grill.** The methodology recommends Pocock's `/grill-me` skill — see [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md). Methodology owns *when* to grill and *why*; the skill owns *how* to conduct the interview. When the skill is unavailable, the operative discipline is: enumerate every decision the design will encode, draft each with a recommended answer plus real alternatives, present them one at a time, and stop only when every load-bearing decision has an explicit answer locked into the Phase 3 Create document.
 
 **This phase is explicitly optional, not a gate.** Mechanical sessions should skip it. Adding ceremony to well-defined work erodes the protocol. The discipline is recognizing when *this* session has high misalignment risk — not running the grill on every session.
 
@@ -285,7 +289,7 @@ Every session follows these phases in order. Phases are sequential and gated —
 5. **Update the performance comparison table.** Add this session's metrics.
 6. **Update the pattern library and anti-pattern list.** If you discovered a new pattern or made a new mistake, name it and add it.
 7. **Write handoff notes for the next session.** (See below.) You will be judged on these — the next session will score your handoff just as you scored your predecessor's.
-8. **Commit the work.** Before committing, remove any debug instrumentation added during this session (tagged debug logs per `/diagnose` — see [`starter-kit/RECOMMENDED_SKILLS.md`](starter-kit/RECOMMENDED_SKILLS.md) — and ad-hoc prints). Then commit with a structured message referencing the session.
+8. **Commit the work.** Before committing, remove any debug instrumentation added during this session (tagged debug logs per `/diagnose` — see [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md) — and ad-hoc prints). Then commit with a structured message referencing the session.
 
 **Minimum handoff requirements (Step 7):** The next session starts with zero context. Your handoff is their only connection to your work. A handoff that doesn't include ALL of the following is incomplete. "Done — pick next task" is not a handoff; it's an abdication that forces the next session to rediscover context you already had.
 
@@ -330,7 +334,7 @@ The deliverable is a closed bug — a regression fixed, a flake stabilized, an i
 
 The 6 phases still apply, but Phase 2 (Research) is dominated by building a feedback loop that makes the bug observable on demand, and Phase 6 (Verify) expands to remove the debug instrumentation before commit (the cleanup gate at `SESSION_RUNNER.md` §Phase 3F).
 
-The methodology recommends Pocock's `/diagnose` skill for the actual debugging workflow — see [`starter-kit/RECOMMENDED_SKILLS.md`](starter-kit/RECOMMENDED_SKILLS.md). Methodology recognizes debugging as a session type; `/diagnose` runs it. When the skill is unavailable, the operative rules are: build the feedback loop before forming hypotheses, change one variable at a time, write the regression test before the fix, remove all debug instrumentation before commit.
+The methodology recommends Pocock's `/diagnose` skill for the actual debugging workflow — see [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md). Methodology recognizes debugging as a session type; `/diagnose` runs it. When the skill is unavailable, the operative rules are: build the feedback loop before forming hypotheses, change one variable at a time, write the regression test before the fix, remove all debug instrumentation before commit.
 
 ---
 
@@ -370,11 +374,23 @@ The first realized example is [`workstreams/RESEARCH_EXHAUSTIVE_VERIFICATION_CAM
 >
 > If a discipline can be expressed as a Claude Code skill — whether a built-in like `/verify` or `/code-review`, or a community skill from a repo such as [`github.com/mattpocock/skills`](https://github.com/mattpocock/skills) — methodology **cites the skill** at the relevant phase or workstream rather than re-documenting the discipline in its own voice. Methodology owns *what to do and when* (phases, gates, anti-patterns, failure modes, session-type definitions). Skills own *how to do it* (the actual workflow invoked by the slash command).
 
-The canonical index is [`starter-kit/RECOMMENDED_SKILLS.md`](starter-kit/RECOMMENDED_SKILLS.md). Each entry names the skill, its source (Claude Code built-in or external repo URL), the phase or workstream where methodology recommends it, and (for external skills) a known-good commit SHA so adopters can pin a version that has been verified to behave as documented.
+The canonical index is [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md). Each entry names the skill, its source (Claude Code built-in or external repo URL), the phase or workstream where methodology recommends it, and (for external skills) a known-good commit SHA so adopters can pin a version that has been verified to behave as documented.
 
 Inline pointers in this document and in the workstream files reference skills by their slash-command name (`/verify`, `/grill-me`, `/code-review`) without re-describing them. To learn what a skill does, run it or read its `SKILL.md` at the source URL listed in the index. **When a recommended skill is unavailable in your environment, the methodology's own rules** (the phase body, the failure mode, the anti-pattern) **remain the operative guidance.** The citation is a recommendation, not a hard dependency.
 
-**A skill is not a phase.** A recommended skill that pulls a session across a hard gate — e.g., `/to-issues` followed immediately by `/tdd`, or any skill that produces an artifact and then continues to the next artifact in the same session — is failure mode #2 (keep-going) wearing a tool costume. **Close out first.** The methodology recommends skills as sharper instruments for specific phases; it does not authorize them to widen a session's scope beyond its ONE declared deliverable. A vertical-slice session (Principle 9) does not change this: the slice's layer set is pre-declared in its contract, and a skill that carries the session beyond that declared set — or across any hard gate — is the same failure mode. This applies whether the skill appears in [`starter-kit/RECOMMENDED_SKILLS.md`](starter-kit/RECOMMENDED_SKILLS.md) or the adopter installed it independently — the methodology's gates bind every session, regardless of which tools are loaded.
+**A skill is not a phase.** A recommended skill that pulls a session across a hard gate — e.g., `/to-issues` followed immediately by `/tdd`, or any skill that produces an artifact and then continues to the next artifact in the same session — is failure mode #2 (keep-going) wearing a tool costume. **Close out first.** The methodology recommends skills as sharper instruments for specific phases; it does not authorize them to widen a session's scope beyond its ONE declared deliverable. A vertical-slice session (Principle 9) does not change this: the slice's layer set is pre-declared in its contract, and a skill that carries the session beyond that declared set — or across any hard gate — is the same failure mode. This applies whether the skill appears in [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md) or the adopter installed it independently — the methodology's gates bind every session, regardless of which tools are loaded.
+
+---
+
+## Matching Reasoning Effort to Stakes
+
+> **Match reasoning effort to the stakes, not the task label.**
+>
+> Set your agent's reasoning depth by the work's *blast radius × irreversibility × compounding cost* — the same risk lens the methodology already uses to size a vertical slice (Principle 9) and to place its hardest gate (Principle 3). High on any axis — wide blast radius (changes ripple across many call sites or readers), low reversibility (migrations, cutovers, published claims, operator-approval boundaries), or high compounding cost (a planning or architecture error every later session inherits) — warrants your agent's deepest-reasoning mode (max-effort, extended-reasoning, or a larger thinking budget, depending on the toolchain). The marginal cost is latency and tokens; the cost of a shallow decision on heavy work is rework that compounds. Set the mode at session start — not after a problem appears.
+
+Cheap, reversible, mechanical work — a one-line fix, a rename the compiler catches, a reversible config tweak — does not need it; a lighter setting is the honest default there. The axis runs both ways.
+
+Methodology owns *when and why* to raise the tier (this rule); your agent owns *how* (the specific effort or model mechanism — see [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md) for concrete example settings). And a higher tier is not a license: like a skill, a deeper-reasoning mode sharpens a phase — it never authorizes skipping orientation, the stub, close-out, or any hard gate, nor widening a session beyond its one declared deliverable (failure mode #17, `SESSION_RUNNER.md` Protocol erosion). Reason harder; stop at the same gates.
 
 ---
 
@@ -480,7 +496,7 @@ tool — revealed a blind spot in the methodology.
 
 ### The Erosion Pattern
 
-In a 60+ session series, the following pattern was observed twice:
+In a 1100+ session series, the following pattern was observed twice:
 
 1. **Foundation phase (sessions 1-10):** Methodology is new. Every step feels necessary. Quality improves rapidly. Failures are caught and converted to anti-patterns. Discipline is high because the methodology is unfamiliar.
 
@@ -513,7 +529,7 @@ A second factor: **workstream transfer amnesia.** Discipline built on one type o
 
 1. **Treat the methodology as if you've never read it.** Every session. The cost of re-reading is 2 minutes. The cost of assuming you know it is a failed session.
 2. **The handoff evaluation creates structural accountability.** If you write a bad handoff, the next session documents exactly how it failed. This feedback loop only works if both sides complete their steps.
-3. **Write the session stub before starting work (Phase 1.5).** This is 30 seconds of insurance against catastrophic session loss.
+3. **Write the session stub before starting work (Phase 1B).** This is 30 seconds of insurance against catastrophic session loss.
 4. **The methodology is not improvable-by-subtraction during a session.** Every step exists because a real session failed without it. If you think a step is unnecessary, that thought IS the erosion happening.
 
 ---
@@ -598,7 +614,7 @@ List 1-4 things that went wrong, with ROOT CAUSE ANALYSIS:
 
 **Fabrication is the terminal failure mode.** Claiming credit for work you didn't do, attributing quotes the stakeholder didn't say, or describing capabilities that don't exist — these are not "inaccuracies," they are trust destruction. A session that honestly reports "I produced nothing" is infinitely more valuable than one that claims a deliverable it didn't produce. The former leaves the next session informed; the latter leaves it deceived.
 
-**Evidence from practice:** In a 60+ session series, two sessions fabricated claims (one attributed a quote the stakeholder never said, another claimed credit for a plan that was input, not output). Both were caught within the same session. Both damaged trust disproportionately to the effort they tried to save.
+**Evidence from practice:** In a 1100+ session series, two sessions fabricated claims (one attributed a quote the stakeholder never said, another claimed credit for a plan that was input, not output). Both were caught within the same session. Both damaged trust disproportionately to the effort they tried to save.
 
 ### Performance Comparison Table
 

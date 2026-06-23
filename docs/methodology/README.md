@@ -6,7 +6,7 @@ A framework for producing high-quality software through structured, self-correct
 
 AI agents are capable but inconsistent. They skip steps, lose context between sessions, start implementing before researching, and treat speed as evidence of quality. A methodology document alone doesn't fix this — agents read it, understand it conceptually, and still skip steps. Understanding a concept and following a procedure are fundamentally different cognitive tasks.
 
-This framework solves the problem with three layers:
+This framework solves the problem with four layers:
 
 | Layer | Document | Purpose |
 |-------|----------|---------|
@@ -69,11 +69,11 @@ Each phase is gated. You cannot enter the next phase until the current one is co
 ../methodology/bin/sync your-project/ --source=github  # or: pull from GitHub (needs gh CLI)
 ```
 
-This copies `SESSION_RUNNER.md`, `SAFEGUARDS.md`, and `methodology_dashboard.py` into the target. See [`starter-kit/BOOTSTRAP.md`](starter-kit/BOOTSTRAP.md) for the difference between committed and ignored modes.
+This copies the full methodology corpus into the target: the operating files (`SESSION_RUNNER.md`, `SAFEGUARDS.md`, `RECOMMENDED_SKILLS.md`, `CONTEXT_TEMPLATE.md`, `CLAUDE_TEMPLATE.md`, `BOOTSTRAP.md`, `methodology_dashboard.py`) to the project root, and the framework (`ITERATIVE_METHODOLOGY.md`, `HOW_TO_USE.md`, `workstreams/`) to `docs/methodology/`. These are kept current on every run. `SESSION_NOTES.md`, `CHANGELOG.md`, and `ROADMAP.md` are *seeded* at the root only when absent — once they exist they are yours and `bin/sync` never overwrites them. See [`starter-kit/BOOTSTRAP.md`](starter-kit/BOOTSTRAP.md) for the difference between committed and ignored modes.
 
 **Option B — manual:**
 
-Copy `starter-kit/SESSION_RUNNER.md`, `starter-kit/SAFEGUARDS.md`, `starter-kit/SESSION_NOTES.md`, `starter-kit/CHANGELOG.md`, and `starter-kit/ROADMAP.md` to your project root. Copy the framework files (`ITERATIVE_METHODOLOGY.md`, `HOW_TO_USE.md`, `workstreams/`) to `docs/methodology/`.
+Copy the starter-kit root-files to your project root — `SESSION_RUNNER.md`, `SAFEGUARDS.md`, `RECOMMENDED_SKILLS.md`, `CONTEXT_TEMPLATE.md`, `CLAUDE_TEMPLATE.md`, `BOOTSTRAP.md`, `methodology_dashboard.py`, plus `SESSION_NOTES.md`, `CHANGELOG.md`, and `ROADMAP.md` as starting points you then own. Copy the framework files (`ITERATIVE_METHODOLOGY.md`, `HOW_TO_USE.md`) and `workstreams/` to `docs/methodology/`. (Option A's `bin/sync` does all of this in one command.)
 
 ### 2. Tell Claude to use it
 
@@ -105,6 +105,8 @@ See **[`starter-kit/BOOTSTRAP.md`](starter-kit/BOOTSTRAP.md)** for the complete 
 | `SESSION_NOTES.md` | Empty template for session continuity |
 | `SAFEGUARDS.md` | Safety rails: commit discipline, blast radius limits, mode switching |
 | `CLAUDE_TEMPLATE.md` | Template for project `CLAUDE.md` with SESSION PROTOCOL block and Adaptations section |
+| `CONTEXT_TEMPLATE.md` | Project domain-glossary / `CONTEXT.md` template |
+| `RECOMMENDED_SKILLS.md` | Index of recommended skills, cited at the relevant phase/workstream |
 | `CHANGELOG.md` | Completed work history template — keeps BACKLOG.md lean |
 | `ROADMAP.md` | Feature inventory and future plans template |
 | `methodology_dashboard.py` | Health scanner: project scoring, risk assessment, compliance dashboard |
@@ -141,6 +143,10 @@ Expand any project card to see health breakdown by dimension, risk factors, git 
 
 ![Expanded project detail showing health breakdown, code metrics, and methodology compliance](docs/images/dashboard-detail.png)
 
+## Tutorials
+
+New to the methodology? The **[tutorials](docs/tutorials/)** are a hands-on, progressive learning track — install the framework, run a real session end to end, and learn where the guardrails catch you. Each lesson has you *do* one thing against a real project (your own repo, or the bundled [sample project](docs/tutorials/sample-project/)), with a checkpoint at every step. The full track — Setup through Keeping Adopters Current (T1–T8) — is published; see the **[series index](docs/tutorials/)** for the full curriculum.
+
 ## Repository Structure
 
 ```
@@ -162,6 +168,8 @@ Expand any project card to see health breakdown by dimension, risk factors, git 
 ├── starter-kit/                      ← Copy these to bootstrap a new project
 │   ├── BOOTSTRAP.md                  ← Setup guide
 │   ├── CLAUDE_TEMPLATE.md            ← Project CLAUDE.md template (protocol + Adaptations section)
+│   ├── CONTEXT_TEMPLATE.md           ← Project domain-glossary / CONTEXT.md template
+│   ├── RECOMMENDED_SKILLS.md         ← Index of recommended skills (cited by phase/workstream)
 │   ├── SESSION_RUNNER.md             ← Cockpit checklist template
 │   ├── SESSION_NOTES.md              ← Session continuity template
 │   ├── SAFEGUARDS.md                 ← Safety rails template
@@ -169,9 +177,15 @@ Expand any project card to see health breakdown by dimension, risk factors, git 
 │   ├── ROADMAP.md                    ← Feature inventory & future plans template
 │   └── methodology_dashboard.py      ← Health scanner (also in tools/)
 │
+├── docs/                             ← Tutorials and supporting docs
+│   └── tutorials/                    ← Hands-on learning track + sample todo-CLI project
+│
 ├── bin/                              ← Sync tools (v2.2+)
 │   ├── sync                          ← Copy starter-kit files into a project (dual-mode, dual-source)
-│   └── status                        ← Report drift of synced files across projects
+│   ├── status                        ← Report drift of synced files across projects
+│   ├── check-links                   ← Validate relative links resolve in the adopter layout
+│   ├── _manifest.py                  ← Shared (src, dest, disposition) manifest — single source of truth
+│   └── tests.sh                      ← Test suite for the bin/ tooling
 │
 └── tools/                            ← Portfolio-level tooling
     └── methodology_dashboard.py      ← Health scanner & compliance dashboard
@@ -186,8 +200,8 @@ The methodology framework describes WHAT to do and WHY. In practice, it needs an
 - **Mandatory orientation** — prevents starting work without understanding current state
 - **"1 and done" rule** — prevents scope creep and quality degradation
 - **Automatic close-out** — prevents skipping the self-improvement loop
-- **23 known failure modes** — documents agent tendencies with specific countermeasures
-- **Degradation detection** — 7 warning signs that predict protocol erosion
+- **26 known failure modes** — documents agent tendencies with specific countermeasures
+- **Degradation detection** — 16 warning signs that predict protocol erosion
 - **Handoff accountability** — ensures each session sets up the next for success
 
 ### The Handoff Accountability Loop
@@ -230,6 +244,44 @@ Domain-specific adaptations of the master framework. Each workstream customizes 
 Developed by Terrell Deppe (KJ5HST) using Claude Code (Anthropic) during development of a commercial software product. The methodology emerged organically from an initial 11-session design series, was codified into a reusable framework, and subsequently validated across 1100+ sessions of varied work.
 
 The framework is agent-independent — it works with any AI coding agent that supports persistent files and session-based interaction. It also works for human developers, though the Session Runner and known failure modes are specifically tuned for AI agent tendencies.
+
+### What's New in v2.9
+
+A combined release of two additive contributions that merged together ([#38](https://github.com/KJ5HST/methodology/pull/38), [#39](https://github.com/KJ5HST/methodology/pull/39), rmsharp): a hands-on **tutorial track** for newcomers, and a **reasoning-effort convention** that generalizes "match effort to the stakes" across the whole framework. No principle, phase, gate, workstream, or failure-mode changes — failure-mode count stays 26.
+
+- **Hands-on tutorial track (#38).** A new [`docs/tutorials/`](docs/tutorials/) learning layer: a progressive, *do-one-thing-per-lesson* curriculum with a checkpoint at every step, run against your own repo or a bundled [sample todo-CLI project](docs/tutorials/sample-project/). The published **core trio** runs Setup (T1) → First Session, with a full worked transcript (T2) → Cautionary Use (T5), alongside a series index and a reusable tutorial template. The sample project intentionally leaves one feature unbuilt so a tutorial session implements it end to end. The tutorials are a **canonical-only learning aid — they are not distributed to adopter projects** by `bin/sync`, so the corpus an installed project receives is unchanged.
+- **Reasoning-effort convention (#39).** The guidance to raise an agent's reasoning depth on high-stakes work — previously living only in the Research Documentation workstream — is promoted to a cross-cutting rule: the new **Matching Reasoning Effort to Stakes** section in `ITERATIVE_METHODOLOGY.md`. Set reasoning depth by the work's *blast radius × irreversibility × compounding cost* (the same risk lens Principles 3 and 9 already use); the inverse holds too, so cheap, reversible, mechanical work gets a lighter default. The rule is **agent-independent** — the brand-neutral core says *when and why*, while `RECOMMENDED_SKILLS.md` names concrete example settings as the *how*. The heavy workstreams and both campaigns cite the rule, and an anti-erosion clause keeps it from becoming a license to skip a gate: a deeper mode sharpens a phase — it never crosses a hard gate (failure mode #17).
+- **Backward compatible.** Adopters absorb the reasoning-effort edits to distributed files (`ITERATIVE_METHODOLOGY.md`, `RECOMMENDED_SKILLS.md`, `SESSION_RUNNER.md`, `workstreams/*`) by re-running `bin/sync`; the tutorials are not synced and need no adopter action. These are additive — no methodology-content semantics change.
+
+### What's New in v2.8
+
+The first non-docs change in several releases (since v2.2's distribution tooling): `bin/sync` and `bin/status` now cover the **full methodology corpus**, not the legacy three files. Resolves the **B1** campaign — issue [#32](https://github.com/KJ5HST/methodology/issues/32) — across four contributor PRs ([#33](https://github.com/KJ5HST/methodology/pull/33)/[#34](https://github.com/KJ5HST/methodology/pull/34)/[#35](https://github.com/KJ5HST/methodology/pull/35)/[#37](https://github.com/KJ5HST/methodology/pull/37), rmsharp). No principle, phase, gate, workstream, or failure-mode changes — this is tooling.
+
+- **The gap it closes.** `bin/sync` propagated only `SESSION_RUNNER.md`, `SAFEGUARDS.md`, and `methodology_dashboard.py`; `bin/status` inspected the same three. Every release since v2.5 also changed files *outside* that set (`RECOMMENDED_SKILLS.md`, `ITERATIVE_METHODOLOGY.md`, `workstreams/*`…), so adopters who synced "by the book" silently fell behind while `status` still reported `current` — **false confidence**.
+- **Link reconciliation + `bin/check-links` (Phase 2, #33).** A distributed file's relative cross-references can't be correct in *both* the canonical repo layout and the adopter layout unless source and target are siblings in both ("the link-topology paradox"). Distributed files now author their cross-references for the **adopter** layout — extending the convention `SESSION_RUNNER.md` already followed — and a new `bin/check-links` validates every relative link against a simulated adopter tree (wired into `bin/tests.sh`). Tradeoff: those cross-boundary links resolve in an installed project but no longer when the canonical repo is browsed on GitHub.
+- **Expanded `bin/sync` over a shared manifest (Phase 3, #34).** The flat three-file tuple becomes a `(src, dest, disposition)` manifest defined once in **`bin/_manifest.py`** — the single source of truth now read by `sync`, `status`, and `check-links`. `bin/sync` produces the full Option-B tree (operating files at the project root, framework under `docs/methodology/`, subdirectories created as needed) and adds a **`seed` disposition**: `SESSION_NOTES.md`, `CHANGELOG.md`, and `ROADMAP.md` are written only when absent and never overwritten afterward — even with `--force` — because once created they are the adopter's.
+- **Per-file `bin/status` (Phase 4, #35).** `status` reports one row per distributed file (`Project · File · Disposition · Status`) over the shared manifest, so drift in *any* framework doc — not just the legacy three — is now visible. SEED files report `present`/`absent` only, and an absent seed is never miscounted as drift. The test suite grew from 28 to 50.
+- **Checker hygiene (Phase 5, [#37](https://github.com/KJ5HST/methodology/pull/37), closes [#36](https://github.com/KJ5HST/methodology/issues/36)).** `bin/check-links --tree` now validates a real project *in place* without writing to it — adopter-owned placeholder files (`CONTEXT.md`, `CLAUDE.md`, …) are treated as allowed-absent rather than fabricated. The `--tree` mode added in Phase 3 had created up to 5 empty files in the validated tree; a Test 14 regression assertion now guards against it (suite at 51).
+- **Backward compatible.** No methodology-content change; adopters pick up the full corpus by re-running `bin/sync`. Per-project customizations in `CLAUDE.md`'s Adaptations section are unaffected, locally-edited tracked files stay drift-protected, and seed files are never touched.
+
+### What's New in v2.7.2
+
+Docs-only dot release bundling three contributor fixes from the PR-14 review backlog — issues [#16](https://github.com/KJ5HST/methodology/issues/16), [#17](https://github.com/KJ5HST/methodology/issues/17), and [#19](https://github.com/KJ5HST/methodology/issues/19). No principle, phase, gate, workstream, or failure-mode changes.
+
+- **Agent-level memory, named generically (#16).** `starter-kit/CONTEXT_TEMPLATE.md`'s "CONTEXT.md vs auto-memory" guidance becomes "CONTEXT.md vs **agent-level memory**" — the cross-project persistence layer is now named by what it does, not by Claude Code's brand term, with a gloss that other agents implement it under their own names (Cursor's memories, Cody's preferences). Keeps the methodology agent-independent.
+- **A convention for citing skills from workstreams (#17).** `RECOMMENDED_SKILLS.md` now states the rule the docs already followed: cite **one** recommended skill inline at the point of recommendation; promote **two or more** for the same workstream to a dedicated `## Recommended Skills` section with a purpose→skill table. `TEMPLATE_WORKSTREAM.md` ships a matching optional scaffold.
+- **Cross-reference completeness as Learning #7 (#19).** A new Learnings-table row plus a Phase 3F pre-commit hook codify the self-review check `git diff` can't do for you: when you add a citation or grow a numbered set (failure modes, principles, learnings…), the defect is the *missing* destination-side edit — so grep each cited destination and each nearby count claim before committing.
+- **Backward compatible.** Docs-only; adopters absorb the starter-kit changes (`CONTEXT_TEMPLATE.md`, `RECOMMENDED_SKILLS.md`, `SESSION_RUNNER.md`, `TEMPLATE_WORKSTREAM.md`) via `bin/sync`.
+
+### What's New in v2.7.1
+
+Docs-only naming-consistency dot release resolving issue [#15](https://github.com/KJ5HST/methodology/issues/15). The methodology's two decimal-suffixed phase labels are renamed to the letter-suffix convention `SESSION_RUNNER.md` already uses, so the spec carries one consistent style for inserted sub-phases.
+
+- **`Phase 1.5: Claim the Session` → `Phase 1B`** and **`Phase 2.5: Pre-Create Grill` → `Phase 2B`** in `ITERATIVE_METHODOLOGY.md`, each with a one-line clarifier: a letter suffix marks an *inserted bridge step* between two numbered phases — it does not subdivide a phase (there is no "Phase 1A"/"Phase 2A") and does not change the **"6 phases"** count.
+- **Issue #15 scoped only Phase 2.5; the grep inventory found Phase 1.5 too** — the same "Claim the Session" step that `SESSION_RUNNER.md` and `CLAUDE.md` already call `1B`, rendered as a decimal here. Renaming only 2.5 would have left a fresh `1.5`-vs-`2B` split inside one file, so both decimals were standardized and the latent `1B`/`1.5` cross-doc inconsistency is closed in the same pass.
+- **Live sites updated:** `ITERATIVE_METHODOLOGY.md` (both headers + 2 body refs), the `SESSION_RUNNER.md` task-mapping row, `RECOMMENDED_SKILLS.md` (2 sites), and 3 campaign/workstream templates (`INHERITED_CODEBASE_FAMILIARIZATION_CAMPAIGN.md`, `TEMPLATE_CAMPAIGN.md`, `RESEARCH_EXHAUSTIVE_VERIFICATION_CAMPAIGN.md`).
+- **Changelog left verbatim by design.** Dated "What's New" entries below (v1.1 names `Phase 1.5`; v2.6 names `Phase 2.5`) and the frozen `docs/planning`/`docs/audits` records keep their original tokens — a changelog records what shipped under the name used at the time; this entry is the bridge.
+- **Backward compatible.** No principle, phase, gate, workstream, or FM changes; the phase count is unchanged. Adopters absorb the starter-kit changes via `bin/sync`.
 
 ### What's New in v2.7
 
