@@ -54,12 +54,12 @@ Common task-to-workstream mappings:
 | "Fix [bug campaign]" | One fix campaign pass | `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md` |
 | "Review [code/PR]" | One review document | The review produces a plan; follow DEVELOPMENT_WORKSTREAM for structure |
 | "Write/draft/audit [paper/section/dimension]" | One paper section, one audit pass, or one corpus retrieval pass | `docs/methodology/workstreams/RESEARCH_DOCUMENTATION_WORKSTREAM.md` |
-| "Grill me" / "I want to be grilled" / "Decide before designing" | A decisions list with stakeholder answers, then the Phase 3 design | `docs/methodology/ITERATIVE_METHODOLOGY.md` §Phase 2.5 (then continue in the relevant workstream — typically DESIGN or ARCHITECTURE). The grill itself is run via `/grill-me` — see [`RECOMMENDED_SKILLS.md`](RECOMMENDED_SKILLS.md). |
+| "Grill me" / "I want to be grilled" / "Decide before designing" | A decisions list with stakeholder answers, then the Phase 3 design | `docs/methodology/ITERATIVE_METHODOLOGY.md` §Phase 2B (then continue in the relevant workstream — typically DESIGN or ARCHITECTURE). The grill itself is run via `/grill-me` — see [`RECOMMENDED_SKILLS.md`](RECOMMENDED_SKILLS.md). |
 | Multi-phase plan appears in prompt (from Plan Mode or user) | Plan document written to `docs/planning/` with evidence-based inventory | Planning workstream |
 
 **⚠ Plan Mode exit trap.** Plan Mode generates "Implement the following plan" as its preamble. **This does NOT mean "start coding."** When a multi-phase plan appears in the prompt — regardless of the preamble wording — the deliverable is writing the plan document with grep-based evidence and per-phase criteria. Orient first. The plan is a DRAFT until evidence-verified. See Planning Sessions below.
 
-**⚠ Multi-session campaign check.** If your work cannot be produced cleanly in one session even after correct decomposition — paper-wide verification, repository-wide hardening, multi-module familiarization — look for a matching `*_CAMPAIGN.md` in `workstreams/`. If one exists, your session is one unit within its campaign: read the campaign template and follow its planning → execution → consolidation sequence. If none exists but the work has that shape, raise it before starting work — a planning session may be needed to either adopt an existing campaign or draft one. See [`ITERATIVE_METHODOLOGY.md` §Multi-Session Campaigns](../docs/methodology/ITERATIVE_METHODOLOGY.md#multi-session-campaigns).
+**⚠ Multi-session campaign check.** If your work cannot be produced cleanly in one session even after correct decomposition — paper-wide verification, repository-wide hardening, multi-module familiarization — look for a matching `*_CAMPAIGN.md` in `workstreams/`. If one exists, your session is one unit within its campaign: read the campaign template and follow its planning → execution → consolidation sequence. If none exists but the work has that shape, raise it before starting work — a planning session may be needed to either adopt an existing campaign or draft one. See [`ITERATIVE_METHODOLOGY.md` §Multi-Session Campaigns](docs/methodology/ITERATIVE_METHODOLOGY.md#multi-session-campaigns).
 
 **If no workstream document exists for the task type, follow the master framework:** `docs/methodology/ITERATIVE_METHODOLOGY.md`, phases 1-6.
 
@@ -94,6 +94,8 @@ State your understanding back to the user: *"I'm going to [deliverable] followin
 
 **⚠ The plan is the deliverable. Do not start implementing it.** Write the plan document to `docs/planning/`, commit it, close out. Implementation happens in a separate session.
 
+**Set your agent's deepest available reasoning mode at session start** (capability: maximum reasoning depth — e.g. `/effort max` where supported). A plan is low-reversibility and high-compounding: its errors propagate into every executor session that trusts it (`ITERATIVE_METHODOLOGY.md` §Matching Reasoning Effort to Stakes).
+
 **A plan is a deliverable, not a preamble.** When the session's deliverable is a plan (architecture doc, migration plan, multi-phase implementation plan), additional discipline applies:
 
 #### Evidence-Based Inventory (MANDATORY for deletion/migration/rename plans)
@@ -122,6 +124,7 @@ Without explicit completion criteria, executors don't know when to stop and tend
 
 Before closing out a planning session, verify:
 
+- [ ] Deepest available reasoning mode set at session start
 - [ ] Plan document written with file paths and line numbers
 - [ ] Grep-based inventory completed for all affected symbols (if deletion/migration/rename)
 - [ ] Each phase has explicit completion criteria and verification commands
@@ -253,6 +256,7 @@ If you cannot runtime-verify (requires hardware, external service, CI), state th
 Before committing:
 
 - **Remove debug instrumentation added during this session.** Tagged debug logs (per `/diagnose` — see [`RECOMMENDED_SKILLS.md`](RECOMMENDED_SKILLS.md)) make this a single grep; ad-hoc prints make it manual. Either way, do not commit instrumentation that was meant to be temporary.
+- **Verify cross-references added or changed this session.** If you added a citation, index entry, glossary term, or cross-reference between files, or modified a numbered set (FMs, principles, phases, anti-patterns, learnings), grep each cited destination to confirm it resolves and grep nearby prose for set-size claims that may have drifted. `git diff` shows the present-side edit, not the missing destination (Learning #7).
 
 Then commit all changes with a descriptive message.
 
@@ -343,6 +347,7 @@ These are documented tendencies. The agent must actively guard against them.
 | 4 | **Verify a plan's output against its completion criteria — not against session duration or count.** Execution speed is not evidence of plan quality, and "fits in one session" is not a planning goal. A plan whose phases each fit cleanly in one session and produce work that matches the completion criteria is high-quality; a plan that tempts the executor to bundle phases or skip close-out to "finish faster" is not. The "1 and done" rule does not bend for high-quality plans. | Field observation (refined from rmsharp feedback on issue #7) | When evaluating a plan or judging plan quality. Resist the temptation to read execution speed as plan quality — they are uncorrelated when the protocol holds. |
 | 5 | Code review is a distinct deliverable, not overhead. Reviews that produce actionable plans (exact code snippets, line numbers, implementation order) have higher ROI than vague "this needs improvement" feedback. A review that doesn't identify specific changes a future session can execute is incomplete. | Field observation | When the session deliverable is a code review. Output an actionable plan, not a critique. |
 | 6 | A plan written from memory of a file read is an assumption-level claim. Reading implementations before estimating complexity catches wrong assumptions early — estimating from a backlog description alone is unreliable. This is a special case of FM #11 (gaps from memory) and FM #20 (edit from memory) applied to planning. | Field observation | Before estimating effort or scope for any phase, read the actual implementation file. The backlog description is a hint, not a spec. |
+| 7 | **Cross-reference completeness at self-review.** When a change adds a citation, an index entry, a glossary term, or any cross-reference between files — and especially when it modifies a numbered set (FMs, principles, phases, anti-patterns, learnings) — `git diff` confirms only the present-side edit; the defect is the *absence* on the destination side, which the diff cannot surface. Grep each cited destination to confirm the citation resolves, and grep nearby prose for set-size or named-membership assertions ("N failure modes", "the three workstreams") that may have drifted. Bidirectional: a new index entry needs its destination to cite back; a grown numbered set needs its size claims re-counted. | Three v2.6 instances: stale "24 failure modes" count, understated `/diagnose` + `/grill-with-docs` citation rows, aspirational `/init` citation (issue #19) | When a change touches any cross-file citation, index, glossary term, or numbered set. At self-review, grep destinations and size claims before committing — do not rely on `git diff` alone. |
 
 ---
 
