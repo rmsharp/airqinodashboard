@@ -17,10 +17,6 @@ reconcile-on-read backstop — this makes a skipped handoff *detectable* rather 
 > never semantic quality. Faithfulness is still scored 1–10 by the next session (Phase 3A). A
 > well-formed but hollow receipt passes the check and is caught only by that human judgement.
 
-<!-- METHODOLOGY-SEED-SENTINEL: fresh receipt ledger, no receipts yet. While this line is present AND
-     there are no `session:` blocks below, this is a freshly-seeded file, not a stale or abandoned one.
-     Delete this line when you add your first real receipt. -->
-
 ## How to write a receipt
 
 **At Phase 1B (claim the session)** — write the stub block below with `status: pending`, filling what
@@ -158,3 +154,28 @@ session need this block to continue the work without re-reading the whole repo?*
 ---
 
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
+
+```handoff
+session: S5
+date: 2026-09-15
+status: complete
+self_score: 8
+predecessor_score: 9
+active_task: No task in progress. Session 5 was orientation-only; the operator closed it at the Phase 0 STOP, so no deliverable was produced. The SESSION_NOTES.md ACTIVE TASK was refreshed (it had gone stale) and lists four open items; pick ONE.
+what_was_done: Phase 0 in full, then close-out. Traced the four post-Session-4 commits (66abe78, 28db357, 0c59e5e, dfe26fd) to methodology-repo sessions by hash, so no ghost sessions; the CHANGELOG and HANDOFFS reconciles were no-ops. Close-out rewrote the stale ACTIVE TASK, added CLAUDE.md learning #4, wrote this first receipt and added the CHANGELOG entry, all in one close-out commit.
+next_steps: Fix the stale USB Serial setup-banner text at templates/dashboard.html:55 ("connect a USB cable to the Arduino Mega port") so it describes the REV6 USB-to-TTL adapter path in docs/HARDWARE.md:33, then grep every surface for the old wording (CLAUDE.md learning #3).
+key_files: templates/dashboard.html:55, docs/HARDWARE.md:33, CLAUDE.md:39, SESSION_NOTES.md:7
+gotchas: The HEAD branch chore/methodology-read-set-budgets is local-only and carries dfe26fd plus this close-out commit on top of PR #1's head 0c59e5e; if it is re-synced or discarded, cherry-pick the close-out commit. The harness's session-start git snapshot was stale in Sessions 4 and 5, so run git status and git reflog yourself. CHANGELOG.md now has two entries, but methodology plan P6 (BL-56) assumes one; whoever runs P6 must carry both.
+runtime_smoke: n/a — docs-only close-out
+changelog_ref: CHANGELOG.md "2026-09-15 · [ad hoc] Session 5 — orientation-only session closed out; no deliverable"
+commit: pending
+```
+
+Session 5 (Claude Opus 5, single-tier) started 2026-09-14 and closed 2026-09-15. The Phase 0 report found the repo on a
+branch that a methodology-repo session had created after the session-start snapshot was taken; four commits with no airqino
+session notes, all traced by hash to methodology-repo sessions; and a stale ACTIVE TASK. The operator closed the session
+without assigning a task. Self-score 8/10: (+) full Phase 0 including the reconcile, reflog-based provenance, the pre-ledger
+finding measured rather than assumed, git state left alone during a concurrent session; (−) no deliverable, one commit-subject
+misattribution in the Phase 0 report (`66abe78`), and the Phase 1B stub was not committed separately. Predecessor (Session 4)
+scored 9/10: its one recommended next deliverable was exact, and two "pending" phrases aged badly. Full notes are in
+`SESSION_NOTES.md` under "What Session 5 Did".

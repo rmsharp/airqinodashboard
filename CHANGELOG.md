@@ -9,6 +9,16 @@ When completing work, remove the item from `BACKLOG.md` and add an entry here.
 
 <!-- Add entries here as work is completed. Group by month when the list grows. -->
 
+### 2026-09-15 · [ad hoc] Session 5 — orientation-only session closed out; no deliverable
+
+Phase 0 ran in full (started 2026-09-14). Reconcile found no undocumented commits (this ledger's frontier was HEAD,
+`dfe26fd`), and the four commits after Session 4 (`66abe78`, `28db357`, `0c59e5e`, `dfe26fd`) trace to methodology-repo
+sessions, not ghost sessions. The operator then closed the session without assigning a task. Close-out refreshed the stale
+`SESSION_NOTES.md` ACTIVE TASK, added `CLAUDE.md` learning #4, and wrote the first `HANDOFFS.md` receipt (S5; seed
+sentinel removed). No application code changed; not pushed.
+
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-14 · [ad hoc] Methodology synced to `read-set-budgets` (`598c459`), ahead of its upstream merge
 
 Synced with `bin/sync --source=local` from a full clone of `KJ5HST/methodology`'s `read-set-budgets`
