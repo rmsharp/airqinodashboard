@@ -1,13 +1,25 @@
-# Changelog
+# Changelog — Authoritative Action Ledger
 
-All notable changes to this project are documented here.
-Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
+The cumulative, append-only record of **actions taken** in this repository — across backlog
+items, repository issues, and ad-hoc work. It is the authoritative answer to *"what was done
+here, ever?"* Every session records its actions here at close-out (`SESSION_RUNNER.md`
+Phase 3F); Phase 0 reconciles it against `git log` and backfills anything a crashed or
+out-of-band session missed. Taking an action — any commit, or any non-commit action — and
+not recording it is failure mode #27. Old entries are archived, never deleted.
 
-When completing work, remove the item from `BACKLOG.md` and add an entry here.
+**The rules** — how to add an entry, source tags, size and archiving — are in
+[§The Action Ledger](docs/methodology/FRAMEWORK_APPARATUS.md#the-action-ledger), which `bin/sync`
+keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
-## [Unreleased]
+---
 
-<!-- Add entries here as work is completed. Group by month when the list grows. -->
+<!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
+
+### 2026-09-17 · [ad hoc] `CHANGELOG.md` header migrated to the thin seed (`ledger-format: 2`) — BL-57 P6 step 3, BL-56 folded in
+- **Change:** the Keep-a-Changelog header (lines 1–11 at `28022fe`, recorded at claim) is replaced by fork `main`'s `starter-kit/CHANGELOG.md` header (`ff02b5c`), less its seed-sentinel comment, since this ledger already holds entries. `## [Unreleased]` is dropped: entries group by month, not by release, and this ledger opens its first `## YYYY-MM` at the next new month (2026-10) instead of retrofitting one. Every entry below is byte-identical
+- **Commit/PR:** the migration commit (ships this entry)
+- **Session:** S6 · **Verified:** fork `main`'s `bin/status` reads `present`; the upstream marker (`Authoritative Action Ledger`) is present; only lines 1–11 lose content (§9.8); `### ` headings 4 → 5 and audit 4 → 5 in zsh and bash (the block held 0 of either)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
 
 ### 2026-09-17 · [ad hoc] Methodology synced from fork `main` (`ff02b5c`) — BL-57 P6 step 2
 - **Change:** `bin/sync . --source=local` from fork `main` (`v3.7-848-gff02b5c`), after a dry run that exited 0 with no refusals: 12 tracked files updated, `quality_ratchet.py` created, `.quality-gates.json` seeded with no gates, the 5 existing seeds left as they are. Fork `main`'s `bin/status` now reads every tracked file `current`; `CHANGELOG.md` still reads *present (stale format)* until its header is migrated. Synced from `main`, not the branch the plan names, because BL-54 is fixed fork-side (`865119f`) and no longer refuses files. One commit of 14 synced files plus this ledger — one tool run, not split under the 5-file cap
