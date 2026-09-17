@@ -25,6 +25,13 @@
 
 (none)
 
+### Ledger (`CHANGELOG.md`) conventions
+
+The rules are `docs/methodology/FRAMEWORK_APPARATUS.md` §The Action Ledger. This project adds two conventions:
+
+- **Source tags.** `[BL-<id>]` names an item in *this* repo's `BACKLOG.md`. Work that comes from the methodology repo's backlog, such as a sync or BL-57's header migration, is tagged `[ad hoc]` and names the methodology item in its summary.
+- **Legacy layout, left as written.** Session 6 migrated the header to `ledger-format: 2` (`5e4b483`) and dropped the old Keep-a-Changelog `## [Unreleased]` heading. So the 2026-09 entries sit under no month heading, and the first `## YYYY-MM` heading opens with the first 2026-10 entry. Don't add `## 2026-09` above them. The 2026-09-14 and 2026-09-15 entries have prose bodies instead of the detail bullets. They stay that way, because entries are never edited.
+
 ### Project-specific Learnings
 
 <!-- This table is loaded every session and grows with no cap. When CLAUDE.md nears its
