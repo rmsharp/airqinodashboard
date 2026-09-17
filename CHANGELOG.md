@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 6 closed out — methodology BL-57 P6 for airqino complete; Sessions 1–3 notes archived
+- **Change:** P6 is complete here, with BL-56 folded in: synced from fork `main`, `CHANGELOG.md` at `ledger-format: 2`, and ledger conventions recorded in `CLAUDE.md`. Every item on the plan's DONE list passed, with counts re-derived per commit. `SESSION_NOTES.md` carries the handoff, the Session 5 evaluation (9/10) and the self-assessment (8/10), and no longer holds the Session 1–3 history (`git show 1402ad4:SESSION_NOTES.md`; 330 → 294 lines). The S6 `HANDOFFS.md` receipt is `status: complete`. Not pushed
+- **Commit/PR:** the close-out commit (ships this entry); session commits `2b0230a`, `28022fe`, `5e4b483`, `9f150a5`
+- **Session:** S6 · **Verified:** n/a — docs-only; the receipt's `changelog_ref` matches this heading
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] `CLAUDE.md` records this ledger's conventions — BL-57 P6 step 4
 - **Change:** a new Adaptations subsection, *Ledger (`CHANGELOG.md`) conventions*. It points to §The Action Ledger, reserves `[BL-<id>]` for this repo's own `BACKLOG.md` (methodology-backlog work is `[ad hoc]`), and records the legacy layout: no month heading over the 2026-09 entries, and prose bodies on the 2026-09-14 and 2026-09-15 entries. The protocol block already matches the current `CLAUDE_TEMPLATE.md` and carries no ledger wording, so it is unchanged
 - **Commit/PR:** the `CLAUDE.md` commit (ships this entry)

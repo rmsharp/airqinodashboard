@@ -158,11 +158,29 @@ session need this block to continue the work without re-reading the whole repo?*
 ```handoff
 session: S6
 date: 2026-09-17
-status: pending
-active_task: Methodology BL-57 phase P6 for airqino (BL-56 folded in) — sync from fork main, migrate CHANGELOG.md to the thin-seed header, align CLAUDE.md ledger wording, verify against the plan's DONE list. In progress.
-what_was_done: pending
+status: complete
+self_score: 8
+predecessor_score: 9
+active_task: No task in progress. Methodology BL-57 phase P6 for airqino, with BL-56 folded in, is complete on the local branch chore/methodology-bl57-p6. SESSION_NOTES.md lists five open items; pick ONE.
+what_was_done: Claim 2b0230a recorded the CHANGELOG.md block (lines 1-11) before any edit. 28022fe synced from fork main ff02b5c after a clean dry run: 12 tracked files updated, quality_ratchet.py and an empty .quality-gates.json created. 5e4b483 replaced the Keep-a-Changelog header with the thin seed's header (sentinel and ## [Unreleased] dropped; every entry byte-identical). 9f150a5 added CLAUDE.md ledger conventions. All plan P6 DONE items pass: bin/status reads present from fork main and upstream main 6b29d3d; §9.8 prints "only the block changed"; headings and audit went 4 to 5 across the migration, as predicted. Close-out removed the Session 1-3 history from SESSION_NOTES.md.
+next_steps: Fix the stale USB Serial banner at templates/dashboard.html:55 ("connect a USB cable to the Arduino Mega port") so it describes the REV6 USB-to-TTL adapter path in docs/HARDWARE.md:33, then grep every surface for the old wording (CLAUDE.md learning #3). Separately, a methodology-repo session should mark P6 and BL-56 done and correct the plan's P6 row (the Route A reason is stale; there were two entries, not one).
+key_files: CHANGELOG.md:12, CLAUDE.md:28, SESSION_NOTES.md:18, templates/dashboard.html:55, .quality-gates.json:16
+gotchas: One CHANGELOG entry per commit, and the claim commit carries an (in progress) one. [BL-<id>] means this repo's BACKLOG.md only; methodology work is [ad hoc]. The first 2026-10 entry opens ## 2026-10; never add ## 2026-09. quality_ratchet.py --run and context_budget.py write untracked files (.quality-gates-results.json, .context-budget-history.jsonl), so stage by name. context_budget.py shows 3 red findings that predate this session (CLAUDE.md purpose fence missing; SESSION_NOTES.md long lines; a ^## pattern minimum); fix them in plan mode, never by loosening a ceiling. All branches except PR #1's are local-only.
+runtime_smoke: n/a for the app — no app code changed; app imports with 9 routes. The synced tools each ran: dashboard v2.18.0 (54/100), quality_ratchet.py --run 0/0 gates, methodology_trim.py --check (does not fire).
+changelog_ref: CHANGELOG.md "2026-09-17 · [ad hoc] Session 6 closed out — methodology BL-57 P6 for airqino complete; Sessions 1–3 notes archived"
 commit: pending
 ```
+
+Session 6 (Claude Opus 5, single-tier) ran on 2026-09-17. The operator assigned methodology BL-57 phase P6 for this repo and
+directed the route: fork `main` rather than the plan's branch, since a dry run showed BL-54 no longer refuses files. Five
+commits, each with its own ledger entry, did the job: claim, sync, header migration, `CLAUDE.md` conventions and close-out.
+Every DONE item was verified with counts re-derived per commit, and BL-56's "both `bin/status` versions" criterion was
+checked by running upstream `main`'s `bin/status` from a scratch clone. Self-score 8/10. (+) The claim was committed on its
+own with the block range; each entry's claims were verified before its commit; the older budget findings were reproduced on
+`1402ad4`, not assumed. (−) The 15-file sync commit went over the 5-file cap without first asking; `git fetch upstream` in
+the methodology repo; verification side-effect files needed cleanup; two long silences. Predecessor (Session 5) scored 9/10:
+its "carry both entries" and #80 cherry-pick gotchas were exact, and one plan line citation (`:584`) had decayed. Full notes
+are in `SESSION_NOTES.md` under "What Session 6 Did".
 
 ```handoff
 session: S5
