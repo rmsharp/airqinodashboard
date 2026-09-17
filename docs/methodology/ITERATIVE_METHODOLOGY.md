@@ -166,7 +166,7 @@ Every session follows these phases in order. Phases are sequential and gated —
 **Purpose:** Leave a trace before any work begins, so that even a catastrophic failure (crash, context loss, timeout) produces evidence of what was attempted.
 
 **Steps:**
-1. Write a stub to the session notes file with: session identifier, task description, start time, status "IN PROGRESS", and a `CHANGELOG: pending` ledger marker (the crash breadcrumb the next session's Pre-Flight reconcile reads; cleared when Phase 6 records the entry)
+1. Write a stub to the session notes file with: session identifier, task description, start time, status "IN PROGRESS", and a `CHANGELOG: pending` ledger marker (the crash breadcrumb the next session's Pre-Flight reconcile reads); the claim commit's ledger entry says *(in progress)*, and Phase 6 records the rest
 2. Open a `HANDOFFS.md` close-out receipt stub — a durable receipt block with `status: pending` — and commit it with the claim; unlike the transient session-notes stub it survives a fresh clone, so it is the crash breadcrumb the next session's reconcile greps. Phase 6 completes it to `status: complete`
 3. Both stubs are overwritten/completed during Phase 6 with the full close-out
 
@@ -291,7 +291,7 @@ Every session follows these phases in order. Phases are sequential and gated —
 5. **Update the performance comparison table.** (See [§Performance Tracking](FRAMEWORK_APPARATUS.md#performance-tracking).) Add this session's metrics.
 6. **Update the pattern library and anti-pattern list.** (See [§Knowledge Accumulation System](FRAMEWORK_APPARATUS.md#knowledge-accumulation-system).) If you discovered a new pattern or made a new mistake, name it and add it.
 7. **Write handoff notes for the next session.** (See below.) You will be judged on these — the next session will score your handoff just as you scored your predecessor's. Write them both to `SESSION_NOTES.md` (the transient scratchpad) and as a durable ` ```handoff ` receipt block in `HANDOFFS.md` — set `status: complete` and fill the six minimum requirements (the sixth *is* `self_score`) plus `predecessor_score`. The receipt is the machine-checkable proof the handoff exists (the canonical-only `bin/check-handoff` asserts its structure — copy it in if you want it — never its quality); a skipped receipt is caught at the next Pre-Flight reconcile with no tooling.
-8. **Record every action, then commit.** Before committing: (a) remove any debug instrumentation added during this session (tagged debug logs per `/diagnose` — see [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md) — and ad-hoc prints); (b) append a dated, source-tagged entry to the authoritative ledger `CHANGELOG.md` for **each action this session took** — one per commit *and* per non-commit action (release, tag/branch op, PR open, upstream issue close, access grant, decline/grooming decision): `### YYYY-MM-DD · [issue #<N>] | [BL-<N>] | [ad hoc]` + a one-line outcome, newest on top, removing any completed `BACKLOG.md` item in the same commit. If `CHANGELOG.md` is absent, create it from the bootstrap seed; the only exemptions are a project that records "no CHANGELOG" in `CLAUDE.md` and a session whose diff is empty with no action taken. "Too small to log" is failure mode #27, not an exception. Then commit with a structured message referencing the session. (Failure mode #17: the ledger records what the session did; it does not authorize a second deliverable.)
+8. **Record every action, then commit.** Before committing: (a) remove any debug instrumentation added during this session (tagged debug logs per `/diagnose` — see [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md) — and ad-hoc prints); (b) prepend a dated, source-tagged entry to the authoritative ledger `CHANGELOG.md` for **each action this session took** — one per commit *and* per non-commit action (release, tag/branch op, PR open, upstream issue close, access grant, decline/grooming decision): `### YYYY-MM-DD · [issue #<N>] | [BL-<id>] | [ad hoc]` + a one-line outcome, newest on top, removing any completed `BACKLOG.md` item in the same commit. If `CHANGELOG.md` is absent, create it from the bootstrap seed; the only exemptions are a project that records "no CHANGELOG" in `CLAUDE.md` and a session whose diff is empty with no action taken. "Too small to log" is failure mode #27, not an exception. Where the project declares quality gates (`.quality-gates.json`), (c) run them — `quality_ratchet.py --run` — and cite the summary line in the close-out receipt, so the session's claim of "tests pass" is a measured number the next Orient can compare against the results file (§Mechanical Gates Bind Every Actor). Then commit with a structured message referencing the session. (Failure mode #17: the ledger records what the session did; it does not authorize a second deliverable.)
 
 **Minimum handoff requirements (Step 7):** The next session starts with zero context. Your handoff is their only connection to your work. A handoff that doesn't include ALL of the following is incomplete. "Done — pick next task" is not a handoff; it's an abdication that forces the next session to rediscover context you already had.
 
@@ -395,6 +395,25 @@ Inline pointers in this document and in the workstream files reference skills by
 Cheap, reversible, mechanical work — a one-line fix, a rename the compiler catches, a reversible config tweak — does not need it; a lighter setting is the honest default there. The axis runs both ways.
 
 Methodology owns *when and why* to raise the tier (this rule); your agent owns *how* (the specific effort or model mechanism — see [`RECOMMENDED_SKILLS.md`](../../RECOMMENDED_SKILLS.md) for concrete example settings). Within a pre-declared vertical slice, that mechanism can vary *by layer* too — see `SESSION_RUNNER.md` §Vertical Slice Sessions, capability-tiered review, for the elective pattern and its guardrails. And a higher tier is not a license: like a skill, a deeper-reasoning mode sharpens a phase — it never authorizes skipping orientation, the stub, close-out, or any hard gate, nor widening a session beyond its one declared deliverable (failure mode #17, `SESSION_RUNNER.md` Protocol erosion). Reason harder; stop at the same gates.
+
+---
+
+## Mechanical Gates Bind Every Actor
+
+> **Enforce quality on the artifact, not on the actor.**
+>
+> A gate that is a question the actor asks itself ("did I verify this?") does not scale under N agents — it multiplies. Ten of the twelve quality gates below are such questions, and a more capable agent or a sharper adversarial reviewer changes the *judge*, not the *class* of gate. Where a rule can be expressed mechanically — a test suite that must pass, a coverage floor, a complexity ceiling, a size budget, a link check, a count that must not drop — it is expressed mechanically, and the mechanical form binds **every** actor: every tier, every agent, every human, every session.
+
+Four consequences, none of them new principles:
+
+1. **Verification a gate expresses is never re-done by judgment and never waived by tier, agent, or human.** The capability-tiered pattern in `SESSION_RUNNER.md` §Vertical Slice Sessions already says this for one case — a lighter tier may build a layer only where an objective gate proves it. This section generalizes it: the same gates for everyone is the rule, not the elective.
+2. **Judgment is reserved for what no gate expresses** — what changed, why, and the risk — and that decision belongs to the stakeholder after implementation as well as before (Principle 3's Present → Implement gate, and its mirror at delivery).
+3. **Automated checks never pass by default or by timeout.** A gate that cannot run reports *unmeasured*, not *pass* (Principle 5).
+4. **Thresholds only tighten.** A threshold that can be lowered under pressure is a suggestion. Loosening one to make a change pass is failure mode #17 in mechanical form and requires plan-mode approval in its own commit (`SAFEGUARDS.md` §Blast Radius Limits).
+
+Where the binding happens today is worth stating beside the claim: the shipped enforcement point is a pre-commit hook that each clone opts into and that `git commit --no-verify` bypasses on the record, and merge and rebase commits skip it. That binds every actor who commits through an enabled hook; it does not bind one who never sets it. The manifest's git history and the dashboard's read of it are what make a loosening *visible* regardless; a CI job that runs the gates and the ratchet comparison against the base branch is what makes the claim hold for everyone, and a project that wants the word "every" to be literal wires one.
+
+The methodology recommends; it does not reimplement: it ships no linter, complexity tool, or coverage runner. It ships the *ratchet* — a declared, machine-readable gate manifest per project (`.quality-gates.json`) and a small checker (`quality_ratchet.py`) that refuses a commit loosening any declared threshold and runs the declared gates on demand — and this rule. Which tools produce the numbers is the project's choice (`BOOTSTRAP.md` Step 10). The dashboard reports gate outcomes and loosening history, advisory as always; the gate is the pre-commit check, where it belongs. Ceiling, stated plainly: a gate proves what it measures and nothing else — a coverage floor can be cleared by assertions that assert nothing, so a floor without a faithfulness check beside it (Learning #12) measures effort, not quality.
 
 ---
 
@@ -542,7 +561,8 @@ A second factor: **workstream transfer amnesia.** Discipline built on one type o
 
 The apparatus these principles operate — the tables you fill in, the tests you run, the scales you
 score against — lives in [`FRAMEWORK_APPARATUS.md`](FRAMEWORK_APPARATUS.md), a sibling read **on
-demand** rather than every session. Six sections moved there intact, content unchanged:
+demand** rather than every session. Six sections moved there intact, content unchanged; a seventh
+holds the `CHANGELOG.md` rules the starter-kit seed used to carry:
 
 | Section | What it gives you |
 |---|---|
@@ -552,6 +572,7 @@ demand** rather than every session. Six sections moved there intact, content unc
 | **Verification Hierarchy** | The seven ascending levels of verification |
 | **Session Document Template** | The copy-paste template for a session document |
 | **Performance Tracking** | Cross-session metric columns, their interpretation, maturity and erosion indicators |
+| **The Action Ledger** | The rules for a project's `CHANGELOG.md`: entry format, source tags, size and archiving |
 
 Nothing was condensed or dropped, and every point of need above links onward — Principles 4–7,
 Phase 2 steps 6–8, Phase 6 steps 4–6 with its honest-accounting bullet and its gate, and the

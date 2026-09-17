@@ -183,7 +183,7 @@ CLASS_A_STOP_BYTES = 96 * 1024    # 98,304 — cut back to at or under this. Del
 # against". That is impossible for BL-9, which CLOSED 2026-08-01 against a constant first written
 # 2026-08-03 (df381ea); §5.4's 52,927 B is BL-9's own output commit 7a71df0, so BL-9 is this
 # constant's INPUT. The other four were not re-derived and are claimed neither way.
-DEFAULT_BUDGET_BYTES = 192 * 1024  # 196,608 — the per-file context-tax budget, still overridable
+DEFAULT_BUDGET_BYTES = 192 * 1024  # 196,608 — the per-file byte budget, still overridable
                                    # per LedgerSpec and per run via --budget-bytes
 
 # LINE_FIRE_BELOW / LINE_STOP_ABOVE ARE GONE, DELIBERATELY. This note is the record of why, so a
@@ -357,10 +357,11 @@ LEDGERS = {
 # =============================================================================================
 # Fence tracking — mandatory, and the seed files are the proof.
 #
-# `starter-kit/CHANGELOG.md` holds 3 `^### YYYY-MM-DD` lines and ALL 3 are inside fenced
-# documentation examples; `starter-kit/HANDOFFS.md` holds 1 ```handoff and it is inside a
-# 4-backtick wrapper. A trimmer that is not fence-aware trims an adopter's freshly seeded
-# ledger on day one (design §2.2).
+# A `CHANGELOG.md` seeded before ledger-format 2 holds 3 `^### YYYY-MM-DD` lines and ALL 3 are
+# inside fenced documentation examples — every adopter seeded that early still carries them,
+# though the current seed points at FRAMEWORK_APPARATUS.md §The Action Ledger instead;
+# `starter-kit/HANDOFFS.md` holds 1 ```handoff and it is inside a 4-backtick wrapper. A trimmer
+# that is not fence-aware trims an adopter's freshly seeded ledger on day one (design §2.2).
 # =============================================================================================
 
 _FENCE = re.compile(r"^(`{3,}|~{3,})(.*)$")
