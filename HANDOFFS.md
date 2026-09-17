@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S6
+date: 2026-09-17
+status: pending
+active_task: Methodology BL-57 phase P6 for airqino (BL-56 folded in) — sync from fork main, migrate CHANGELOG.md to the thin-seed header, align CLAUDE.md ledger wording, verify against the plan's DONE list. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S5
 date: 2026-09-15
 status: complete

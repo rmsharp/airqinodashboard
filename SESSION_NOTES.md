@@ -42,6 +42,16 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 6 Did
+**Deliverable:** Methodology BL-57 phase P6 for airqino (BL-56 folded in) — sync from fork `main`, migrate `CHANGELOG.md`
+to the thin-seed header, align `CLAUDE.md` ledger wording, verify against the plan's DONE list (IN PROGRESS)
+**Started:** 2026-09-17
+**Status:** Session claimed on branch `chore/methodology-bl57-p6` (off `1402ad4`). Work beginning.
+**Ledger:** `CHANGELOG: pending` — set at claim; this session's actions are recorded in `CHANGELOG.md` at Phase 3F. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+**Block recorded before editing:** `CHANGELOG.md` lines **1–11** at `1402ad4` (the Keep-a-Changelog header: `# Changelog`
+through the blank line after `<!-- Add entries here … -->`; 0 `### ` lines). The first entry starts at line 12. Entries
+prepended below line 11 by this session's earlier commits leave the block at 1–11 — re-verify before the edit.
+
 ### Session 4 Handoff Evaluation (by Session 5)
 - **Score: 9/10**
 - **What helped:** The one concrete recommendation was exact. Session 4 put the stale "Arduino Mega port" banner at
