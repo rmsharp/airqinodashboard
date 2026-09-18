@@ -1,7 +1,8 @@
 # Test Suite Plan: airqino dashboard
 
 **Status:** approved as written by the operator, 2026-09-17 (Session 10's Phase 0 picker). Phase 1 was
-implemented in Session 10, Phase 2 in Session 11 and Phase 3 in Session 12.
+implemented in Session 10, Phase 2 in Session 11, Phase 3 in Session 12 and Phase 4 in Session 13. All four
+phases are done. The fix sessions (§6) remain.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.
@@ -521,6 +522,28 @@ hourly half of D2 get their xfails.
 - A red-drive is recorded: for example, change `- 30` to `+ 30` at `airqino_client.py:23` and watch T4.2 or T4.3
   fail.
 - No product file shows in `git diff`.
+
+**As implemented (Session 13):** five changes from the text above.
+
+- **`FakeClient` has only the 7 methods `app.py` calls, and binds each call to the real method's signature**
+  (`inspect.signature(...).bind`). A call the real client would refuse raises `TypeError` in the fake too. A red-drive
+  that dropped `get_range`'s third argument failed every range test.
+- **D6 needs no `FakeReader`.** It uses `idle_reader` and `FakeClient`, and sets all four credentials plus
+  `SERIAL_PORT`. With only `AIRQINO_CLIENT_ID`, as first written, a real D5 fix also flipped D6. T4.15 sets all four
+  credentials for the same reason.
+- **`FakeRequests` sends a token request to the next queued `grant` or `refuse`,** by its `grant_type`, not its URL.
+  The tests write the URL constants out, so a changed constant fails T4.1 and T4.6.
+- **`get_api_client()` gets tests** (§3.1 lists it for Phase 4, but no T4.x covered it): all four credentials build and
+  keep a client, and any one missing gives none.
+- **A pinned defect outside Phase 4:** Phase 1's T1.5 (`tests/test_dashboard_page.py:97`) sets only
+  `AIRQINO_CLIENT_ID`, so it pins D5's current behaviour as passing. A real D5 fix fails it. The D5 fix session must
+  also set all four credentials in T1.5.
+
+Two citations in this plan went stale when Phase 1 added README's "Running tests" section: §4 D6's `README.md:27` is
+now `:36`, and the surface note's `README.md:99` below is now `:108`. The DONE criteria were met: `116 passed,
+8 xfailed`, and the ratchet passes 2/2 at 116. There were 10 red-drives on `airqino_client.py` (the `- 30` → `+ 30`
+one failed T4.3, T4.4 and T4.5), 11 on `app.py` (real D5, D6 and D2-hourly fixes each gave XPASS strict) and 1 on the
+gate.
 
 **Surface:**
 
