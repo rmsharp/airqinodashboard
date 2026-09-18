@@ -1,6 +1,7 @@
 # Test Suite Plan: airqino dashboard
 
-**Status:** plan, awaiting operator approval before Phase 1 starts. It is a draft until approved.
+**Status:** approved as written by the operator, 2026-09-17 (Session 10's Phase 0 picker). Session 10 implements
+Phase 1.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.

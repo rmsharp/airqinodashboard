@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S10
+date: 2026-09-17
+status: pending
+active_task: Implement Phase 1 of docs/planning/test-suite-plan.md (approved by the operator in the Session 10 picker): requirements-dev.txt, pytest.ini, tests/conftest.py, tests/test_dashboard_page.py T1.1-T1.7, .gitignore, README.md and two gates in .quality-gates.json, on branch test/suite-phase1. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S9
 date: 2026-09-17
 status: complete

@@ -57,6 +57,14 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 10 Did
+**Deliverable:** Implement Phase 1 of `docs/planning/test-suite-plan.md` (open item 1): the pytest harness and the
+setup-banner guard (IN PROGRESS)
+**Started:** 2026-09-17 21:21
+**Status:** Session claimed on branch `test/suite-phase1` (off `main` `7256c91`). The operator approved the plan as
+written in the Phase 0 picker. Work beginning.
+**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+
 ### Session 8 Handoff Evaluation (by Session 9)
 - **Score: 9/10**
 - **What helped:** Open item 1 gave everything a planning session starts from:
