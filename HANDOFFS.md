@@ -158,11 +158,28 @@ session need this block to continue the work without re-reading the whole repo?*
 ```handoff
 session: S7
 date: 2026-09-17
-status: pending
-active_task: Fix the stale USB Serial setup-banner text at templates/dashboard.html:55 so it describes the REV6 USB-to-TTL adapter path, then grep every surface for the old wording. In progress.
-what_was_done: pending
+status: complete
+self_score: 8
+predecessor_score: 9
+active_task: No task in progress. The setup-banner fix is complete on the local branch fix/usb-serial-banner, off e947798. SESSION_NOTES.md lists four open items; pick ONE, with branch/PR housekeeping recommended.
+what_was_done: The Phase 0 report ended with an AskUserQuestion picker, as the operator asked, and the operator picked open item 1. Claim 38920e3. Fix e5f52e1: templates/dashboard.html option 2 is now "Serial Adapter". It says the REV6 has no USB port and to wire a 3.3V USB-to-TTL adapter to the TX and GND pins (see docs/HARDWARE.md). Learning #3 in CLAUDE.md now uses the past tense. A git grep of every tracked surface found the old wording only in the template before the fix, and only in learning #3's historical quote after it. Close-out added CLAUDE.md learning #5 (the UI runtime-verification recipe) and archived "What Session 4 Did" from SESSION_NOTES.md.
+next_steps: Branch/PR housekeeping (open item 1). With the operator's go-ahead, push or merge the four-branch stack in order: chore/methodology-pr2527-remediation (PR #1, 0c59e5e), then chore/methodology-read-set-budgets (1402ad4), then chore/methodology-bl57-p6 (e947798), then fix/usb-serial-banner (this session). Alternatives: decide the untracked files, give CLAUDE.md a fenced statement of purpose, or plan a test suite whose first case is a setup-banner render test.
+key_files: templates/dashboard.html:54, app.py:51, static/css/dashboard.css:65, CLAUDE.md:45, CLAUDE.md:47, docs/HARDWARE.md:33
+gotchas: The banner renders only when active_source() finds no source (no AIRQINO_CLIENT_ID or SERIAL_PORT in the environment or .env, and no uploaded CSV). Headless Chrome --screenshot against this app writes the PNG but never exits, so run it in the background and stop it. The Phase 0 picker preference is in agent memory, not in the repo. All branches except PR #1's are local only. Verification tools write untracked files, so stage files by name.
+runtime_smoke: python3 app.py with no data source: GET / returned 200 with the new banner text and 0 matches for Arduino or USB cable. A headless-Chrome screenshot at 1200x700 shows the three setup cards with no overflow. The server was stopped and port 5001 is free.
+changelog_ref: CHANGELOG.md "2026-09-17 · [ad hoc] Session 7 closed out — setup-banner serial fix complete"
 commit: pending
 ```
+
+Session 7 (Claude Opus 5, single-tier) ran on 2026-09-17. The operator asked for the Phase 0 report to end with a picker,
+then chose open item 1 from it. Three commits, each with its own ledger entry: claim, fix and close-out. The fix corrects
+the last surface still carrying the pre-Session-2 "Arduino Mega USB port" claim, and was verified in the running app, the
+first time a session has booted it. Self-score 8/10. (+) Claim committed first; every surface grepped before and after;
+the served page and a screenshot were checked; FM #28 reduction done. (−) Three harness nudges for long silences; the
+heading rename was a user-facing call made without asking; a headless-Chrome hang cost a 60 s timeout; no automated guard
+(no test infrastructure). Predecessor (Session 6) scored 9/10: its open item 1 could be executed as written; it missed
+that learning #3's "still lives" claim would need updating. Full notes are in `SESSION_NOTES.md` under
+"What Session 7 Did".
 
 ```handoff
 session: S6

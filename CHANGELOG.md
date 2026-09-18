@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 7 closed out — setup-banner serial fix complete
+- **Change:** `SESSION_NOTES.md` carries the handoff, the Session 6 evaluation (9/10) and the self-assessment (8/10). Its open items are renumbered, and branch/PR housekeeping is recommended next. "What Session 4 Did" was archived (`git show e947798:SESSION_NOTES.md`; FM #28). `CLAUDE.md` gains learning #5, a runtime-verification recipe for the Flask UI. The S7 `HANDOFFS.md` receipt is `status: complete`. Not pushed
+- **Commit/PR:** the close-out commit (ships this entry); session commits `38920e3`, `e5f52e1`
+- **Session:** S7 · **Verified:** n/a — docs-only; the receipt's `changelog_ref` matches this heading
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Setup banner's serial option describes the REV6 USB-to-TTL adapter, not an Arduino Mega USB port
 - **Change:** `templates/dashboard.html` option 2 is now "Serial Adapter". The text says the REV6 board has no USB port, tells the user to wire a 3.3V USB-to-TTL adapter to the TX and GND pins, and points to `docs/HARDWARE.md`. The old heading was "USB Serial" and the old text said "connect a USB cable to the Arduino Mega port". `CLAUDE.md` learning #3 is now in the past tense, because the stale copy it described is gone. Searching every tracked surface outside the methodology docs and session records finds the old wording only in that learning's quote
 - **Commit/PR:** the fix commit (ships this entry)

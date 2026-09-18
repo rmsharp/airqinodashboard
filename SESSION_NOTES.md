@@ -6,32 +6,33 @@
 
 ## ACTIVE TASK
 
-**Current focus:** Open — no task in progress. Session 6 (2026-09-17) completed methodology BL-57 phase P6 for airqino,
-with BL-56 folded in. Next session picks ONE open item below.
+**Current focus:** Open — no task in progress. Session 7 (2026-09-17) fixed the stale USB Serial setup-banner text.
+Next session picks ONE open item below.
 **Status:**
-- **Methodology BL-57 P6 / BL-56: DONE** on branch `chore/methodology-bl57-p6` (local): claim `2b0230a`, sync from fork
-  `main` `28022fe`, `CHANGELOG.md` header migration `5e4b483`, `CLAUDE.md` ledger conventions `9f150a5`, plus the close-out
-  commit. Fork `main`'s and upstream `main`'s `bin/status` both read `CHANGELOG.md` as `present`. Marking P6 and BL-56 done
-  in the methodology repo's plan and backlog belongs to a methodology-repo session.
+- **Setup-banner fix: DONE** on branch `fix/usb-serial-banner` (local, off `e947798`): claim `38920e3`, fix `e5f52e1`, plus
+  the close-out commit. Verified in the running app (curl and a headless-Chrome screenshot).
+- **Methodology BL-57 P6 / BL-56: DONE** by Session 6 (`2b0230a`..`e947798`). Marking P6 and BL-56 done in the methodology
+  repo's plan and backlog belongs to a methodology-repo session.
 - Earlier status (PART 2 re-vendor, README) and the Session 1–3 history: `git show 1402ad4:SESSION_NOTES.md`.
 
 ### Open items — next session picks ONE (1-and-done)
 
-1. **Fix the stale USB Serial setup-banner text — recommended next.** `templates/dashboard.html:55` still says
-   "Open the enclosure and connect a USB cable to the Arduino Mega port." The REV6 board has no USB port (`docs/HARDWARE.md:33`);
-   the real path is a USB-to-TTL adapter on the board's TX/RX pins. After the fix, grep every surface for the old wording (`CLAUDE.md` learning #3).
+1. **Branch/PR housekeeping — recommended next.** Four stacked branches, and everything since 2026-06-12 is local only.
+   PR #1's `chore/methodology-pr2527-remediation` (`0c59e5e`) is pushed and open. On it sits
+   `chore/methodology-read-set-budgets` (`dfe26fd`, `1402ad4`), local. On that sits `chore/methodology-bl57-p6`
+   (`2b0230a`..`e947798`), local. On that sits `fix/usb-serial-banner` (Session 7), local and HEAD. The operator decides
+   the push and merge order.
 2. **Decide the untracked files** — operator's call for each: commit, gitignore, or delete. `docs/HARDWARE.html` has been
-   untracked since Session 3 (an HTML render of `docs/HARDWARE.md`). Three tool outputs have no `.gitignore` entry:
-   `dashboard_history.jsonl` (written by every dashboard run); `.quality-gates-results.json` (from `quality_ratchet.py --run`;
-   the `.quality-gates.json` seed says to gitignore it); `.context-budget-history.jsonl` (from `context_budget.py`).
-3. **Branch/PR housekeeping** — three stacked branches. PR #1's `chore/methodology-pr2527-remediation` (`0c59e5e`) is pushed
-   and open. On it sits `chore/methodology-read-set-budgets` (`dfe26fd`, `1402ad4`), local. On that sits
-   `chore/methodology-bl57-p6` (Session 6's commits), local and HEAD. Push and merge order is the operator's go-ahead.
-4. **Give `CLAUDE.md` a statement of purpose.** The synced `context_budget.py` reports the `budget:protected` fence missing
+   untracked since Session 3 (an HTML render of `docs/HARDWARE.md`; it holds no stale hardware copy). Three tool outputs
+   have no `.gitignore` entry: `dashboard_history.jsonl` (written by every dashboard run); `.quality-gates-results.json`
+   (from `quality_ratchet.py --run`; the `.quality-gates.json` seed says to gitignore it); `.context-budget-history.jsonl`
+   (from `context_budget.py`).
+3. **Give `CLAUDE.md` a statement of purpose.** The synced `context_budget.py` reports the `budget:protected` fence missing
    (`.context-budget.json` declares it for `CLAUDE.md`, minimum 800 B). `CLAUDE.md` has never had a fence or a Purpose
    section. `README.md`'s opening is the source text.
-5. **Test suite** — the dashboard's only HIGH risk factor is "No test infrastructure" (0 test files; health 54/100).
-   A bigger deliverable; start with a planning session.
+4. **Test suite** — the dashboard's only HIGH risk factor is "No test infrastructure" (0 test files; health 54/100).
+   A bigger deliverable; start with a planning session. A render test of the setup banner (no data source configured;
+   assert the text has no "Arduino" in it) would be an easy first case; Session 7's fix has no automated guard.
 
 ### Connecting a Live Data Source (updated Session 2)
 The AirQino REV6 board has **NO USB port**. Three paths remain:
@@ -44,12 +45,90 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### Session 6 Handoff Evaluation (by Session 7)
+- **Score: 9/10**
+- **What helped:** Open item 1 could be done as written. It gave the line (`templates/dashboard.html:55`), quoted the old
+  text, named the source of truth (`docs/HARDWARE.md:33`) and asked for the follow-up grep (learning #3). A re-grep found
+  it unchanged. The gotchas "stage files by name" and "one ledger entry per commit" set the commit pattern with no
+  lookup. The five open items became the Phase 0 picker's options as written.
+- **What was missing:** Two small things. First, `CLAUDE.md` learning #3 said the stale copy "still lives" in the
+  template, so the fix owed a one-line learning update; nothing flagged that. Second, there was no recipe for
+  runtime-verifying this Flask UI, because no earlier session had booted the app. Session 7 worked one out (learning #5).
+- **What was wrong:** Nothing found. The line numbers, the branch base (`e947798`), the health score (54/100) and the
+  untracked-file list all matched.
+- **ROI:** Strongly positive. Orientation went straight to a verified fix, with no rediscovery.
+
 ### What Session 7 Did
-**Deliverable:** Fix the stale USB Serial setup-banner text (`templates/dashboard.html:55`), then grep every surface for
-the old "USB cable / Arduino Mega port" wording (`CLAUDE.md` learning #3) (IN PROGRESS)
-**Started:** 2026-09-17 20:07
-**Status:** Session claimed on branch `fix/usb-serial-banner` (off `e947798`). Work beginning.
-**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+**Deliverable:** Fix the stale USB Serial setup-banner text — **COMPLETE**
+**Started / Closed:** 2026-09-17 · branch `fix/usb-serial-banner` off `e947798` (local, not pushed)
+**Governing doc:** `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md`. It is a one-off fix, so research, plan and
+the verification checklist were applied at small scale.
+**Ledger:** 3 `CHANGELOG.md` entries, one per commit (claim, fix, close-out).
+
+**What was done:**
+- **Phase 0 ended with a picker.** On the operator's request, the report closed with an `AskUserQuestion` picker
+  of the open items; the operator picked item 1. The preference is in agent memory
+  (`~/.claude/projects/-Users-rmsharp-Development-airqino/memory/phase0-picker.md`), not in the repo.
+- **Claim** `38920e3`: stub, pending receipt and an *(in progress)* ledger entry, committed before any other work.
+- **Fix** `e5f52e1`, `templates/dashboard.html:54-55`:
+  - The heading changed from "2. USB Serial" to "2. Serial Adapter", because "USB Serial" suggests the device has a USB
+    port. The header badge for an active serial source still says "Serial" (`templates/dashboard.html:29`).
+  - The new text: "The REV6 board has no USB port. Open the enclosure and wire a 3.3V USB-to-TTL adapter to the board's
+    TX and GND pins (see `docs/HARDWARE.md`). Set `SERIAL_PORT` in `.env`". It says TX and GND only, which matches the
+    wiring at `docs/HARDWARE.md:53-66`: VCC and the board's RX are not connected.
+  - In the same commit, `CLAUDE.md:45` learning #3 changed from "still lives in the UI" to "stayed in the UI … until
+    Session 7".
+- **Surface inventory (learning #3):** `git grep -i` for `arduino|mega|usb cable|usb port|usb-b|usb serial` over every
+  tracked file except `docs/methodology/` and the three session records.
+  - Before the fix, the only stale hit was `templates/dashboard.html:55`.
+  - Already correct: `serial_reader.py:3-5`, `.env.example:12-15`, `README.md:9,53,123` and `docs/HARDWARE.md:33`.
+  - Neither `static/js/` nor `app.py` has connection instructions.
+  - After the fix, the only hit is learning #3's historical quote.
+- **FM #28 reduction:** "What Session 4 Did" was removed from this file (`git show e947798:SESSION_NOTES.md`).
+
+**Verification:**
+- **Runtime (3E):** ran `python3 app.py` in the background. There is no `.env`, so no source was configured and the
+  banner showed. `GET /` returned 200 with the new text and 0 matches for "Arduino" or "USB cable".
+- **Screenshot:** headless Chrome at 1200×700 showed the three cards. The Serial Adapter card is 8 lines tall against 5
+  for Cloud API, with no overflow. The server and Chrome were stopped afterwards, and port 5001 was free.
+- **Build:** no `.py` file changed. No test was added, because the project has no test infrastructure (open item 4).
+
+**Key files:**
+- `templates/dashboard.html:53-56` — the fixed option
+- `static/css/dashboard.css:65-72` — `.setup-option` is 220 px wide with 12 px text, so longer copy makes the card taller
+- `app.py:51-59` — `active_source()`, which decides whether the banner renders
+- `CLAUDE.md:45` (learning #3), `CLAUDE.md:47` (new learning #5, the runtime-verification recipe)
+- `docs/HARDWARE.md:31-33` (no USB port) and `:53-66` (wiring)
+
+**Gotchas for the next session:**
+- **The banner renders only when no data source is set.** `active_source()` returns api, serial or csv when
+  `AIRQINO_CLIENT_ID` or `SERIAL_PORT` is set (in the environment or `.env`) or a CSV has been uploaded. There is no
+  `.env` today. If one appears, unset those variables before checking the banner.
+- **Headless Chrome doesn't exit against this app.** `--screenshot` wrote the PNG within seconds, but the process kept
+  running until the 60 s tool timeout. Run it in the background and stop it (learning #5).
+- **The Phase 0 picker is in agent memory, not the repo.** Other machines and agents won't see it. If the operator wants
+  it for everyone, add it to `CLAUDE.md`'s *Additional Phase 0 steps*. That needs the operator's go-ahead.
+- **The branch stack is four deep, all local except PR #1** (open item 1). `fix/usb-serial-banner` contains every earlier
+  local commit.
+- **`context_budget.py` now shows 2 older red findings, down from 3:** the missing `CLAUDE.md` fence and the `^## `
+  minimum in this file. The long-lines finding cleared because its 3 lines were in the archived Session 4 block.
+  Running the tool writes `.context-budget-history.jsonl`; Session 7 deleted it. Verification tools write untracked files, so stage files by name. The Phase 0 dashboard run
+  added a line to `dashboard_history.jsonl` (now 5 lines), which is untracked and was left alone.
+
+**Learnings (3C):** `CLAUDE.md` learning #5, the Flask UI runtime-verification recipe. The stale-wording check could
+become a gate (a `.quality-gates.json` grep or a test) instead of a row; noted for the test-suite plan and not built here.
+
+**Self-assessment:**
+- **Score: 8/10**
+- (+) The claim was committed before any technical work, and the ledger has one entry per commit.
+- (+) Every surface was grepped before and after the fix, and learning #3 was updated so the resident file stays true.
+- (+) This is the first session to boot the app and look at the change. Served HTML and a screenshot were checked, not
+  just the template source.
+- (+) FM #28: removed a session's worth of history instead of only adding to this file.
+- (−) Long silences again. The harness prompted for status three times, which repeats a Session 6 minus.
+- (−) Renaming the heading was a user-facing call I made without asking. It is small and easy to revert.
+- (−) The headless-Chrome hang cost a 60 s timeout; running it in the background from the start would have avoided that.
+- (−) No automated guard against the old wording coming back (there's no test infrastructure).
 
 ### Session 5 Handoff Evaluation (by Session 6)
 - **Score: 9/10**
@@ -258,44 +337,6 @@ directed close-out without assigning a task.
   shipped in the single close-out commit.
 - (-) Phase 0 took four rounds of tool calls; the ledger-history and methodology-log checks could have run in round one.
 
-### What Session 4 Did
-**Deliverable:** Root `README.md` (Item B) — **COMPLETE**
-**Started / Closed:** 2026-06-08
-
-**What was done:**
-- **Bookkeeping first (per user):** (1) committed the out-of-session correction to `docs/planning/methodology-pr2527-remediation-airqino.md` on its own as `a5fdd12` (PART 2 reclassified to DEFER — the `integration/pr2527` branch never existed); (2) verified the claim before committing — Phase 0 `git status` showed a clean tree, so I re-ran `git status` and confirmed the file was genuinely modified out-of-session. (3) Reclassified Item A (PART 2 re-vendor) in this file from **BLOCKED → DEFERRED** so it stops surfacing as actionable.
-- **Deliverable:** Wrote `README.md` from a direct read of `app.py`, `airqino_client.py`, `serial_reader.py`, `.env.example`, `requirements.txt`, `static/js/dashboard.js`, `templates/dashboard.html`, and `docs/HARDWARE.md` — not from the handoff description. Covers: project background (abandoned PN 800506 / S/N AIRO 6153 device), quick start, all three data sources (CSV/SD, cloud API, serial), feature list, full API endpoint + Flask route tables, hardware summary, key-file map, and a config-variable reference.
-- **Left `docs/HARDWARE.html` untouched** (per user — separate decision).
-
-**Verification:**
-- `app.py` confirms port **5001**, host `0.0.0.0`, env var names, and route list → README matches.
-- API base/token URLs, endpoint paths, and the 30-day/CSV/401-empty quirks taken verbatim from `airqino_client.py`.
-- Sensor units and chart ranges (6h/12h/24h/3d/7d/30d) taken from `static/js/dashboard.js` and `templates/dashboard.html`.
-
-**Commits:**
-- `a5fdd12` — docs: correct airqino PART 2 — defer re-vendor until PR #25/#27 merge (no integration branch)
-- (close-out commit for README + SESSION_NOTES + CLAUDE.md follows this note)
-
-**Key files:**
-- `README.md` — NEW, the deliverable
-- `CLAUDE.md:34` — added project learning #3 (factual corrections must be grepped across ALL surfaces)
-- `docs/planning/methodology-pr2527-remediation-airqino.md` — corrected (committed `a5fdd12`)
-
-**Gotchas for the next session:**
-- **Stale UI copy (NOT fixed — deliberate scope hold):** `templates/dashboard.html:54-55` still tells the user to "connect a USB cable to the Arduino Mega port" — the pre-Session-2 hardware claim that Session 2 corrected everywhere else (`serial_reader.py`, `.env.example`, `docs/HARDWARE.md`). This is the setup-banner "USB Serial" option. A good, bounded next deliverable: fix that banner text to match the USB-to-TTL/REV6 reality. (Logged as CLAUDE.md project learning #3.)
-- **PART 2 is DEFERRED, not actionable:** do not pick up Item A until PR #25/#27 merge into `KJ5HST/main`. See Item A for the trigger and the one-pass re-vendor procedure.
-- `docs/HARDWARE.html` is still untracked and still undecided (track / ignore / delete?) — Session 4 left it alone per instruction, same as Session 3.
-- Branch `chore/methodology-pr2527-remediation` is not merged to `main` or pushed. No push was requested.
-
-**Self-assessment:**
-- **Score: 9/10**
-- (+) Verified the out-of-session edit before committing instead of trusting the description — caught that my own Phase 0 snapshot was stale and confirmed against a fresh `git status`.
-- (+) Wrote the README from the actual code, so endpoint names, env vars, port, sensor units, and chart ranges are accurate rather than paraphrased from the handoff.
-- (+) Held the line on scope: spotted the stale `dashboard.html` Arduino text but did NOT fix it (FM #8) — flagged it as a clean next-session deliverable and logged the root-cause learning instead.
-- (+) Did the bookkeeping in the exact order requested, committed the correction as its own logical unit, and left `HARDWARE.html` untouched.
-- (-) Did not boot the Flask app to confirm it serves (it's a blocking debug server); relied on reading `app.py`. The install/run steps are standard, but a runtime smoke test would have been stronger evidence.
-
-**Previous session handoff evaluation:** See "Session 3 Handoff Evaluation (by Session 4)" above.
-
-### Sessions 1–3 (archived by Session 6)
-Removed to keep this mandated read under its ceiling (FM #28). Full text, including their handoff evaluations: `git show 1402ad4:SESSION_NOTES.md`.
+### Sessions 1–4 (archived by Sessions 6 and 7)
+Removed to keep this mandated read under its ceiling (FM #28). Sessions 1–3, including their handoff evaluations:
+`git show 1402ad4:SESSION_NOTES.md`. "What Session 4 Did": `git show e947798:SESSION_NOTES.md`.
