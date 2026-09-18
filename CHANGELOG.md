@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Plan branch landed — main fast-forwarded to `docs/test-suite-plan` and pushed to origin
+- **Change:** on the operator's direction, local `main` was fast-forwarded from `15b0a3f` to `f49da64` (`git merge --ff-only`, so Session 9's SHAs `1177049`, `d813463` and `f49da64` are unchanged; learning #6). `SESSION_NOTES.md`'s ACTIVE TASK and open item 1 no longer call the branch unpushed. This commit is pushed to `origin/main` directly after it is made, together with the three Session 9 commits. The local branch `docs/test-suite-plan` is kept (fully merged; not pushed)
+- **Commit/PR:** this commit (ships this entry); fast-forward to `f49da64`; push to `origin/main`
+- **Session:** S9 (operator-directed follow-on after close-out) · **Verified:** before the fast-forward, `origin/main` = `main` = `15b0a3f` after `git fetch`, and `git merge-base --is-ancestor` confirmed it could fast-forward; a scan of the added lines found no secrets, home paths or scratchpad paths
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 9 closed out — test-suite plan written, approval pending
 - **Change:** `SESSION_NOTES.md` carries the handoff, the Session 8 evaluation (9/10) and the self-assessment (8/10). Its open items are renumbered, with Phase 1 of the plan recommended next after approval. The Session 5–7 notes were archived (`git show 15b0a3f:SESSION_NOTES.md`; FM #28; 350 → 266 lines). `CLAUDE.md` gains learning #7: probe the code before a plan claims how it behaves, and re-grep citations after writing. The S9 `HANDOFFS.md` receipt is `status: complete`. The branch `docs/test-suite-plan` stays local and unpushed
 - **Commit/PR:** the close-out commit (ships this entry); session commits `1177049`, `d813463`

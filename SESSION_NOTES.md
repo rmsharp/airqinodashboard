@@ -9,10 +9,11 @@
 **Current focus:** Test suite. Session 9 (2026-09-17) wrote `docs/planning/test-suite-plan.md`, which awaits the
 operator's approval. Next session implements **Phase 1 only**, once the plan is approved (or amended).
 **Status:**
-- **Plan: WRITTEN, not approved.** `d813463` on branch `docs/test-suite-plan`. The branch is local and unpushed, 3
-  commits ahead of `main` `15b0a3f` counting this close-out. It has four phases, one session each: P1 harness +
-  setup-banner guard, P2 no-source + CSV, P3 serial, P4 API. The operator chose pytest, strict xfail for known
-  defects, monkeypatch fakes and Python-only scope (plan §2).
+- **Plan: WRITTEN, not approved.** `d813463`, now on `main`. On the operator's direction, `main` was fast-forwarded
+  to `docs/test-suite-plan` (`f49da64`) and pushed to `origin`, and the next commit (this note) was pushed with it.
+  The local branch `docs/test-suite-plan` still exists and is fully merged. The plan has four phases, one session
+  each: P1 harness + setup-banner guard, P2 no-source + CSV, P3 serial, P4 API. The operator chose pytest, strict
+  xfail for known defects, monkeypatch fakes and Python-only scope (plan §2).
 - **7 defects found and reproduced** (plan §4, D1–D7), none fixed. Each becomes a strict-xfail test in its phase, then
   a fix session of its own (plan §6). **D1 and D7 hit the serial path the operator is about to use:** a `;`-separated
   `key=value` line loses its first sensor, and a port that fails to open shows "No readings available" with no error.
@@ -29,9 +30,8 @@ operator's approval. Next session implements **Phase 1 only**, once the plan is 
    - four commits, each of 5 files or fewer;
    - DONE: suite green, ratchet 2/2, two red-drives recorded, and the dashboard's HIGH "No test infrastructure" gone.
 
-   **First, land the plan branch** (operator's call). `git switch main && git merge --ff-only docs/test-suite-plan`
-   keeps every SHA (learning #6). Or branch Phase 1 off `docs/test-suite-plan`. P2–P4 and the D1–D7 fixes follow in
-   plan order.
+   The plan branch is already on `main` (fast-forward, SHAs unchanged). Start Phase 1 on a new branch off `main`.
+   P2–P4 and the D1–D7 fixes follow in plan order.
 2. **Decide the untracked files** — operator's call for each: commit, gitignore, or delete. `docs/HARDWARE.html` has been
    untracked since Session 3 (an HTML render of `docs/HARDWARE.md`; it holds no stale hardware copy). Three tool outputs
    have no `.gitignore` entry: `dashboard_history.jsonl` (written by every dashboard run); `.quality-gates-results.json`
