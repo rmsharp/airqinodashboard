@@ -70,6 +70,8 @@ SERIAL_BAUD=9600
 
 The serial reader runs in a background thread and parses the AirQino's output (semicolon-delimited, `key=value`, or JSON, depending on firmware).
 
+If the port can't be opened (a wrong `SERIAL_PORT`, or the adapter unplugged), the readings area shows the error in red within a minute of loading the page. The reader tries the port once, when the first request arrives, and doesn't retry. Fix the setting or the connection, then restart the dashboard.
+
 ## Dashboard features
 
 - **Current readings** — one card per sensor, tinted by EPA AQI breakpoints (good → hazardous) for PM2.5, PM10, NO₂, O₃, and CO.

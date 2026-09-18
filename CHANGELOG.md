@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] D7, part 3 of 3 — README documents the serial error; tests-passed 119 → 120
+- **Change:** `README.md` §"3. Direct serial" gains a paragraph: if the port can't be opened, the readings area shows the error within a minute of loading the page; the reader tries the port once and doesn't retry, so fix the setting or connection and restart. The paragraph moves the "Known quirks" line from `README.md:108` to `:110`, so `tests/test_api_routes.py:159`'s citation follows it (learning #3: re-grep cited lines after an edit). `.quality-gates.json` `tests-passed` tightened from 119 to 120 (D7's xfail turned pass; the other changed tests were edited, not added)
+- **Commit/PR:** this commit
+- **Session:** S15 · **Verified:** `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results a29b9250f033 · manifest 41bd5cf14af2`; with one test hidden, `tests-passed` measured 119 and the ratchet exited 2, and the file was restored byte-identical (`shasum -c`); `grep -rn "README.md:[0-9]"` over the live files found only the one moved citation (frozen records left as written)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] D7, part 2 of 3 — a serial port that fails to open is a 503 naming the error, not data with 200
 - **Change:** `serial_reader.py`: an open failure is kept in a new `error` field instead of `latest`, the slot that holds readings, so it can't be confused with a device line that carries an `error` key. `app.py` `/api/current`: when the reader has an `error`, it answers 503 with `{"source": "serial", "data": null, "error": …}`, the same shape as its 202. `tests/test_serial_routes.py`: D7's strict-xfail marker removed; its assertion tightened from `!= 200` to 503 with that body. `tests/test_serial_reader.py` T3.7 asserted `latest["error"]`, the defect's own representation, so it now checks `reader.error`, and that `get_current()` is `None`. `/api/timeseries` still answers 200 `data: []` in this state (open item 4, the operator's call). Second of the plan's §6 fix sessions
 - **Commit/PR:** this commit
