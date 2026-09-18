@@ -158,11 +158,26 @@ session need this block to continue the work without re-reading the whole repo?*
 ```handoff
 session: S10
 date: 2026-09-17
-status: pending
-active_task: Implement Phase 1 of docs/planning/test-suite-plan.md (approved by the operator in the Session 10 picker): requirements-dev.txt, pytest.ini, tests/conftest.py, tests/test_dashboard_page.py T1.1-T1.7, .gitignore, README.md and two gates in .quality-gates.json, on branch test/suite-phase1. In progress.
-what_was_done: pending
-commit: pending
+status: complete
+self_score: 8
+predecessor_score: 8
+active_task: Test suite. docs/planning/test-suite-plan.md is approved, and Phase 1 (the harness and the setup-banner guard) is complete on main: 067455f and 4da62a1. Next session implements Phase 2 only (the no-source contract and the CSV path), on a new branch off main. main is the only branch and is pushed with this close-out. No product code has changed since e5f52e1.
+what_was_done: Claim 02016aa, which records the operator's approval on the plan's Status line. Harness 067455f: requirements-dev.txt, pytest.ini, tests/conftest.py (the isolated autouse fixture) and tests/test_dashboard_page.py, 9 tests (T1.1-T1.7). A probe showed that the plan's red-drive (autouse off fails T1.7) did not hold on a machine with no .env, so a module fixture, planted_leak, plants all 8 variables and the 3 globals. A second T1.7 test scans app.py's os.getenv names. Wire-up 4da62a1: .gitignore gains .pytest_cache/, README gains "Running tests" and a tests/ row, and .quality-gates.json gets tests-exit (max 0) and tests-passed (min 9). Seven red-drives, each restored: the pre-Session-7 banner fails T1.1; autouse=False fails 6 tests; a variable dropped from CONFIG_VARS fails T1.7; a new os.getenv fails the scan test; a failing test fails tests-exit; a hidden test fails tests-passed; a loosened threshold is REFUSED by --precommit. Dashboard 54 -> 62/100, with 0 HIGH risks. On the operator's direction (a picker before close-out): a fetch and a secret scan, main fast-forwarded to the branch, the branch deleted, and main pushed with this commit. CLAUDE.md learning #9. The Session 7 evaluation and "What Session 8 Did" were archived from SESSION_NOTES.md.
+next_steps: Implement Phase 2 of docs/planning/test-suite-plan.md (section 5, lines 299-348) on a new branch off main: tests/test_csv_routes.py with T2.1-T2.8 and strict xfails for D2 (timeseries half), D3 and D4, and tighten tests-passed in .quality-gates.json to the new measured count. Three commits: the claim; the tests, the gate and the ledger entry; the close-out. DONE: the suite exits 0 with exactly 3 xfailed, the ratchet passes 2/2, one red-drive is recorded (remove .lower() at app.py:261), and no product file shows in git diff. P3 (serial) and P4 (API) follow, then the D1-D7 fix sessions, D1 and D7 first.
+key_files: tests/conftest.py:15, tests/conftest.py:9, tests/test_dashboard_page.py:29, tests/test_dashboard_page.py:57, tests/test_dashboard_page.py:122, tests/test_dashboard_page.py:129, .quality-gates.json:16, pytest.ini:1, README.md:25, docs/planning/test-suite-plan.md:299, docs/planning/test-suite-plan.md:262, app.py:236, app.py:245, app.py:261, CLAUDE.md:51
+gotchas: The plan's P2 citations were re-grepped and hold (.lower() is at app.py:261); find line numbers with grep -n, not by counting sed output. Don't copy planted_leak into new test modules: T1.7 already proves isolated works everywhere, and a probe showed a global set by a route is reset between tests. No hook enforces the ratchet (core.hooksPath is unset), so tighten tests-passed in the same commit as the tests and run quality_ratchet.py --precommit by hand. P2 adds the first xfails, so keep "passed" out of reason= strings. Cite the ratchet summary line from the final run. Stage files by name: 4 tool and render outputs are untracked (open item 2). The MEDIUM "thin coverage" stays until the tests total 548 lines (166 now), so don't pad. Before a red-drive mutates an untracked file, back it up to the scratchpad by explicit path. context_budget.py reports SESSION_NOTES.md "instrument-failed", which is an upstream seed mismatch (open item 3), not this file's defect.
+runtime_smoke: Tests only; no product runtime behaviour changed. python3 -m pytest -q and plain pytest -q: 9 passed, exit 0, 0 xfailed. quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results b7ff3e55b84d · manifest f394b801e28f
+changelog_ref: CHANGELOG.md "2026-09-17 · [ad hoc] Session 10 closed out — test-suite Phase 1 complete; main fast-forwarded, pushed with this commit"
+commit: 4da62a1
 ```
+Session 10 (Claude Opus 5, single-tier) implemented Phase 1 of the test-suite plan. The pytest suite runs (9
+passed), the setup-banner fix has its guard, and the ratchet holds two gates. The dashboard moved from 54 to 62/100
+with no HIGH risk left. It scored Session 9's handoff 8/10: the plan's recipe and gotchas were exact, but one DONE
+red-drive held only where a `.env` exists. It scored itself 8/10. (+) The red-drive premise was probed and fixed
+with one fixture; every guard and gate was driven red; scope held; the landing decision was asked before close-out
+(learning #8). (−) A red-drive restore used `git checkout` on an untracked file and backed up to `$TMPDIR`; a
+padded draft test got written; one red-drive was mislabelled; there were two harness nudges for silence; and a
+draft of this handoff miscounted app.py:261 as :260, which the pre-commit re-grep caught.
 
 ```handoff
 session: S9

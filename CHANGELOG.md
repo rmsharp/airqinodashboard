@@ -15,6 +15,24 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 10 closed out — test-suite Phase 1 complete; main fast-forwarded, pushed with this commit
+- **Change:** `SESSION_NOTES.md` carries the handoff, the Session 9 evaluation (8/10) and the self-assessment (8/10). Its open items are renumbered, with Phase 2 recommended next. "Session 7 Handoff Evaluation" and "What Session 8 Did" were archived (`git show 4da62a1:SESSION_NOTES.md`; FM #28; 300 → 334 lines, under the 400-line ceiling). `CLAUDE.md` gains learning #9: plant the hazard a guard test exists to catch. `docs/planning/test-suite-plan.md` gains an "As implemented (Session 10)" note under Phase 1's DONE list. The S10 `HANDOFFS.md` receipt is `status: complete`. A new finding went to open item 3: `context_budget.py` reports `SESSION_NOTES.md` as "instrument-failed", because `.context-budget.json` expects at least 2 `^## ` headings but the synced seed has 1
+- **Commit/PR:** the close-out commit (ships this entry); session commits `02016aa`, `067455f`, `4da62a1`. Pushed to `origin/main` straight after it is made, on the operator's direction
+- **Session:** S10 · **Verified:** `python3 -m pytest -q` gives `9 passed`; `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results b7ff3e55b84d · manifest f394b801e28f`; the receipt's `changelog_ref` matches this heading
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] Local branch `test/suite-phase1` deleted
+- **Change:** on the operator's direction, the fully merged local branch `test/suite-phase1` (tip `4da62a1`) was deleted with `git branch -d`. It was never pushed, so there was no remote branch to delete. `main` is again the only branch
+- **Commit/PR:** the close-out commit (ships this entry); branch op, no commit of its own
+- **Session:** S10 · **Verified:** before deletion, `git merge-base --is-ancestor test/suite-phase1 main` succeeded; afterwards `git branch -vv` lists only `main`
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] Phase 1 branch landed — main fast-forwarded to `test/suite-phase1`; push follows the close-out
+- **Change:** the operator chose "fast-forward main + push" in a picker before close-out (learning #8). Local `main` was fast-forwarded from `7256c91` to `4da62a1` with `git merge --ff-only`, so `02016aa`, `067455f` and `4da62a1` keep their SHAs (learning #6). `main` is pushed to `origin/main` straight after the close-out commit. That push carries `7256c91` (Session 9's amended close-out, never pushed until now), the three Session 10 commits and the close-out
+- **Commit/PR:** the close-out commit (ships this entry); fast-forward to `4da62a1`; push to `origin/main`
+- **Session:** S10 · **Verified:** after `git fetch`, `origin/main` = `5cc4ce9`, and `git merge-base --is-ancestor` confirmed that both it and `main` are ancestors of the branch. A scan of the lines added in `origin/main..test/suite-phase1` found no secrets, home paths or scratchpad paths, only variable names and prose about earlier scans. The planted test values are `planted-*` strings
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Test wire-up — .gitignore, README "Running tests", two quality gates (plan Phase 1, commit 3 of 4)
 - **Change:** `.gitignore` gains `.pytest_cache/`. pytest already writes a `.gitignore` inside that directory, so this line is a backup. `README.md` gains a "Running tests" subsection under Quick start: it says the suite is verified on Python 3.10 only, and adds a `tests/` row in Key files. `.quality-gates.json` declares its first two gates: `tests-exit` (max 0) and `tests-passed` (min 9, the measured count). Both use one `python3 -m pytest -q` command, so the ratchet runs pytest once. `.quality-gates-results.json` stays untracked (open item 2, the operator's call)
 - **Commit/PR:** this commit (ships this entry)

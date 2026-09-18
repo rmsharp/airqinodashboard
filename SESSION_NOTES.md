@@ -6,41 +6,47 @@
 
 ## ACTIVE TASK
 
-**Current focus:** Test suite. Session 9 (2026-09-17) wrote `docs/planning/test-suite-plan.md`, which awaits the
-operator's approval. Next session implements **Phase 1 only**, once the plan is approved (or amended).
+**Current focus:** Test suite. `docs/planning/test-suite-plan.md` is approved (Session 10), and **Phase 1 is done**.
+Next session implements **Phase 2 only**: the no-source contract and the CSV path.
 **Status:**
-- **Plan: WRITTEN, not approved.** `d813463` is on `main`. On the operator's direction, `main` was fast-forwarded
-  to the plan branch, and `4973cf7` and `5cc4ce9` were pushed. The branch was then deleted: it was only ever local.
-  `main` is the only branch, local and remote. This amended close-out commit is the one local commit not yet on
-  `origin`; `git status -sb` shows whether it was pushed. The plan has four phases, one session each: P1 harness +
-  setup-banner guard, P2 no-source + CSV, P3 serial, P4 API. The operator chose pytest, strict xfail for known
-  defects, monkeypatch fakes and Python-only scope (plan §2).
-- **7 defects found and reproduced** (plan §4, D1–D7), none fixed. Each becomes a strict-xfail test in its phase, then
-  a fix session of its own (plan §6). **D1 and D7 hit the serial path the operator is about to use:** a `;`-separated
-  `key=value` line loses its first sensor, and a port that fails to open shows "No readings available" with no error.
-- **No product code changed** since Session 7's fix (`e5f52e1`). The plan's `file:line` citations are against
-  `15b0a3f` and hold until a fix session edits product code.
-- Session 8's merges, and earlier status: `git show 15b0a3f:SESSION_NOTES.md` and `git show 1402ad4:SESSION_NOTES.md`.
+- **Phase 1: COMPLETE, on `main`.** It is `067455f` (the harness and 9 tests) plus `4da62a1` (the wire-up and 2
+  gates). On the operator's direction, `main` was fast-forwarded to the Session 10 branch, which was then deleted.
+  `main` is the only branch. Session 10's close-out commit is pushed straight after it is made, together with
+  `7256c91`, `02016aa`, `067455f` and `4da62a1`. Check with `git status -sb`.
+- **Suite:** `python3 -m pytest -q` gives `9 passed`, 0 xfailed, in about 0.02 s. The ratchet gives `quality_ratchet:
+  2/2 pass · 0 fail · 0 unmeasured · results b7ff3e55b84d · manifest f394b801e28f`. The gates are `tests-exit`
+  (max 0) and `tests-passed` (min 9).
+- **Dashboard:** 54 → **62/100**, and High+ risk 1 → 0. "Test coverage is very thin (ratio: 0.03)" (MEDIUM) replaced
+  the HIGH, as the plan computed.
+- **7 defects (plan §4, D1–D7) are still unfixed.** Each gets its strict xfail in P2–P4, then a fix session of its
+  own. D1 and D7 hit the serial path the operator is about to use.
+- **No product code has changed** since Session 7's fix (`e5f52e1`).
+- Earlier status: Session 9's is at `git show 7256c91:SESSION_NOTES.md`, Session 8's at `git show 15b0a3f:SESSION_NOTES.md`.
 
 ### Open items — next session picks ONE (1-and-done)
 
-1. **Implement Phase 1 of the test-suite plan — recommended next, after approval.** Plan §5 "Phase 1"
-   (`docs/planning/test-suite-plan.md:161-290`):
-   - files: `requirements-dev.txt`, `pytest.ini`, `tests/conftest.py` (skeleton in the plan, verified in a spike),
-     `tests/test_dashboard_page.py` (T1.1–T1.7), `.gitignore`, `README.md`, `.quality-gates.json` (2 gates);
-   - four commits, each of 5 files or fewer;
-   - DONE: suite green, ratchet 2/2, two red-drives recorded, and the dashboard's HIGH "No test infrastructure" gone.
+1. **Implement Phase 2 of the test-suite plan (recommended next).** It is plan §5 "Phase 2"
+   (`docs/planning/test-suite-plan.md:299-348`):
+   - files: `tests/test_csv_routes.py` (T2.1–T2.8, plus strict xfails for D2's timeseries half, D3 and D4) and
+     `.quality-gates.json` (tighten `tests-passed` to the new measured count);
+   - three commits: the claim; the tests, the gate and the ledger entry; the close-out;
+   - DONE: the suite exits 0 with exactly 3 xfailed, the ratchet passes 2/2 at the tightened threshold, one red-drive
+     is recorded, and no product file shows in `git diff`.
 
-   The plan branch is already on `main` (fast-forward, SHAs unchanged). Start Phase 1 on a new branch off `main`.
-   P2–P4 and the D1–D7 fixes follow in plan order.
-2. **Decide the untracked files** — operator's call for each: commit, gitignore, or delete. `docs/HARDWARE.html` has been
-   untracked since Session 3 (an HTML render of `docs/HARDWARE.md`; it holds no stale hardware copy). Three tool outputs
-   have no `.gitignore` entry: `dashboard_history.jsonl` (written by every dashboard run); `.quality-gates-results.json`
-   (from `quality_ratchet.py --run`, which Phase 1 will run; the `.quality-gates.json` seed says to gitignore it);
-   `.context-budget-history.jsonl` (from `context_budget.py`). Phase 1 gitignores `.pytest_cache/` itself.
-3. **Give `CLAUDE.md` a statement of purpose.** The synced `context_budget.py` reports the `budget:protected` fence missing
-   (`.context-budget.json` declares it for `CLAUDE.md`, minimum 800 B). `CLAUDE.md` has never had a fence or a Purpose
-   section. `README.md`'s opening is the source text.
+   Start on a new branch off `main`. P3 (serial), P4 (API) and the D1–D7 fixes follow in plan order.
+2. **Decide the untracked files.** For each one, commit, gitignore or delete; that's the operator's call.
+   - `docs/HARDWARE.html` has been untracked since Session 3. It is an HTML render of `docs/HARDWARE.md` and holds no
+     stale hardware copy.
+   - Three tool outputs, all present now, have no `.gitignore` entry: `dashboard_history.jsonl` (written by every
+     dashboard run); `.quality-gates-results.json` (from `quality_ratchet.py --run`, which the `.quality-gates.json`
+     seed says to gitignore); `.context-budget-history.jsonl` (from `context_budget.py`).
+3. **Give `CLAUDE.md` a statement of purpose.** The synced `context_budget.py` reports the `budget:protected` fence
+   missing: `.context-budget.json` declares it for `CLAUDE.md`, with a minimum of 800 B. `CLAUDE.md` has never had a
+   fence or a Purpose section, and `README.md`'s opening is the source text. The same tool also reports
+   `SESSION_NOTES.md` as "instrument-failed" (new in Session 10). `.context-budget.json` expects at least 2 `^## `
+   headings, but this file has 1, and so does the synced seed `docs/methodology/starter-kit/SESSION_NOTES.md`.
+   That's a mismatch inside the methodology's own files. Raise it upstream rather than restructuring this file to
+   satisfy it.
 4. **Make learning #6 a gate (operator's call, one command).** GitHub still allows squash and rebase merges, either of
    which would orphan the SHAs the ledger cites. `gh repo edit rmsharp/airqinodashboard --enable-squash-merge=false
    --enable-rebase-merge=false` makes a merge commit the only option. It changes a public repo's settings, so it needs
@@ -57,13 +63,131 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### Session 9 Handoff Evaluation (by Session 10)
+- **Score: 8/10**
+- **What helped:**
+  - Open item 1 was an exact recipe: the files, the four-commit shape and the DONE list. The plan's `pytest.ini`
+    worked verbatim, and so did its `conftest.py` apart from one unused import.
+  - Every gotcha held and got used: don't ban "USB port"; assert on `>No Data Source<`; keep "passed" out of xfail
+    reasons; expect the MEDIUM "thin" after P1. It appeared exactly, at ratio 0.03.
+  - "Stage files by name" kept 4 untracked files out of every commit.
+  - "The amended close-out commit may not be pushed yet" was right: `main` was 1 ahead of origin.
+- **What was missing:** only that pytest writes its own `.gitignore` inside `.pytest_cache/`. So the planned
+  `.gitignore` line is a backup, not a need. Minor.
+- **What was wrong:** the plan's DONE red-drive, "turning `autouse` off fails T1.7" (`test-suite-plan.md:260`).
+  On a machine with no `.env` it doesn't. T1.7 as specified checks that the variables are absent, and here nothing
+  sets them, so all 9 tests passed with `autouse=False`. The spike got its result from a planted `.env`, and the plan
+  generalized that to every machine. I probed it before writing the fixture, and the fix was one fixture (below).
+- **ROI:** strongly positive. Going from approval to a green suite needed no rediscovery.
+
 ### What Session 10 Did
 **Deliverable:** Implement Phase 1 of `docs/planning/test-suite-plan.md` (open item 1): the pytest harness and the
-setup-banner guard (IN PROGRESS)
-**Started:** 2026-09-17 21:21
-**Status:** Session claimed on branch `test/suite-phase1` (off `main` `7256c91`). The operator approved the plan as
-written in the Phase 0 picker. Work beginning.
-**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+setup-banner guard — **COMPLETE**
+**Started / Closed:** 2026-09-17 21:21. Claimed on branch `test/suite-phase1` off `main` `7256c91`. Closed on `main`
+after a fast-forward, and pushed straight after this commit.
+**Governing docs:** `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md`, and plan §5 "Phase 1", the approved
+contract. At the start, `git diff 15b0a3f -- '*.py' templates static requirements.txt` was empty, so the contract
+still held.
+**Ledger:** 6 `CHANGELOG.md` entries: the claim, the harness (commit 2), the wire-up (commit 3), the fast-forward and
+push, the branch deletion, and this close-out.
+
+**What was done:**
+- **Approval and claim** `02016aa`. The operator approved the plan as written in the Phase 0 picker, and the plan's
+  Status line records it.
+- **Harness** `067455f`: `requirements-dev.txt`, `pytest.ini`, `tests/conftest.py` and `tests/test_dashboard_page.py`,
+  with 9 tests: T1.1–T1.5, T1.6 (twice: station and project set, then the fallback) and T1.7 (twice). Changes from the
+  plan's text:
+  - **`planted_leak`**, a module-scoped fixture, sets all 8 variables and fills the 3 globals before `isolated` runs.
+    A probe showed that without it, `autouse=False` still gave `9 passed` here.
+  - **A second T1.7 test** scans `app.py` for `os.getenv` names, so a new variable has to join the isolation lists.
+  - The plan's unused `import os` was left out of the conftest. A padded draft test (8 parametrized cases that
+    imported `conftest`) was deleted before the commit.
+- **Wire-up** `4da62a1`: `.gitignore` gains `.pytest_cache/`; `README.md` gains "Running tests" (verified on Python 3.10
+  only) and a `tests/` row; `.quality-gates.json` gets its first 2 gates.
+- **Red-drives**, all in the working tree and each restored (`git status` was clean afterwards):
+  1. the `e5f52e1^` template, with the old "USB Serial"/"Arduino Mega" banner: T1.1 fails;
+  2. `autouse=False`: 6 tests fail, T1.1 and T1.7 among them (0 failed before `planted_leak` existed);
+  3. `SERIAL_BAUD` dropped from `CONFIG_VARS`: T1.7 fails;
+  4. `os.getenv("AIRQINO_NEW_SETTING")` appended to `app.py`: the scan test fails;
+  5. an `assert False` test: `tests-exit` fails (measured 1);
+  6. one test hidden from collection: `tests-passed` fails (measured 8);
+  7. threshold 9 → 8, staged: `quality_ratchet.py --precommit` prints REFUSED.
+- **Probe for Phase 2**, run on a scratchpad copy: a test that uploads a CSV through the route sets `_csv_data`, and
+  the next test sees `None` again, with `/api/status` source `None`. So `isolated` resets globals that a route sets.
+- **Plan note:** the "As implemented (Session 10)" paragraph at `test-suite-plan.md:262-266`.
+- **Landing:** you picked the fast-forward and push in a picker before close-out (learning #8). Before the
+  fast-forward, a `git fetch` showed `origin/main` = `5cc4ce9`, an ancestor of the branch, and a scan of the lines
+  added since then found no secrets or local paths. Then `git merge --ff-only` and `git branch -d`, with the push
+  after this commit.
+- **FM #28 reduction:** "Session 7 Handoff Evaluation" and "What Session 8 Did" were archived
+  (`git show 4da62a1:SESSION_NOTES.md`).
+
+**Verification:**
+- **Plan §5 P1 DONE, every item met:**
+  - `python3 -m pytest -q` and plain `pytest -q` both give `9 passed` and exit 0, with 0 xfailed;
+  - the ratchet passes 2/2 (the summary line is in ACTIVE TASK);
+  - the red-drives are recorded (above);
+  - `git diff --stat main -- app.py airqino_client.py serial_reader.py templates static` was empty before the
+    fast-forward;
+  - the dashboard no longer lists "No test infrastructure".
+- **Runtime (3E):** the deliverable is tests only, so no product runtime behaviour changed. Running the suite is the
+  run: it renders `/` through Flask's test client under 5 source setups. With no template change, no browser check was
+  needed, and learning #5's headless Chrome stays the only rendered-page check.
+
+**Key files:**
+- `tests/conftest.py:9-12` (`CONFIG_VARS`), `:15-22` (`isolated`, autouse), `:25-28` (`client`)
+- `tests/test_dashboard_page.py`:
+  - `:19-24` (`ISOLATED_VARS`, `IMPORT_TIME_VARS`, `MODULE_GLOBALS`);
+  - `:29-42` (`planted_leak`);
+  - `:57` (T1.1, the banner guard);
+  - `:122` and `:129` (T1.7).
+- `.quality-gates.json:16-33` (the two gates); `pytest.ini:1-5`; `requirements-dev.txt:1-2`
+- `README.md:25` ("Running tests"), `README.md:150` (the `tests/` row)
+- For Phase 2:
+  - `docs/planning/test-suite-plan.md:299` (Phase 2), `:337` (its red-drive);
+  - `app.py:236` (`upload_csv`), `:245` (the `utf-8` decode, D4), `:261` (`k.strip().lower()`, D3 and the
+    red-drive), `:171` (`int(hours)`, D2).
+
+**Gotchas for the next session:**
+- **The plan's Phase 2 citations hold.** They were re-grepped in Session 10, and `.lower()` is at `app.py:261`. Find
+  line numbers with `grep -n`, not by counting `sed` output: a draft of this handoff miscounted it as `:260`, and
+  the pre-commit re-grep caught it.
+- **Don't copy `planted_leak` into the new test modules.** T1.7 already proves that `isolated` works for every module,
+  and the Session 10 probe showed that a global set by a route is reset between tests.
+- **No hook enforces the ratchet:** `core.hooksPath` is unset and `.git/hooks` has no active hook. Tighten
+  `tests-passed` in the same commit as the tests, and run `python3 quality_ratchet.py --precommit` by hand after
+  staging the manifest.
+- **P2 adds the first xfails,** so keep "passed" out of `reason=` strings. The `tests-passed` regex scans the `-ra`
+  output.
+- **The ratchet's `results` hash changes with each run.** Cite the summary line from the final run.
+- **Stage files by name.** `.quality-gates-results.json`, `.context-budget-history.jsonl`, `dashboard_history.jsonl`
+  and `docs/HARDWARE.html` are untracked (open item 2).
+- **The dashboard's MEDIUM "thin" stays until the test files total at least 548 lines.** They are 166 now. Don't pad.
+- **Back up an untracked file to the scratchpad, by explicit path, before a red-drive mutates it:** `git checkout`
+  can't restore an untracked file. In this session a `||` fallback sent the backup to `$TMPDIR`, and the conftest was
+  briefly left with `autouse=False` (fixed at once). `tests/` is tracked now, so `git checkout --` works for it.
+
+**Learnings (3C):** `CLAUDE.md` learning #9: plant the hazard that a guard test exists to catch. It points at
+`planted_leak`, which is the gate form.
+
+**Self-assessment:**
+- **Score: 8/10**
+- (+) Probed the plan's red-drive premise before trusting it (learning #7). That found the gap, and one fixture closed
+  it.
+- (+) Seven red-drives and a ratchet refusal: every guard and both gates were watched failing.
+- (+) Scope held: no product code; three commits of 5 files or fewer, plus the close-out.
+- (+) Learning #8 applied: the landing decision was asked *before* close-out, so this handoff describes the session's
+  real end.
+- (+) Probed the claim Phase 2 depends on (a global set by a route is reset between tests) rather than guessing.
+- (−) The red-drive restore mishap: a `git checkout` on an untracked file, and a backup that went to `$TMPDIR`
+  instead of the scratchpad. The harness flagged the change, and it was fixed at once.
+- (−) A padded draft test (8 parametrized cases importing `conftest`) got written before being caught.
+- (−) One red-drive was labelled "both gates fail" when only `tests-exit` does. That was right by design, but the
+  label was careless.
+- (−) Two harness nudges for silence during long tool runs.
+- (−) A draft of this handoff called the plan's `app.py:261` citation off by one. The pre-commit re-grep showed the
+  plan was right and my `sed` count was wrong. It was fixed before the commit, but it's learning #7's failure again:
+  a line number read by eye.
 
 ### Session 8 Handoff Evaluation (by Session 9)
 - **Score: 9/10**
@@ -202,99 +326,9 @@ deletion, and this amended close-out.
   re-running Phase 3. That left the receipt saying the branch was unpushed and telling the next session to land it,
   and left no final report. The operator had to ask for the close-out.
 
-### Session 7 Handoff Evaluation (by Session 8)
-- **Score: 9/10**
-- **What helped:** Open item 1 laid out the stack exactly: four branches, which were pushed, and the SHA ranges. The gotcha
-  "`fix/usb-serial-banner` contains every earlier local commit" meant one PR could carry the rest, and that became the
-  approved plan. The four open items went straight into the Phase 0 picker. The "stage files by name" gotcha kept the two
-  untracked files out of every commit.
-- **What was missing:** Two facts the housekeeping depended on. First, local `main` was 1 commit ahead of `origin/main`
-  (`03510d3`, the 2026-04-12 hardware guide). It was already on PR #1's branch, so nothing was at risk, but no handoff had
-  said so. Second, the ledger and receipts cite SHAs, which rules out squash and rebase merges. That constraint had never
-  been written down (now learning #6). The repo's settings (public, no branch protection, no CI) weren't recorded either.
-- **What was wrong:** Nothing found. Every SHA, branch position and the health score (54/100) matched.
-- **ROI:** Strongly positive. Orientation to an approved plan took one picker round and one fact-gathering round.
-
-### What Session 8 Did
-**Deliverable:** Branch/PR housekeeping (open item 1): merge the four-branch stack into `main` — **COMPLETE**
-**Started / Closed:** 2026-09-17 20:15 · claimed on `fix/usb-serial-banner`, closed on `main`
-**Governing doc:** `docs/methodology/ITERATIVE_METHODOLOGY.md` (no workstream covers git operations). Phases 3–5 at small
-scale: gather facts, present the options, STOP for approval, then carry out the approved plan.
-**Ledger:** 6 `CHANGELOG.md` entries: the claim, PR #1 merged, PR #2 opened, PR #2 merged, branch cleanup, and close-out.
-
-**What was done:**
-- **Claim** `a31fea6`, committed on the stack tip before any git operation.
-- **Facts gathered before proposing anything:**
-  - `rmsharp/airqinodashboard` is public, `main` has no branch protection, there is no CI, and all three merge methods
-    are allowed.
-  - History was linear: remote `main` `765036c` → local `main` `03510d3` → PR #1 head `0c59e5e` → HEAD `a31fea6`.
-  - `git merge-tree` showed no conflicts.
-  - A secret scan of the 11 unpublished commits' added lines found nothing, and no `.env` file is tracked. The device
-    serial and home paths were already public on PR #1's branch.
-- **Operator decisions**, from one four-question picker (the recommended option each time):
-  - Merge PR #1, then open one PR for the rest, both with merge commits.
-  - Session 8 merges them.
-  - Delete the local and remote branches.
-  - Push the close-out commit straight to `main`.
-- **PR #1 merged** as `9099569` (parents `765036c`, `0c59e5e`).
-- **PR #2 opened.** `fix/usb-serial-banner` was pushed and https://github.com/rmsharp/airqinodashboard/pull/2 opened. It
-  holds the 11 commits `dfe26fd`..`a31fea6`, and its body says not to squash or rebase.
-- **PR #2 merged** as `8554078` (parents `9099569`, `a31fea6`).
-- **Cleanup:**
-  - Local `main` was fast-forwarded from `03510d3` to `8554078`.
-  - Each of the four stack branches was confirmed to be an ancestor of `main`, and so was every SHA the ledger cites.
-  - The branches were then deleted with `git branch -d`, which refuses a branch that isn't merged.
-  - `origin`'s `chore/methodology-pr2527-remediation` and `fix/usb-serial-banner` were deleted, and `git fetch --prune` run.
-- **FM #28 reduction:** "Session 4 Handoff Evaluation" and "What Session 5 Did" were removed from this file
-  (`git show a31fea6:SESSION_NOTES.md`).
-
-**Verification:**
-- `git diff a31fea6 main` is empty, so the merged tree is byte-identical to the branch tip checked before merging.
-- `gh pr list` is empty. `git ls-remote --heads origin` lists only `main`, and `git branch -vv` shows only `main`, in
-  step with `origin/main`.
-- **Build:** all 7 root `.py` files parse, and `app` imports with 8 non-static routes. Session 6 counted 9, which
-  included the `static` route.
-- **Runtime (3E):** n/a. No file content changed (the tree is identical), so Session 7's runtime check of the banner
-  still holds.
-
-**Key files:**
-- `CHANGELOG.md:18` onward — this session's 6 entries
-- `CLAUDE.md:48` — new learning #6: merge with a merge commit or fast-forward, never squash or rebase
-- `app.py:51` (`active_source()`) and `app.py:64`–`:236` (the 8 routes) — where the test-suite plan (open item 1) starts
-- `requirements.txt:1-4` — flask, requests, python-dotenv, pyserial; no test dependency yet
-
-**Gotchas for the next session:**
-- **Start from `main` and branch for the deliverable.** The old stack branches are gone. Their commits are all on `main`
-  under merge commits `9099569` and `8554078`.
-- **`git log --oneline` now shows merge commits.** `a31fea6` is the second parent of `8554078`. The Phase 0 ledger
-  reconcile already uses `--no-merges`, so merge commits need no entries of their own. A PR merge is still an action and
-  still needs an entry.
-- **Never squash or rebase a PR here** (learning #6). GitHub still offers both (open item 4).
-- **The dashboard's "Issues" count included open PRs.** It read 1 in Phase 0 because of PR #1, and should read 0 now.
-- **This close-out's own push can't be recorded in its own ledger entry**, because the entry is written before the push.
-  The entry says the push follows. `git status -sb` on `main` shows whether local and origin match.
-- Verification tools still write untracked files (open item 2), so stage files by name.
-
-**Learnings (3C):** `CLAUDE.md` learning #6, a new row. Its gate is GitHub's merge settings (open item 4). That wasn't
-built here, because it changes a public repo's settings and the operator hasn't approved it.
-
-**Self-assessment:**
-- **Score: 9/10**
-- (+) The claim was committed before any git operation. Nothing outward-facing (merge, push, delete) happened before the
-  operator approved the plan.
-- (+) Found the constraint no document recorded: squash or rebase would orphan the ledger's SHAs. Offered only options
-  that preserve SHAs, and recorded the rule as learning #6.
-- (+) Checked the public repo before publishing: a simulated merge, a secret scan and a personal-data check.
-- (+) Confirmed every branch and cited SHA was in `main` before deleting anything, and proved the merged tree identical
-  to the verified tip.
-- (+) FM #28: this file was trimmed as well as added to.
-- (−) One harness nudge for silence during Phase 0.
-- (−) Phase 0 took seven rounds of tool calls. The document reads, and the remote checks behind the report's main-ahead
-  finding, could have been batched into fewer.
-- (−) The close-out push is recorded only as a forward-looking claim, which the ledger's shape can't avoid.
-
-### Sessions 1–7 (archived by Sessions 6–9)
+### Sessions 1–8 (archived by Sessions 6–10)
 Removed to keep this mandated read under its ceiling (FM #28). Sessions 1–3, including their handoff evaluations:
 `git show 1402ad4:SESSION_NOTES.md`. "What Session 4 Did": `git show e947798:SESSION_NOTES.md`. "Session 4 Handoff
 Evaluation" and "What Session 5 Did": `git show a31fea6:SESSION_NOTES.md`. "Session 5 Handoff Evaluation", "What
 Session 6 Did", "Session 6 Handoff Evaluation" and "What Session 7 Did": `git show 15b0a3f:SESSION_NOTES.md`.
+"Session 7 Handoff Evaluation" and "What Session 8 Did": `git show 4da62a1:SESSION_NOTES.md`.

@@ -258,6 +258,12 @@ Both gates share one command, so the ratchet runs pytest once (`quality_ratchet.
 - The red-drives are recorded:
   - restoring the old banner wording ("Connect a USB cable to the Arduino Mega port.") in the working tree fails T1.1;
   - turning `autouse` off fails T1.7. The spike showed it also fails T1.1 when a `.env` is present.
+
+  **As implemented (Session 10):** this red-drive holds only where something sets the variables. On a machine with
+  no `.env`, turning `autouse` off still gave `9 passed`. So `tests/test_dashboard_page.py` plants the leak itself:
+  a module-scoped fixture, `planted_leak`, sets all 8 variables and fills the 3 globals before `isolated` runs.
+  After that, turning `autouse` off fails 6 tests, T1.7 among them. A second T1.7 test scans `app.py` for
+  `os.getenv` names. The DONE criteria were met: `9 passed` and ratchet `2/2 pass`.
 - `git diff --stat main -- app.py airqino_client.py serial_reader.py templates static` is empty.
 - `python3 methodology_dashboard.py` no longer lists "No test infrastructure".
 
