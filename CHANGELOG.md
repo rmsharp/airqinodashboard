@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Serial route tests — plan Phase 3, T3.8–T3.9 and the D7 strict xfail; tests-passed 28 → 58
+- **Change:** new `tests/test_serial_routes.py`: 4 passing tests and 1 strict xfail. It pins `/api/current` as 200 with a reading and 202 before one, and `/api/timeseries` as the history, with `?sensor=` reshaping rows. D7 is marked `raises=AssertionError`; it runs the real reader through `get_serial_reader()` and polls until the 202 turns. A poll timeout calls `pytest.fail`, which reports FAILED and can never count as the xfail. `tests/conftest.py` gains `idle_reader`, a real `SerialReader` that is never started, where the plan specified a hand-written `FakeReader`: the routes then run the reader's own methods, and no copy of them can drift. `.quality-gates.json` `tests-passed` tightens from 28 to 58. No product code changed
+- **Commit/PR:** this commit
+- **Session:** S12 · **Verified:** `python3 -m pytest -q` and plain `pytest -q` give `58 passed, 5 xfailed`, exit 0, in 0.69 s. `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results dcc07cbf2359 · manifest fe94344ce1e7`, and `--precommit` passed on the staged manifest. Five red-drives on `app.py` each failed their target, among them a real D7 fix (XPASS strict) and a reader that is never started (the poll timeout gave FAILED). The file was restored byte-identical (shasum `9ede4c1…`). With one test hidden from collection, `tests-passed` measured 57 and the ratchet exited 2
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Serial reader tests — plan Phase 3, T3.1–T3.7 and the D1 strict xfail
 - **Change:** new `tests/test_serial_reader.py`: 26 passing tests and 1 strict xfail. They cover the `_parse_line` table (9 cases), every `_normalize` alias plus key case, `get_current` (empty, and a copy), `get_history` (last N, and the oldest dropped past `history_size`), idempotent `start()`, and the real thread over a pty (T3.6). The pty test writes a noise line and then a reading, and waits for the port to open first, because pyserial flushes input on open. The open-failure test is T3.7. D1 is marked `raises=AssertionError`. `tests/conftest.py` moves to the next commit, where its fixture gets its first user. No product code changed
 - **Commit/PR:** this commit

@@ -3,6 +3,7 @@
 import pytest
 
 import app as app_module
+from serial_reader import SerialReader
 
 # Every environment variable app.py reads per request. FLASK_SECRET_KEY is read
 # once at import, so tests leave it alone.
@@ -26,3 +27,15 @@ def isolated(monkeypatch):
 def client():
     app_module.app.config["TESTING"] = True
     return app_module.app.test_client()
+
+
+@pytest.fixture
+def idle_reader(monkeypatch):
+    """A real SerialReader, never started, installed as the app's reader: no port, no thread.
+
+    get_serial_reader() returns an installed reader as it is (app.py:40-41). A test fills
+    .latest and .history, and the routes read them through the reader's own methods.
+    """
+    reader = SerialReader("never-opened")
+    monkeypatch.setattr(app_module, "_serial_reader", reader)
+    return reader
