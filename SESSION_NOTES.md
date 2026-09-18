@@ -7,65 +7,71 @@
 ## ACTIVE TASK
 
 **Current focus:** The test suite is complete (all four phases on `main`). Of the plan's fix sessions (§6), D1
-(Session 14), D7 (Session 15), D3 (Session 16) and D4 (Session 17) are done. Next: D6 (plan §6's order continues
-D6, then D5 and D2), or any other open item.
+(Session 14), D7 (Session 15), D3 (Session 16), D4 (Session 17) and D6 (Session 18) are done; D5 and D2 remain.
+Session 18's probe also found a serial-reader race that plan §4 doesn't list (open item 1, recommended next).
 **Status:**
-- **D4: FIXED, Session 17, on `main`** (`caec75a` fix, tests, README and gate; `9812ef3` plan). An upload is now
-  decoded as `utf-8-sig`, so the byte-order mark that Excel's "CSV UTF-8" export writes no longer stays in the first
-  header. Before, the page said "Loaded" in green, but the cards had no timestamps and the chart was empty; with a
-  sensor as the first column, that sensor's card and chart series were missing. No design went to the operator: the
-  one alternative, stripping U+FEFF from each header key, gives the same page, and the tests pass on either. `main`
-  was fast-forwarded to the Session 17 branch, which was then deleted. `main` is the only branch, and it is pushed
-  straight after the close-out commit. Check with `git status -sb`.
-- **Suite:** `python3 -m pytest -q` gives `124 passed, 4 xfailed` in about 1–3 s. The ratchet gives
-  `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 5de9dfd7b3bc · manifest c0a107040a76`. The gates
-  are `tests-exit` (max 0) and `tests-passed` (min 124).
-- **Dashboard:** 68/100, unchanged, with High+ risk 0. It has 6 flags, the same 6 as at Phase 0, listed from
-  `dashboard.html` after this close-out's edits: MEDIUM "No CI/CD pipeline" (BL-3); MEDIUM, a large file, the synced
-  `docs/methodology/tools/methodology_dashboard.py`; LOW "No LICENSE file" (BL-1); LOW "BACKLOG.md: done-mark format
-  not recognized" (BL-2); LOW `CHANGELOG.md` and LOW `HANDOFFS.md`, each past the 56,750 B one-read budget, which the
-  dashboard calls expected for a ledger.
-- **Defects (plan §4):** D1, D7, D3 and D4 fixed. D2, D5 and D6 still have strict xfails, 4 tests in all (D2 has two).
+- **D6: FIXED, Session 18, on `main`** (`5056055` fix, test and gate; `91ea569` plan; `2943371` a D5 citation the
+  fix moved). `active_source()` now checks `SERIAL_PORT` before `AIRQINO_CLIENT_ID`, the order the data routes use
+  and `README.md:36` documents. Before, with both configured, the badge said "API Connected" over serial readings.
+  It is the only design the xfail and README allow, so no picker. `main` was fast-forwarded to the Session 18
+  branch, which was then deleted; `main` is the only branch, pushed straight after the close-out commit. Check with
+  `git status -sb`.
+- **Suite:** `python3 -m pytest -q` gives `128 passed, 3 xfailed` in under 1 s. The ratchet gives
+  `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 0002758d231d · manifest f7714b97d99b`. The gates
+  are `tests-exit` (max 0) and `tests-passed` (min 128).
+- **Dashboard:** 68/100, High+ risk 0, the same 6 flags as at Phase 0 (listed from `dashboard.html` after these edits):
+  MEDIUM no CI/CD (BL-3) and the synced dashboard's size; LOW no LICENSE (BL-1), the backlog's done-mark format
+  (BL-2), and `CHANGELOG.md` and `HANDOFFS.md` past their one-read budget (expected for a ledger).
+- **Defects (plan §4):** D1, D7, D3, D4 and D6 fixed. D2 and D5 still have strict xfails, 3 tests in all (D2 has
+  two). The serial-reader race is not in §4 and has no test.
 - **BACKLOG.md** has three items, none started: BL-1 (MIT licensing), BL-2 (`- [ ]` checkboxes so the dashboard's
   done-mark check works) and BL-3 (decide whether the repo needs CI/CD).
 - **Merge settings:** GitHub allows merge commits only (squash and rebase are off), so learning #6 is a gate for PR
   merges.
-- Earlier status: Session 16's is at `git show 9995f62:SESSION_NOTES.md`, Session 15's at `git show a1cb7ec:SESSION_NOTES.md`.
+- Earlier status: Session 17's is at `git show be44a02:SESSION_NOTES.md`, Session 16's at `git show 9995f62:SESSION_NOTES.md`.
 
 ### Open items — next session picks ONE (1-and-done)
 
-1. **Fix D6 (recommended next): the plan's fix sessions (§6), one defect per session.** D1, D7, D3 and D4 are
-   done. The remaining order is D6, then D5 and D2. Each session, on a new branch off `main`:
-   - removes the defect's `xfail` marker and watches its test fail on the unfixed code;
+1. **Fix the serial-reader race (recommended next), then D5 and D2.** The race comes first because the serial path
+   is next in use (the operator is sourcing an adapter), the reason D1 and D7 went first. The order is the
+   operator's call. Each fix session, on a new branch off `main`:
+   - watches its test fail on the unfixed code (for D5 and D2, by removing the `xfail` marker; the race has no test
+     yet, so the session writes it first);
    - **before choosing a design, runs the current code and each candidate fix end to end on the surface the user
-     sees** (learning #12). For D6 that is the header's source badge beside the readings grid, with serial and API
-     both configured. Probe with more than one input: D4's second symptom (a sensor as the first column) showed up
-     only on a second probe file;
+     sees** (learning #12). Probe with more than one input, and explain any odd output with a measurement before
+     calling it an artifact (learning #16);
    - fixes the product code and watches the test pass;
-   - tightens `tests-passed` by the measured delta (D3's and D4's were 2: the xfail, plus one new test);
+   - tightens `tests-passed` by the measured delta (D6's was 4: its one xfail became four cases);
    - red-drives the fix against the whole suite with the original marker restored (learning #11), and runs the
-     whole suite on the fix alone (that found T3.7 pinning D7 in Session 15; nothing pinned D3 or D4);
-   - re-greps every `file:line` citation after editing, and measures a line shift instead of computing it.
+     whole suite on the fix alone (that found T3.7 pinning D7; nothing pinned D3, D4 or D6);
+   - re-greps every `file:line` citation after editing, **including citations into the lines it changed**: D6's
+     swap kept the line count but moved the `AIRQINO_CLIENT_ID` check from `:53` to `:55`.
 
    Where each one is:
-   - **D6:** `active_source()` checks the API before serial (`app.py:53-58`), but `/api/current` and
-     `/api/timeseries` try serial first (`:141`, `:179`), and `README.md:36` documents serial → API → CSV. Its xfail
-     is `tests/test_api_routes.py:205` (marker `:202`) and asserts `active_source() == "serial"` with both sources
-     configured. For the real-app probe: a pty feeding a sensor line on `SERIAL_PORT` (Sessions 14–15), plus four
-     fake credentials. **By reading, not probed:** with `AIRQINO_PROJECT_NAME` and `AIRQINO_STATION_NAME` unset,
-     `/api/metadata` (fetched on page load, `static/js/dashboard.js:170`) calls no client method (`app.py:117`,
-     `:129`), and the two data routes answer from serial, so the probe should send nothing to the vendor
-     (`airqino_client.py:7-8`). Check that before trusting it.
-   - **D5:** `app.py:53`; its xfail is `tests/test_api_routes.py:194` (marker `:191`). **A real D5 fix also fails
-     Phase 1's T1.5** (`tests/test_dashboard_page.py:97`), which sets only `AIRQINO_CLIENT_ID`. That session must set
-     all four credentials in T1.5 as well. D5 and D6 both change `active_source()`; D6's test sets all four
-     credentials, so a D5 fix can't flip it.
+   - **The serial-reader race (new, Session 18, probed; not in plan §4).** `get_serial_reader()` (`app.py:38-48`)
+     checks `_serial_reader`, then builds and starts a reader, with no lock. The page's first load sends
+     `/api/current` and `/api/timeseries` together (`static/js/dashboard.js:484-485`), and Flask's dev server is
+     threaded, so each request starts a `SerialReader` on the same port. The global keeps one, and both threads read
+     until the app stops, splitting the byte stream. In a scripted A/B (a fresh app per trial), `lsof` found the pty
+     open twice after 3 of 3 concurrent first requests and once after 3 of 3 sequential ones; the readings read
+     back were garbled (`no2` as `'1o37'`). Probed on a pty only. **By reading, not probed:** pyserial opens a POSIX
+     port without an exclusive lock by default, so a real adapter would open twice the same way. The operator
+     decides whether it becomes D8 (a plan amendment). The test must plant the race (learning #9), e.g. a stand-in
+     `SerialReader` whose constructor sleeps, two threads released together by a `threading.Barrier`, and an
+     assertion that one reader was built. A candidate fix, not verified: a module-level `threading.Lock` around the
+     check and the build. `exclusive=True` on the port looks wrong: the second open would fail, set `error`, and the
+     page would show a port error. Probe from a fresh app with no warm-up request (learning #16). `get_api_client()`
+     (`app.py:24-35`) has the same check-then-set shape; by reading, two clients would each fetch a token. Unprobed.
+   - **D5:** `app.py:55` (the check D6's fix moved from `:53`); its xfail is `tests/test_api_routes.py:227` (marker
+     `:224`). **A real D5 fix also fails Phase 1's T1.5** (`tests/test_dashboard_page.py:97`), which sets only
+     `AIRQINO_CLIENT_ID`; that session must set all four credentials in T1.5 as well. D6's test sets all four in
+     every case with the API, so a D5 fix can't flip it.
    - **D2:** `app.py:175` and `:224`; its xfails are `tests/test_csv_routes.py:192` (marker `:191`) and
-     `tests/test_api_routes.py:213` (marker `:212`).
+     `tests/test_api_routes.py:233` (marker `:232`).
 
    The plan's own `app.py` citations read lower than the code: by 4 past `:142` since D7, and by more inside
-   `upload_csv` since D3 (both noted in the plan; D4 moved none). Use the lines above. Probe fixes carried in these
-   notes are starting points, not verified designs.
+   `upload_csv` since D3, and its §4 D5 citation reads `:53` for `:55` since D6 (all noted in the plan). Use the
+   lines above. Probe fixes carried in these notes are starting points, not verified designs.
 2. **Decide the untracked files.** For each one, commit, gitignore or delete; that's the operator's call.
    - `docs/HARDWARE.html` has been untracked since Session 3. It is an HTML render of `docs/HARDWARE.md` and holds no
      stale hardware copy.
@@ -106,15 +112,15 @@ D6, then D5 and D2), or any other open item.
    Each could become a new defect with a strict xfail (a plan amendment), or be recorded as intended.
 5. **Sync the methodology (new in Session 12).** `context_budget.py` reports that `SAFEGUARDS.md` differs from
    canonical: the local copy is `df926b6` (2026-09-16), 1 commit behind `0d63410` (BL-63, how to commit a `bin/sync`
-   run). Run `bin/sync` from `~/Development/methodology`. Don't edit the synced file here. Re-checked in Session 17
-   against `~/Development/methodology/starter-kit/` (`cmp`): only `SAFEGUARDS.md` differs; `SESSION_RUNNER.md` and
-   the three synced tools match.
+   run). Run `bin/sync` from `~/Development/methodology`. Don't edit the synced file here. Re-checked in Session 18's
+   Phase 0 against `~/Development/methodology/starter-kit/` (`cmp`): only `SAFEGUARDS.md` differs;
+   `SESSION_RUNNER.md` and `methodology_dashboard.py` match.
 6. **Declare a coverage floor (new in Session 13).** Plan §8 defers it until after Phase 4, then to its own session:
    measure with pytest-cov (installed, 7.1.0), declare the floor at the measured value in `.quality-gates.json`, and
    pair it with a mutation spot-check. Sessions 13–15's red-drives are the start of that check.
 7. **A live API test, once credentials arrive (blocked).** Plan §5 Phase 4 surface: `@pytest.mark.live`, skipped
    without credentials, in its own session. It should settle one question the fakes can't. The chart's 30 d button
-   asks `getRange` for 2026-08-18 to 2026-09-17 on a 2026-09-17 clock (`tests/test_api_routes.py:160`), which is 30
+   asks `getRange` for 2026-08-18 to 2026-09-17 on a 2026-09-17 clock (`tests/test_api_routes.py:193`), which is 30
    days apart. `README.md:110` says the API rejects spans over 30 days, and whether it counts that span as 30 days or
    31 is unknown. It could also settle whether the API's hourly CSV starts with a BOM: `/api/hourly` parses
    `resp.text` (`airqino_client.py:123`, `app.py:230-232`) without D4's `utf-8-sig`, so a BOM there would put D4's
@@ -122,8 +128,8 @@ D6, then D5 and D2), or any other open item.
 8. **The map's tile provider now demands an API key (Session 14, no test pins it).** `static/js/dashboard.js:355`
    loads `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png` with no key. A direct `curl` of one tile
    returns 200 with the real map and "API KEY REQUIRED / carto.com/basemaps/apikey" stamped across it, not a 4xx,
-   so nothing in the app's code or tests would catch it. Session 17's page screenshots show the stamp across the
-   map. A screenshot can look normal when the stamp falls outside the visible part of the map, as in Session 16's.
+   so nothing in the app's code or tests would catch it. Session 17's and 18's page screenshots show the stamp
+   across the map. A screenshot can look normal when the stamp falls outside the visible part of the map, as in Session 16's.
    Whether a free key exists and how to wire it in, or which other tile source to use, is a design question for its
    own session. BL-1 (MIT licensing) also touches this, since a tile provider swap changes what is credited and
    under what licence.
@@ -146,11 +152,119 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 *Session history accumulates below this line. Newest session at the top.*
 
 ### What Session 18 Did
-**Deliverable:** Fix D6 (open item 1; plan §6's fifth fix session): `active_source()` checks the API before serial
-(`app.py:53-58`), but `/api/current` and `/api/timeseries` try serial first (`:141`, `:179`) (IN PROGRESS)
-**Started:** 2026-09-18 14:32, on branch `fix/d6-source-order` off `main` `be44a02`
-**Status:** Session claimed. Work beginning.
-**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest.
+**Deliverable:** Fix D6 (open item 1; plan §6's fifth fix session): `active_source()` checked the API before serial
+(`app.py:53-58` at the start), but the data routes try serial first — **COMPLETE**
+**Started / Closed:** 2026-09-18 14:32 / 15:50. Claimed on branch `fix/d6-source-order` off `main` `be44a02`. Closed
+on `main` after a fast-forward, and pushed straight after the close-out commit.
+**Governing docs:** `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md` (read in full), and plan §6 (fix
+sessions), the approved contract from Session 9's plan.
+**Ledger:** 6 `CHANGELOG.md` entries: the claim, the D6 fix, the plan update, the D5 citation correction, the branch
+deletion, and this close-out, which also records the fast-forward and the push.
+
+**What was done:**
+- **Claim** `2160d6b`. The operator picked D6 in the Phase 0 picker.
+- **Probed before designing** (learnings #5, #12, #14). A pty fed the docstring's sensor line once a second, and the
+  real app ran with `SERIAL_PORT` on it plus four fake credentials. Every proxy variable pointed at a closed port, so
+  a vendor request would have failed as a 502; none did, so the handoff's by-reading premise held. The DevTools
+  driver read the page: "API Connected" over five serial reading cards, and `/api/status` said `api`. The reorder,
+  run first in a scratchpad copy of the app, changed only the badge, to "Serial".
+- **Found a defect outside plan §4.** The first readings came back garbled. I first called that a probe artifact;
+  `lsof` then showed the app holding the pty twice. A scripted A/B (a fresh app per trial) confirmed a race in
+  `get_serial_reader()`: two fds after 3 of 3 concurrent first requests, one after 3 of 3 sequential ones. Recorded
+  in the plan and open item 1, not fixed. The D6 probes warmed the reader with one request, so their readings were
+  clean.
+- **Design:** the reorder, the only one the xfail and `README.md:36` allow (routes going API-first fail four tests),
+  so no picker.
+- **Red on the unfixed code:** D6's xfail became a test over the four mixes of two or more sources. With `app.py`
+  unfixed, only serial+api and all-three failed (`'api' == 'serial'`).
+- **The fix, one commit** `5056055` (4 files): the swap at `app.py:53-56` and its docstring; the test, moved above
+  the known-defects block; `tests-passed` 124 → 128; the ledger entry. `--precommit` wasn't run before the commit
+  (no hook is installed), so I replayed it afterwards in a detached worktree at the parent: exit 0.
+- **Red-drives**, each against the whole suite, files restored byte-identical (`shasum -c`): the fix with the
+  original test and marker (only D6's `XPASS(strict)`, so nothing else pinned the old order); serial → CSV → API
+  (only api+csv fails); API-first routes with `active_source()` unfixed (serial+api, all-three and both
+  `test_serial_is_served_before_the_api` cases fail). The gate: with the api+csv case hidden, `tests-passed`
+  measured 127 and the ratchet exited 2.
+- **Runtime (learning #5):** the fixed app from the repo; the driven page read "Serial" over five cards and two
+  chart series. Then a fresh app per mix (none, serial, api, csv, serial+api, api+csv, serial+csv): the badge,
+  `/api/status` and both data routes agree in each, with no 502 in any log. App, Chrome and the pty feeder stopped;
+  ports 5001 and 9333 free.
+- **Plan updated** (`91ea569`): the Status line, D6's §4 row, and an "As implemented (D6, Session 18)" note (`:634`)
+  that also records the race.
+- **A false claim corrected** (`2943371`). The plan note said the swap moved no `app.py` citation, because the line
+  count held. It moved the `AIRQINO_CLIENT_ID` check from `:53` to `:55`, which D5's xfail reason cites. Found at
+  close-out by grepping every surface for citations into `app.py:51-59`.
+- **Landing:** the operator picked "FF main + push". After a `git fetch`, `origin/main` = `be44a02` was an ancestor
+  of the branch, and a scan of the added lines found no secrets or local paths. Then `git merge --ff-only` and
+  `git branch -d`, with the push after this commit.
+- **FM #28 reduction:** "Session 15 Handoff Evaluation" and "What Session 16 Did" archived
+  (`git show 2943371:SESSION_NOTES.md`).
+
+**Verification:**
+- **Plan §6 DONE, every item met:** marker removed and watched red; product code fixed and the test watched green;
+  `tests-passed` tightened 124 → 128 (measured); runtime check done; red-driven against the whole suite with the
+  marker restored.
+- `python3 -m pytest -q`: `128 passed, 3 xfailed`, exit 0, read from a file with no pipe (learning #10).
+  `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 0002758d231d · manifest f7714b97d99b`.
+- **Runtime (3E):** verified live above. Not covered: a real adapter and real API credentials (neither exists yet),
+  so the API side of each mix answered 400 for want of a station name, not with data.
+
+**Key files:**
+- `app.py:51-59` (`active_source()`, the swap at `:53-56`); `app.py:38-48` (`get_serial_reader()`, the race).
+- `tests/test_api_routes.py:152-183` (D6's comment, `BADGES` and the four-mix test), `:224` and `:232` (D5's and
+  D2's markers).
+- `.quality-gates.json:27` (`tests-passed`, 128); `static/js/dashboard.js:484-485` (the page's two concurrent loads).
+- `docs/planning/test-suite-plan.md:634` (the "As implemented (D6, Session 18)" note, and the race).
+
+**Gotchas for the next session:**
+- **Warming the reader hides the race.** The D6 probes sent one `/api/current` before loading the page, so their
+  readings stayed clean. A probe of the race must start a fresh app and load the page first (learning #16).
+- **A swap keeps line numbers but moves content.** After a change, grep every surface for citations into the lines
+  you changed, not only for shifted line numbers.
+- **Flask's debug reloader runs two processes.** In a probe script, start the app with `start_new_session=True` and
+  stop it with `os.killpg`; by hand, kill both PIDs from `lsof -tiTCP:5001`.
+- **No git hooks are installed**, so run `python3 quality_ratchet.py --precommit` by hand, with the manifest staged,
+  before the commit.
+- **A proxy guard for fake credentials:** set `HTTPS_PROXY`, `HTTP_PROXY` and their lowercase forms to
+  `http://127.0.0.1:9` for the app only. A vendor request then fails as a 502 in the app log, so none means none left.
+- **Exit codes (learning #10):** redirect to a scratchpad file, then `echo $?`. **Stage files by name** (the 4
+  untracked files remain, open item 2). **Cite the ratchet summary line from the final run.**
+- **This file must stay at 399 lines or fewer by `wc -l`** (open item 3).
+
+**Learnings (3C):** `CLAUDE.md` learning #16 (an anomaly in a probe is evidence until a measurement explains it).
+
+**Self-assessment:**
+- **Score: 7/10**
+- (+) Probed the page before and after in the real app, and turned the handoff's by-reading "no vendor traffic"
+  premise into a measurement with the proxy guard.
+- (+) Chased a garbled reading to its cause instead of working around it, and confirmed the race with a 3-and-3 A/B
+  before writing it down. It is the most consequential serial-path finding since D7, and it stayed out of scope.
+- (+) D6's test pins the source agreement for every mix, not one pair. 3 product red-drives and 1 gate red-drive,
+  all against the whole suite, and each wrong design fails a named case.
+- (+) Runtime check across all 7 source mixes, not only the defect's.
+- (−) **A false claim reached a commit again.** `91ea569`'s note said no `app.py` citation moved: I had checked the
+  line count, not the lines' content. The close-out grep caught it and `2943371` fixed it before the push, but it is
+  Session 17's minus in a new form: a claim committed before checking the thing it is about.
+- (−) Told the operator the garbled readings were "most likely" a probe artifact before measuring anything.
+- (−) A citation computed from memory (`dashboard.js:480-482`, really `:484-485`), caught before the commit.
+- (−) `--precommit` not run before the fix commit; replayed afterwards (exit 0).
+- (−) Several harness nudges for silence during long runs of tool calls, which repeats Sessions 6–17's minus.
+
+### Session 17 Handoff Evaluation (by Session 18)
+- **Score: 9/10**
+- **What helped:**
+  - Open item 1's D6 citations held on a fresh read (`app.py:53-58`, `:141`, `:179`, `README.md:36`, the xfail at
+    `tests/test_api_routes.py:205`, marker `:202`), and so did its probe recipe: a pty plus four fake credentials.
+  - Labelling the no-vendor-traffic premise "by reading, not probed", with "check that before trusting it", led to
+    the proxy guard, which made it a measurement. It held.
+  - "D6's test sets all four credentials, so a D5 fix can't flip it" carried straight into the new test's design.
+  - The reloader's two-PID gotcha kept a port from being left busy. The ratchet citation matched
+    `.quality-gates-results.json`, both frontiers sat at `be44a02` with nothing to reconcile, the 6 flags matched
+    `dashboard.html`, and the notes were 386 lines as stated.
+- **What was wrong:** nothing I found.
+- **What was missing:** that the page's first load starts two serial readers. No earlier handoff mentions it; the
+  D6 probe found it only because it loaded a fresh app's page before any other request.
+- **ROI:** strongly positive. Phase 0 to a probed design needed no rediscovery.
 
 ### What Session 17 Did
 **Deliverable:** Fix D4 (open item 1; plan §6's fourth fix session): an upload was decoded as `utf-8`, not
@@ -269,116 +383,7 @@ bytes before claiming it's gone). Not yet a gate: open item 10.
   invisible literal. Session 16 had no reason to hit either.
 - **ROI:** strongly positive. Phase 0 to a probed design needed no rediscovery.
 
-### What Session 16 Did
-**Deliverable:** Fix D3 (open item 1; plan §6's third fix session): a CSV row with more fields than the header put
-its extras under the key `None`, and `k.strip()` failed (`app.py:262-265` at the start) — **COMPLETE**
-**Started / Closed:** 2026-09-18 00:23 / 00:48. Claimed on branch `fix/d3-ragged-csv-row` off `main` `a1cb7ec`.
-Closed on `main` after a fast-forward, and pushed straight after the close-out commit.
-**Governing docs:** `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md` (read in full), and plan §6 (fix
-sessions), the approved contract from Session 9's plan.
-**Ledger:** 6 `CHANGELOG.md` entries: the claim, D3 parts 1 and 2, the plan update, the branch deletion, and this
-close-out, which also records the fast-forward and the push.
-
-**What was done:**
-- **Claim** `5c93025`. The operator picked D3 in the Phase 0 picker.
-- **Probed before designing** (learnings #7 and #12). `--screenshot` can't upload, so a scratchpad Node script drove
-  headless Chrome over the DevTools protocol and dropped a CSV on `#uploadArea` (learning #14, new). The real app
-  reproduced D3: `curl` got a 500 as Werkzeug's HTML debugger page, and the page read "Upload failed: Unexpected
-  token '<', "<!doctype "... is not valid JSON" with nothing loaded. Three candidates in scratchpad copies of the
-  app, given the same 5-row CSV (a trailing comma on row 3, an extra value on the last row): A (drop the extras
-  silently) loaded as if clean; B (drop and count) loaded with an amber note; C (a 400 naming the line) loaded
-  nothing. The operator chose B in a picker.
-- **Red on the unfixed code:** with the marker removed, only D3's test failed (`AttributeError` at `app.py:265`).
-- **D3, two commits, each green and true at its own point** (6 files, so the 5-file cap split it):
-  - `31e50f2` page: `uploadFile` adds the ragged-row count to the status, in amber, when the response has
-    `ragged_rows`. A no-op until part 2; that commit's tree gave `120 passed, 6 xfailed`.
-  - `5e37cb1` server: `upload_csv` skips the `None` key and counts those rows; `ragged_rows` is in the body only
-    when it isn't 0. D3's test pins the new body and moved above the known-defects block; a new test covers an
-    extra value, a clean row and a trailing delimiter. A README sentence, inside its line, so no cited line moved.
-    `tests-passed` 120 → 122.
-- **Red-drives**, each against the whole suite, files restored byte-identical (`shasum -c`): the fix with the
-  original marker and assertion (only D3's `XPASS(strict)`); the new tests on the unfixed code (both fail); design A
-  (both D3 tests fail); counting once per file (only the multi-row test fails); always sending `ragged_rows` (T2.3's
-  three cases and T2.7 fail, which pins "only when not 0"); keeping the extras under a key (both fail). The gate:
-  with the new test hidden, `tests-passed` measured 121 and the ratchet exited 2.
-- **Runtime (learning #5):** the real app, before and after, by the drag-and-drop driver, `curl` and screenshots.
-  After the fix: the amber note, four reading cards (the last row, without its extra value) and two 5-point chart
-  series. Adjacent paths: a reload shows the "CSV Data" badge and the same data; a clean CSV dropped on the bottom
-  upload area reads "Loaded 5 rows (5 columns)" in green, and `curl` of it returns no `ragged_rows`. App and Chrome
-  stopped each time; port 5001 free (`lsof` exit 1).
-- **Plan updated** (`c3004b7`): the Status line, D3's §4 row, and an "As implemented (D3, Session 16)" note.
-- **Checked three carried claims before repeating them:** open item 8 (the tile is the map with "API KEY REQUIRED"
-  stamped on it: still true), open item 5 (only `SAFEGUARDS.md` differs from canonical: still true), and Session
-  15's flag count (see the evaluation below).
-- **Landing:** the operator picked "fast-forward main + push" before close-out (learning #8). After a `git fetch`,
-  `origin/main` = `a1cb7ec` was an ancestor of the branch; a scan of the added lines found no secrets or local
-  paths. Then `git merge --ff-only` and `git branch -d`, with the push after this commit.
-- **FM #28 reduction:** "Session 13 Handoff Evaluation" and "What Session 14 Did" were archived
-  (`git show c3004b7:SESSION_NOTES.md`).
-
-**Verification:**
-- **Plan §6 DONE, every item met:** marker removed and watched red; product code fixed and the test watched green;
-  `tests-passed` tightened 120 → 122 (measured); runtime check done; red-driven against the whole suite with the
-  marker restored.
-- `python3 -m pytest -q`: `122 passed, 5 xfailed`, exit 0, read from a file with no pipe (learning #10).
-  `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 4c59862276a3 · manifest 6947b3732825`; `--precommit`
-  passed on the staged manifest. `node --check static/js/dashboard.js` exit 0.
-- **Runtime (3E):** verified live above. Not covered: the file input's click-to-choose path (the driver drops a
-  file; both paths call the same `uploadFile`), and a real SD-card file (none exists; plan Phase 2's surface note).
-
-**Key files:**
-- `app.py:260-283` (`upload_csv`'s parse loop and body; the fix at `:262`, `:266-268` and `:277-283`).
-- `static/js/dashboard.js:449-475` (`uploadFile`; the ragged note at `:461-467`).
-- `tests/test_csv_routes.py:158-172` (D3's two tests), `:177` and `:183` (D2's and D4's remaining markers).
-- `.quality-gates.json:27` (`tests-passed`, 122); `README.md:40` (the CSV paragraph).
-- `docs/planning/test-suite-plan.md` §6, the "As implemented (D3, Session 16)" note.
-
-**Gotchas for the next session:**
-- **An upload needs a driver, not a screenshot** (learning #14). Its recipe rebuilds the driver in a few minutes.
-- **In the real app a 500 is HTML** (`debug=True`), so the page's `resp.json()` throws and the status shows a JSON
-  parse error. D4 isn't a 500, but any CSV-path error that is will look like that.
-- **Upload state persists in a running app** (`_csv_data`), and the upload area moves from the setup banner to the
-  bottom panel once a source is active. Restart the app between probes that need the no-source page.
-- **zsh expands an unquoted `--include=*.py`** in `grep -r` and fails with "no matches found". Quote it.
-- **Exit codes (learning #10):** redirect to a scratchpad file, then `echo $?`. **Stage files by name** (the 4
-  untracked files remain, open item 2). **Cite the ratchet summary line from the final run.**
-- **This file must stay at 399 lines or fewer by `wc -l`** (open item 3).
-
-**Learnings (3C):** `CLAUDE.md` learning #14 (an interaction needs a driver, not a screenshot; the recipe).
-
-**Self-assessment:**
-- **Score: 8/10**
-- (+) Probed the current behaviour and three designs on the real page with a real drag-and-drop. That found the
-  page's actual symptom (a JSON parse error, not a 500), and the operator chose on evidence.
-- (+) Built the driver when `--screenshot` couldn't reach the surface, rather than settling for `curl`.
-- (+) 6 product red-drives and 1 gate red-drive, all against the whole suite; each rejected design has a test that
-  fails on it.
-- (+) The 5-file cap held; both D3 commits were green at their own point (commit 1's tree checked with the test
-  change stashed).
-- (+) Re-checked three carried claims instead of repeating them, and measured the predecessor's flag miss.
-- (−) The plan note's first draft said "11 lower past `:257`", computed rather than measured; the 7 lines went in
-  at three places. Caught before the commit by mapping the lines (learning #7's trap again).
-- (−) A zsh glob trap in the first citation grep; caught from its output.
-- (−) Two harness nudges for silence during long runs of tool calls, which repeats Sessions 6–15's minus.
-
-### Session 15 Handoff Evaluation (by Session 16)
-- **Score: 9/10**
-- **What helped:**
-  - Open item 1's D3 recipe held on a fresh read: `app.py:262-265`, the xfail at `tests/test_csv_routes.py:167`
-    (marker `:165`), and the surface: "a CSV upload in the real app, then the chart and readings grid".
-  - Learning #12 and "probe fixes carried in these notes are starting points" sent me to the page before designing,
-    which is where the real symptom was.
-  - "Run the whole suite on the fix alone" and "measure the delta" both applied as written (the delta was 2).
-  - The ratchet citation matched `.quality-gates-results.json`; both frontiers sat at `a1cb7ec` with nothing to
-    reconcile. Learning #13's gotcha found the sixth flag at Phase 0.
-- **What was wrong:** "It has 5 flags" was true when counted, but the close-out commit took `HANDOFFS.md` from
-  56,534 B to 60,283 B, past its budget, so the committed state had 6: the "measured before the last edit" pattern
-  Session 15 itself found in Session 14's line count.
-- **What was missing:** that `--screenshot` can't exercise an upload, so D3 and D4 need a browser driver. Session 15
-  only loaded pages, so it had no way to know; learning #14 records it now.
-- **ROI:** strongly positive. Phase 0 to a probed design needed no rediscovery, only the driver.
-
-### Sessions 1–15 (archived by Sessions 6–17)
+### Sessions 1–16 (archived by Sessions 6–18)
 Removed to keep this mandated read under its ceiling (FM #28). Sessions 1–3, including their handoff evaluations:
 `git show 1402ad4:SESSION_NOTES.md`. "What Session 4 Did": `git show e947798:SESSION_NOTES.md`. "Session 4 Handoff
 Evaluation" and "What Session 5 Did": `git show a31fea6:SESSION_NOTES.md`. "Session 5 Handoff Evaluation", "What
@@ -391,3 +396,4 @@ Session 6 Did", "Session 6 Handoff Evaluation" and "What Session 7 Did": `git sh
 "Session 12 Handoff Evaluation" and "What Session 13 Did": `git show c159ac8:SESSION_NOTES.md`.
 "Session 13 Handoff Evaluation" and "What Session 14 Did": `git show c3004b7:SESSION_NOTES.md`.
 "Session 14 Handoff Evaluation" and "What Session 15 Did": `git show 9812ef3:SESSION_NOTES.md`.
+"Session 15 Handoff Evaluation" and "What Session 16 Did": `git show 2943371:SESSION_NOTES.md`.
