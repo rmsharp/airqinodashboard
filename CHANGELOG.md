@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 12 claimed — test-suite Phase 3 begins (in progress)
+- **Change:** the operator picked Phase 3 of `docs/planning/test-suite-plan.md` (the serial path) in the Phase 0 picker. Session claimed on branch `test/suite-phase3` (off `main` `e3e7a0a`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S12 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 11 close-out amended — merge-settings gate recorded, receipt brought to session end
 - **Change:** after the first close-out (`803a785`), the operator asked why turning off squash and rebase merges had been ranked behind Phase 2, then directed it done. Per learning #8, Phase 3 re-ran. `SESSION_NOTES.md` records the follow-on action. Its old open item 4 is removed, and the CSV findings are renumbered to item 4. The self-assessment drops from 8/10 to 7/10 for the ranking miss. `CLAUDE.md` learning #6 now records the gate and its reach: PR merges only, since local squash and rebase still work. The S11 `HANDOFFS.md` receipt is overwritten in place: `self_score: 7`, and its `changelog_ref` names this entry
 - **Commit/PR:** the amended close-out commit (ships this entry). Pushed to `origin/main` straight after it is made, on the operator's direction

@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S12
+date: 2026-09-17
+status: pending
+active_task: Implement Phase 3 of docs/planning/test-suite-plan.md (picked by the operator in the Session 12 picker): tests/test_serial_reader.py (T3.1-T3.7, strict xfail D1), a FakeReader fixture in tests/conftest.py, tests/test_serial_routes.py (T3.8-T3.9, strict xfail D7), and a tightened tests-passed gate in .quality-gates.json, on branch test/suite-phase3. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S11
 date: 2026-09-17
 status: complete

@@ -73,6 +73,13 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 12 Did
+**Deliverable:** Implement Phase 3 of `docs/planning/test-suite-plan.md` (open item 1): the serial path (IN PROGRESS)
+**Started:** 2026-09-17 22:50
+**Status:** Session claimed on branch `test/suite-phase3` (off `main` `e3e7a0a`). The operator picked Phase 3 in the
+Phase 0 picker. Work beginning.
+**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+
 ### Session 10 Handoff Evaluation (by Session 11)
 - **Score: 9/10**
 - **What helped:**
