@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Session 16 claimed — D3 fix begins (in progress)
+- **Change:** the operator picked the D3 fix (open item 1; `docs/planning/test-suite-plan.md` §6's third fix session) in the Phase 0 picker. D3: a ragged CSV row puts its extra fields under the key `None`, and `k.strip()` fails. Session claimed on branch `fix/d3-ragged-csv-row` (off `main` `a1cb7ec`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S16 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Session 15 closed out — D7 fixed, the plan's second fix session done; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the Session 14 handoff evaluation (8/10; its wrong claims: the notes' line count at close-out, 407 committed, not 400; "flags unchanged" after its own BL-1 had added a LOW flag; and a `context_budget.py:346` citation that is neither `measure_file`, `:329`, nor its split, `:347`), the full D7 write-up and an 8/10 self-assessment. Open item 1 now recommends D3, with a new first step: run the candidate fix on the page before designing. Open item 4 gains a probed finding: a port that opens and then fails is never reported, and the last reading keeps being served with 200. Open item 9 points to BL-1, BL-2 and BL-3. "Session 12 Handoff Evaluation" and "What Session 13 Did" were archived (`git show c159ac8:SESSION_NOTES.md`; FM #28), which leaves 387 lines, under the 399 that `context_budget.py`'s count allows. `CLAUDE.md` gains learning #12 (a green xfail isn't the user-visible fix: run the candidate fix on the page before choosing the design) and #13 (list the dashboard's flags from its output, not by grepping for the ones a handoff named). The S15 `HANDOFFS.md` receipt is `status: complete`. On the operator's direction (a picker before close-out), `main` was fast-forwarded from `b710ac0` to `87c7535` after a `git fetch` showed `origin/main` was an ancestor, and it is pushed to `origin/main` straight after this commit
 - **Commit/PR:** the close-out commit (ships this entry); session commits `2fc1d25`, `d24ab0e`, `192e831`, `222f02c`, `9698f9c`, `87c7535`, `2519647`, `c159ac8`

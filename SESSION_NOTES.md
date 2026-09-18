@@ -123,6 +123,13 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 16 Did
+**Deliverable:** Fix D3 (open item 1; plan §6's third fix session): a ragged CSV row puts its extra fields under
+the key `None`, and `k.strip()` fails (`app.py:262-265`) (IN PROGRESS)
+**Started:** 2026-09-18 00:23, on branch `fix/d3-ragged-csv-row` off `main` `a1cb7ec`
+**Status:** Session claimed. Work beginning.
+**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest.
+
 ### What Session 15 Did
 **Deliverable:** Fix D7 (open item 1; plan §6's second fix session): a serial port that fails to open was served
 as data with 200 (`serial_reader.py:64-69`, `app.py:141-147` at the start) — **COMPLETE**

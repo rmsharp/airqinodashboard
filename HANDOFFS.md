@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S16
+date: 2026-09-18
+status: pending
+active_task: Fix D3 (picked by the operator in the Session 16 picker; plan section 6's third fix session): remove the strict xfail marker at tests/test_csv_routes.py:165, fix app.py:262-265 so a ragged CSV row (extra fields under the key None) no longer fails k.strip(), check the upload in the real app before choosing a design, tighten tests-passed from 120 (by the measured delta), and red-drive the fix against the whole suite with the marker restored, on branch fix/d3-ragged-csv-row. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S15
 date: 2026-09-17
 status: complete
