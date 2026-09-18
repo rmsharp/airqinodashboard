@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Test plan records D3 as fixed
+- **Change:** `docs/planning/test-suite-plan.md`: the Status line names D3's commits and leaves D4, D6, D5 and D2; D3's §4 row is tagged fixed; a new "As implemented (D3, Session 16)" note under §6 records what the page showed before (Werkzeug's HTML 500 read as JSON: "Upload failed: Unexpected token '<'…"), the three probed designs and the operator's choice, why `tests-passed` moved by 2, how the fix moved this plan's citations inside `upload_csv` (D3's `:258-261` is now `:263-269`, Phase 2's `.lower()` `:261` is now `:269`), and that a CSV with a blank first line now loads as rows with no columns instead of failing
+- **Commit/PR:** this commit
+- **Session:** S16 · **Verified:** n/a — docs-only; each new line citation was checked against `app.py` after the fix (`sed -n`), and a first draft's "11 lower past `:257`" was corrected before the commit, since the 7 lines went in at three places
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] D3, part 2 of 2 — a CSV row with more fields than the header loads without its extras, and is counted; tests-passed 120 → 122
 - **Change:** `app.py` `upload_csv`: a field under the key `None` (where `csv.DictReader` puts a long row's extra fields) is skipped instead of failing `k.strip()`, and each such row is counted. The response gains `ragged_rows` only when the count isn't 0, so a clean upload's body is unchanged, and part 1's page note reads it. `tests/test_csv_routes.py`: D3's strict-xfail marker removed; its test now pins 200, the body with `ragged_rows: 1`, and the stored row, and it moves above the "Known defects" block. A new test uploads an extra value, a clean row and a trailing delimiter, and checks `ragged_rows: 2` and all three rows. `README.md` §"1. CSV / SD-card upload" gains one sentence, inside its existing line, so no cited README line moves. `.quality-gates.json` `tests-passed` tightened from 120 to 122 (D3's xfail turned pass, plus the new test). Third of the plan's §6 fix sessions
 - **Commit/PR:** this commit
