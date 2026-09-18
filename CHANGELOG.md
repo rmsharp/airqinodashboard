@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Test-suite plan written — `docs/planning/test-suite-plan.md` (open item 1)
+- **Change:** a four-phase pytest plan, one session per phase: P1 harness + setup-banner guard, P2 no-source contract + CSV path, P3 serial (real pty), P4 API client + API routes. It has a grep-based inventory (§3), and each phase names its DONE criteria, verification commands, surface and session boundary. It records 7 defects (D1–D7) reproduced by scratch probes; each becomes a strict-xfail test and a later fix session. The operator chose pytest, strict xfail, monkeypatch fakes and Python-only scope in one four-question picker. No product code changed
+- **Commit/PR:** the plan commit (ships this entry)
+- **Session:** S9 · **Verified:** a scratchpad spike ran every mechanism the phases rely on: a planted `.env` leak and the fixture that neutralises it, `pytest.ini`, the pty round trip, fake-client injection and the two ratchet gates (5 passed, 2 xfailed; `quality_ratchet.py --run` 2/2). It drove 3 guards red. Every file:line citation was re-grepped after writing (6 corrected)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 9 claimed — plan a test suite (in progress)
 - **Change:** session claimed on branch `docs/test-suite-plan` (off `main` `15b0a3f`); the operator picked open item 1 from the Phase 0 picker. The deliverable is `docs/planning/test-suite-plan.md`, a plan only
 - **Commit/PR:** the claim commit (ships this entry)
