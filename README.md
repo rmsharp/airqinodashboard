@@ -37,7 +37,7 @@ Configuration lives in `.env` (copy from `.env.example`). The dashboard auto-det
 
 ### 1. CSV / SD-card upload (no setup)
 
-The device logs to an onboard SD card. Extract the card (or export any AirQino CSV), then drag-and-drop the file onto the dashboard's upload area. The parser auto-detects comma, semicolon, or tab delimiters. No `.env` configuration needed — this is the fastest way to see data.
+The device logs to an onboard SD card. Extract the card (or export any AirQino CSV), then drag-and-drop the file onto the dashboard's upload area. The parser auto-detects comma, semicolon, or tab delimiters. A row with more fields than the header still loads, without the extra fields, and the upload message says how many rows had them. No `.env` configuration needed — this is the fastest way to see data.
 
 ### 2. Cloud API (OAuth2)
 

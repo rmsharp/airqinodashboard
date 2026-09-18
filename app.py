@@ -259,9 +259,13 @@ def upload_csv():
 
     reader = csv.DictReader(io.StringIO(text), delimiter=delimiter)
     rows = []
+    ragged = 0  # rows with more fields than the header
     for row in reader:
         cleaned = {}
         for k, v in row.items():
+            if k is None:  # DictReader keeps a long row's extra fields under None; drop them
+                ragged += 1
+                continue
             k = k.strip().lower()
             try:
                 cleaned[k] = float(v)
@@ -270,10 +274,13 @@ def upload_csv():
         rows.append(cleaned)
 
     _csv_data = rows
-    return jsonify({
+    body = {
         "rows": len(rows),
         "columns": list(rows[0].keys()) if rows else [],
-    })
+    }
+    if ragged:
+        body["ragged_rows"] = ragged  # dashboard.js reports it
+    return jsonify(body)
 
 
 if __name__ == "__main__":

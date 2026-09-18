@@ -4,10 +4,11 @@ Phase 2 of docs/planning/test-suite-plan.md (T2.1-T2.8). With no source configur
 every JSON route must say so with a 4xx/5xx body, not crash. The CSV upload is the
 path README.md calls the fastest way to see data.
 
-D2 (timeseries half), D3 and D4 are strict xfails (plan §4). A fix makes its test
+D2 (timeseries half) and D4 are strict xfails (plan §4). A fix makes its test
 XPASS, which fails the suite until the marker comes off (plan §6). The client
 fixture runs with TESTING on, so Flask raises a route's exception into the test
 instead of answering 500; each marker names the exception it expects today.
+D3's test (fixed in Session 16) sits above them, with the passing tests.
 """
 
 import io
@@ -154,18 +155,28 @@ def test_invalid_utf8_is_replaced_not_rejected(client):
     assert app_module._csv_data == [{"timestamp": "2026-09-17T00:00", "site": "caf�"}]
 
 
+# D3 (plan §4): a row with more fields than the header put the extras under the key None,
+# and k.strip() failed on it. Now the extras are dropped and the rows counted, and
+# dashboard.js shows the count. A clean upload's body has no ragged_rows key (T2.3, T2.7).
+def test_ragged_row_is_not_a_server_error(client):
+    resp = upload(client, "a,b\n1,2,3\n")
+    assert resp.status_code == 200
+    assert resp.get_json() == {"rows": 1, "columns": ["a", "b"], "ragged_rows": 1}
+    assert app_module._csv_data == [{"a": 1.0, "b": 2.0}]
+
+
+def test_ragged_rows_keep_their_header_fields_and_are_counted(client):
+    # An extra value, a clean row, then a trailing delimiter (one extra empty field).
+    resp = upload(client, "a,b\n1,2,3\n4,5\n6,7,\n")
+    assert resp.get_json() == {"rows": 3, "columns": ["a", "b"], "ragged_rows": 2}
+    assert app_module._csv_data == [{"a": 1.0, "b": 2.0}, {"a": 4.0, "b": 5.0}, {"a": 6.0, "b": 7.0}]
+
+
 # Known defects (plan §4). Keep the word for a green test out of these reasons:
 # -ra prints them into the output the tests-passed gate's regex scans.
 @pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?hours= with no validation (app.py:175)")
 def test_timeseries_bad_hours_is_a_client_error(client):
     resp = client.get("/api/timeseries?hours=abc")
-    assert resp.status_code < 500
-
-
-@pytest.mark.xfail(raises=AttributeError,
-                   reason="D3: extra fields land under the key None, and k.strip() fails on it (app.py:262-265)")
-def test_ragged_row_is_not_a_server_error(client):
-    resp = upload(client, "a,b\n1,2,3\n")
     assert resp.status_code < 500
 
 
