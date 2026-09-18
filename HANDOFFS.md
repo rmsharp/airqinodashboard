@@ -158,10 +158,17 @@ session need this block to continue the work without re-reading the whole repo?*
 ```handoff
 session: S14
 date: 2026-09-17
-status: pending
-active_task: Fix D1 (picked by the operator in the Session 14 picker; plan section 6's first fix session): remove the strict xfail marker at tests/test_serial_reader.py:154, fix serial_reader.py:106-117 so a ;-joined line is not split on , too, tighten tests-passed from 116 to 117, runtime-check the fix, and red-drive it against the whole suite, on branch fix/d1-serial-delimiter. In progress.
-what_was_done: pending
-commit: pending
+status: complete
+self_score: 9
+predecessor_score: 9
+active_task: D1 (plan section 6's first fix session) is fixed and on main (a14ff03). Next: D7 (recommended), or any other open item (untracked files, CLAUDE.md purpose fence, the three unpinned findings, methodology sync, coverage floor, live API test blocked on credentials, or the new CARTO tile-key finding).
+what_was_done: Claimed on fix/d1-serial-delimiter off main b5a336c (0db8f73). Mid-session the operator asked for a backlog item on MIT licensing; added BACKLOG.md BL-1 (d8e9bc5), its own commit. Probed 3 parser designs in the scratchpad before writing code; rejected the plan's own suggested fix (split on ; or , never both) after it regressed on a trailing-separator comma line. Fixed serial_reader.py _parse_line to split on both separators in one re.split pass (a14ff03); removed D1's xfail marker; tests/test_serial_reader.py gained 2 rows; tests-passed tightened 116 -> 119 (not 117 - the extra row pins the rejected design's regression). Suite: 119 passed, 7 xfailed, exit 0. Ratchet: 2/2 pass, results 71b7ac5ea8f1, manifest 973c1b7d973d.
+next_steps: Fix D7 next (serial_reader.py:64-69, app.py:141-147; xfail at tests/test_serial_routes.py:54, marker :51). A port that fails to open is served as data with 200. Open item 4's third finding (in D7's state /api/timeseries answers 200 with data: []) bears on the fix's design. Follow the same recipe as D1: remove marker, fix, tighten tests-passed by 1 (verify the actual delta, not just assume 1), runtime-check (learning #5, D7 is user-visible), red-drive with the marker restored against the whole suite before committing (learning #11).
+key_files: serial_reader.py:105-115 (the fix), tests/test_serial_reader.py:42-46 (2 new T3.1 rows), tests/test_serial_reader.py:157-159 (D1 test, marker removed), .quality-gates.json:27 (tests-passed, 119), docs/planning/test-suite-plan.md:133 (D1 row, fixed) and :577 (As implemented note), BACKLOG.md (BL-1).
+gotchas: D1's own suggested probe fix in earlier notes ("split on ; or , never both") is wrong - it regresses on a trailing separator; don't reuse it without probing. tests-passed does not always tighten by exactly 1 - this fix needed 2. The CARTO map tiles (static/js/dashboard.js:336) now return "API KEY REQUIRED" images, a live-service change outside this repo's control (open item 8) - both before/after screenshots this session showed it. The acting model switched mid-session, Opus 5 to Sonnet 5, after the fix commit (a14ff03); commit trailers were not rewritten. context_budget.py has a second, newly-found instrument bug on SESSION_NOTES.md: its max_lines check counts text.split("\n"), one more than the real line count for any trailing-newline file (context_budget.py:346) - a tooling defect, not a reason to gut this file.
+runtime_smoke: Verified live. A real python3 app.py process read a real pty (os.openpty) fed the docstring's example line once a second; curled /api/current and /api/timeseries?sensor=co; headless-Chrome screenshots of / before and after. Before: co arrived as a string, no CO card. After: co is 235.0, numeric timeseries rows, CO card shows 235 mg/m3. App and Chrome stopped, port 5001 confirmed free (lsof exit 1) both times.
+changelog_ref: CHANGELOG.md "2026-09-17 · [ad hoc] Session 14 closed out — D1 fixed, the plan's first fix session done; main fast-forwarded, pushed with this commit"
+commit: a14ff03
 ```
 
 ```handoff

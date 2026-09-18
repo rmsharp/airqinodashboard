@@ -2,7 +2,8 @@
 
 **Status:** approved as written by the operator, 2026-09-17 (Session 10's Phase 0 picker). Phase 1 was
 implemented in Session 10, Phase 2 in Session 11, Phase 3 in Session 12 and Phase 4 in Session 13. All four
-phases are done. The fix sessions (§6) remain.
+phases are done. Of the fix sessions (§6), D1 was fixed in Session 14 (`a14ff03`). D7, D3, D4, D6, D5 and D2
+remain.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.
@@ -129,7 +130,7 @@ phase listed, asserting only the *minimal* correct behaviour, so the fix session
 
 | ID | Defect (file:line) | Repro → observed | User impact | xfail assertion | Phase |
 |----|--------------------|------------------|-------------|-----------------|-------|
-| D1 | The serial `key=value` parser splits on `;` **and then** on `,`. The `,` pass re-reads a `;`-joined line as a single pair and overwrites the first key (`serial_reader.py:106-117`) | `_parse_line("co=235;no2=17;o3=17;pm10=25;pm25=13")` → `{'co': '235;no2=17;o3=17;pm10=25;pm25=13', 'no2': 17.0, …}`. This is the docstring's own example format (`:94`). Comma-separated lines parse correctly. | The first sensor becomes a string. The readings grid keeps numbers only (`dashboard.js:198`), so CO would silently vanish on a real serial hookup. | `_parse_line("co=235;no2=17")["co"] == 235.0` | P3 |
+| D1 **(fixed, Session 14, `a14ff03`)** | The serial `key=value` parser splits on `;` **and then** on `,`. The `,` pass re-reads a `;`-joined line as a single pair and overwrites the first key (`serial_reader.py:106-117`) | `_parse_line("co=235;no2=17;o3=17;pm10=25;pm25=13")` → `{'co': '235;no2=17;o3=17;pm10=25;pm25=13', 'no2': 17.0, …}`. This is the docstring's own example format (`:94`). Comma-separated lines parse correctly. | The first sensor becomes a string. The readings grid keeps numbers only (`dashboard.js:198`), so CO would silently vanish on a real serial hookup. | `_parse_line("co=235;no2=17")["co"] == 235.0` | P3 |
 | D2 | `int()` on a query parameter without validation: `hours` (`app.py:171`) and `days` (`:220`) | `GET /api/timeseries?hours=abc` → 500 `ValueError`, even with no source configured. `/api/hourly?days=abc` returns 500 in API mode. | A crafted or mistyped URL returns 500 instead of 400. | `status_code < 500`, once for timeseries and once for hourly | P2 (timeseries), P4 (hourly) |
 | D3 | A CSV row with more fields than the header. `csv.DictReader` puts the extras under the key `None`, and `k.strip()` fails on it (`app.py:258-261`) | Uploading `a,b\n1,2,3\n` → 500 `AttributeError: 'NoneType' object has no attribute 'strip'` | One ragged row in an SD-card export fails the whole upload with a 500. | `status_code < 500` | P2 |
 | D4 | A UTF-8 byte-order mark is kept in the first header (`app.py:245` decodes with `utf-8`, not `utf-8-sig`) | Uploading `﻿timestamp,pm25\n…` → `columns[0] == '﻿timestamp'` | The chart reads `row.timestamp` (`dashboard.js:251`), so a BOM-prefixed CSV plots nothing. Excel's "CSV UTF-8" export writes a BOM. Whether the device's SD card does is unknown. | `columns[0] == "timestamp"` | P2 |
@@ -572,6 +573,16 @@ session:
 5. For D1, D3, D4 and D7, runs the runtime check from learning #5 (these are user-visible).
 
 A fix that lands without removing its marker fails the suite as XPASS(strict). That's intended.
+
+**As implemented (D1, Session 14):** the fix split on `;` and `,` in one pass (`re.split(r"[;,]", line)`), not
+one separator per line. A probe of the one-separator-per-line design (closer to the old code's shape) found its
+own regression: a comma line with a trailing `;` (`"co=1.5,pm25=7;"`) came back as `{"co": "1.5,pm25=7"}`. The
+single-pass fix was checked against that case too, plus the docstring's full example and the old code, each in
+its own red-drive against the whole suite, and only its own target failed each time. `tests-passed` went from 116
+to 119, not the expected 117: T3.1 gained one xfail-turned-pass row (the repro) plus one more, the trailing-`;`
+case, since a probe found it worth pinning once the regression above was known. Step 5 (learning #5's runtime
+check) ran: a real app process read a real pty over `os.openpty()`, fed the docstring's example line once a
+second, with a before/after headless-Chrome screenshot of the readings grid.
 
 ## 7. Alternatives considered
 
