@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [BL-1] Backlog item added — make the repository fully MIT-licensed
+- **Change:** at the operator's request mid-session, `BACKLOG.md` gains its first item, BL-1, under "Up Next". It records the current state: no root `LICENSE`, GitHub licence `null` on a public repo, and no licence section in `README.md`. It also records that the vendored `docs/methodology/LICENSE` is a non-MIT attribution/no-redistribution licence, so the methodology files need a carve-out. It lists the two decisions that are the operator's (the copyright line, the carve-out's wording), the work, and a DONE line. Not started; the session's deliverable stays D1
+- **Commit/PR:** this commit
+- **Session:** S14 · **Verified:** `ls LICENSE*` finds nothing; `gh repo view --json licenseInfo,visibility` gives `null` and `PUBLIC`; `docs/methodology/LICENSE` read in full; the cited `templates/dashboard.html:8`, `:137-139` and `static/js/dashboard.js:337` lines grepped
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 14 claimed — D1 fix begins (in progress)
 - **Change:** the operator picked the D1 fix (open item 1; `docs/planning/test-suite-plan.md` §6's first fix session) in the Phase 0 picker. D1: a `;`-joined serial line is split on `,` too, which overwrites its first key. Session claimed on branch `fix/d1-serial-delimiter` (off `main` `b5a336c`)
 - **Commit/PR:** the claim commit (ships this entry)
