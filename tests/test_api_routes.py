@@ -42,7 +42,7 @@ def frozen(monkeypatch):
     monkeypatch.setattr(app_module, "datetime", FrozenDatetime)
 
 
-# get_api_client() (app.py:24-35). It builds the client; no request is made.
+# get_api_client() (app.py:26-37). It builds the client; no request is made.
 def test_api_client_is_built_from_the_four_credentials_and_kept(monkeypatch):
     for var, value in CREDS.items():
         monkeypatch.setenv(var, value)
@@ -140,7 +140,7 @@ def test_current_returns_the_api_values(client, fake_client, configured, query, 
     assert fake_client.calls == [("get_current_values", (station,), {})]
 
 
-# README.md:36 documents serial → API → CSV, and the data routes follow it (app.py:141, :179).
+# README.md:36 documents serial → API → CSV, and the data routes follow it (app.py:144, :182).
 @pytest.mark.parametrize("url", ["/api/current", "/api/timeseries"])
 def test_serial_is_served_before_the_api(client, fake_client, idle_reader, configured, url):
     idle_reader.latest = {"co": 9.0}
@@ -223,12 +223,12 @@ def test_status_in_api_mode(client, configured, monkeypatch):
 # -ra prints them into the output the tests-passed gate's regex scans.
 @pytest.mark.xfail(raises=AssertionError,
                    reason="D5: active_source() says api when only AIRQINO_CLIENT_ID is set, "
-                          "but get_api_client() needs all four credentials (app.py:55, :32)")
+                          "but get_api_client() needs all four credentials (app.py:58, :34)")
 def test_one_credential_is_not_an_api_connection(client, monkeypatch):
     monkeypatch.setenv("AIRQINO_CLIENT_ID", "cid")
     assert "API Connected" not in client.get("/").get_data(as_text=True)
 
 
-@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?days= with no validation (app.py:224)")
+@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?days= with no validation (app.py:227)")
 def test_hourly_bad_days_is_a_client_error(client, fake_client, configured):
     assert client.get("/api/hourly?days=abc").status_code < 500

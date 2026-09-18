@@ -38,7 +38,7 @@ def client():
 def idle_reader(monkeypatch):
     """A real SerialReader, never started, installed as the app's reader: no port, no thread.
 
-    get_serial_reader() returns an installed reader as it is (app.py:40-41). A test fills
+    get_serial_reader() returns an installed reader as it is (app.py:43-44). A test fills
     .latest and .history, and the routes read them through the reader's own methods.
     """
     reader = SerialReader("never-opened")
@@ -163,7 +163,7 @@ class FakeClient:
 @pytest.fixture
 def fake_client(monkeypatch):
     """A FakeClient installed as the app's client. get_api_client() returns it as it is
-    (app.py:26-27), so no credentials are needed and nothing reaches the network."""
+    (app.py:28-29), so no credentials are needed and nothing reaches the network."""
     fake = FakeClient()
     monkeypatch.setattr(app_module, "_api_client", fake)
     return fake
