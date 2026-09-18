@@ -3,7 +3,8 @@
 **Status:** approved as written by the operator, 2026-09-17 (Session 10's Phase 0 picker). Phase 1 was
 implemented in Session 10, Phase 2 in Session 11, Phase 3 in Session 12 and Phase 4 in Session 13. All four
 phases are done. Of the fix sessions (§6), D1 was fixed in Session 14 (`a14ff03`), D7 in Session 15
-(`222f02c`, `9698f9c`, `87c7535`) and D3 in Session 16 (`31e50f2`, `5e37cb1`). D4, D6, D5 and D2 remain.
+(`222f02c`, `9698f9c`, `87c7535`), D3 in Session 16 (`31e50f2`, `5e37cb1`) and D4 in Session 17 (`caec75a`).
+D6, D5 and D2 remain.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.
@@ -133,7 +134,7 @@ phase listed, asserting only the *minimal* correct behaviour, so the fix session
 | D1 **(fixed, Session 14, `a14ff03`)** | The serial `key=value` parser splits on `;` **and then** on `,`. The `,` pass re-reads a `;`-joined line as a single pair and overwrites the first key (`serial_reader.py:106-117`) | `_parse_line("co=235;no2=17;o3=17;pm10=25;pm25=13")` → `{'co': '235;no2=17;o3=17;pm10=25;pm25=13', 'no2': 17.0, …}`. This is the docstring's own example format (`:94`). Comma-separated lines parse correctly. | The first sensor becomes a string. The readings grid keeps numbers only (`dashboard.js:198`), so CO would silently vanish on a real serial hookup. | `_parse_line("co=235;no2=17")["co"] == 235.0` | P3 |
 | D2 | `int()` on a query parameter without validation: `hours` (`app.py:171`) and `days` (`:220`) | `GET /api/timeseries?hours=abc` → 500 `ValueError`, even with no source configured. `/api/hourly?days=abc` returns 500 in API mode. | A crafted or mistyped URL returns 500 instead of 400. | `status_code < 500`, once for timeseries and once for hourly | P2 (timeseries), P4 (hourly) |
 | D3 **(fixed, Session 16, `5e37cb1`)** | A CSV row with more fields than the header. `csv.DictReader` puts the extras under the key `None`, and `k.strip()` fails on it (`app.py:258-261`) | Uploading `a,b\n1,2,3\n` → 500 `AttributeError: 'NoneType' object has no attribute 'strip'` | One ragged row in an SD-card export fails the whole upload with a 500. | `status_code < 500` | P2 |
-| D4 | A UTF-8 byte-order mark is kept in the first header (`app.py:245` decodes with `utf-8`, not `utf-8-sig`) | Uploading `﻿timestamp,pm25\n…` → `columns[0] == '﻿timestamp'` | The chart reads `row.timestamp` (`dashboard.js:251`), so a BOM-prefixed CSV plots nothing. Excel's "CSV UTF-8" export writes a BOM. Whether the device's SD card does is unknown. | `columns[0] == "timestamp"` | P2 |
+| D4 **(fixed, Session 17, `caec75a`)** | A UTF-8 byte-order mark is kept in the first header (`app.py:245` decodes with `utf-8`, not `utf-8-sig`) | Uploading `﻿timestamp,pm25\n…` → `columns[0] == '﻿timestamp'` | The chart reads `row.timestamp` (`dashboard.js:251`), so a BOM-prefixed CSV plots nothing. Excel's "CSV UTF-8" export writes a BOM. Whether the device's SD card does is unknown. | `columns[0] == "timestamp"` | P2 |
 | D5 | `active_source()` reports `"api"` when only `AIRQINO_CLIENT_ID` is set (`app.py:53`), but `get_api_client()` needs all four credential variables (`:32`) | With only `AIRQINO_CLIENT_ID` set: the badge says "API Connected", the banner is hidden, and `/api/current` returns 503 "No data source configured" | A half-filled `.env` hides the setup help and claims a connection that doesn't exist. | `"API Connected"` not in `GET /` | P4 |
 | D6 | The source order disagrees. `active_source()` is API → serial → CSV (`app.py:53-58`). The data routes use serial → API → CSV (`:141-163`, `:175-208`), and `README.md:27` documents serial → API → CSV. | With both sources configured, the badge says "API Connected" while `/api/current` serves serial data. | The badge contradicts the data shown. | `active_source() == "serial"` with both sources configured | P4 |
 | D7 **(fixed, Session 15, `9698f9c`)** | A serial port that fails to open sets `latest = {"error": …}` (`serial_reader.py:64-69`), and `/api/current` returns it as data with **200** (`app.py:143-145`) | `SERIAL_PORT=/dev/does-not-exist` → first call 202 "No data received yet", then 200 `{"source": "serial", "data": {"error": "[Errno 2] could not open port …"}}` | The JS only reports errors on non-2xx responses (`dashboard.js:134-140`), so it shows "No readings available" and the port error never reaches the user. That is the first-hookup failure the operator is most likely to hit. | `status_code != 200` once the reader holds an error | P3 |
@@ -619,6 +620,16 @@ cited above as `:261`, is now at `:269`. D4's `:245` (now `:249`) is above the c
 A CSV whose first line is blank still loads as rows with no columns: `csv.DictReader` takes the blank line as an
 empty header, so every value counts as an extra field (`ragged_rows` equals the row count). It is no longer a 500,
 and it is not in §4.
+
+**As implemented (D4, Session 17):** §4's user impact held, and the probe found a second symptom. A BOM-prefixed
+CSV (CRLF line endings, as Excel writes) dropped on the real page by the headless-Chrome driver read "Loaded 5 rows
+(5 columns)" in green, but the reading cards had no timestamps and the chart had no series. With `pm25` as the
+first column, the PM2.5 card and its chart series were missing instead. The fix decodes with `utf-8-sig`
+(`caec75a`), on the same line, so no `app.py` citation moves. `errors="replace"` stays, and T2.8 fails without it.
+Stripping U+FEFF from each header key gives the same page. The tests pin the keys the page reads, not the codec,
+so they pass on either. D4's test now pins the body and the stored row, and a second test covers a `;` file with
+`pm25` first, so `tests-passed` went from 122 to 124, not 123. Whether the API's CSV (`/api/hourly`) starts with
+a BOM can't be checked without credentials.
 
 ## 7. Alternatives considered
 

@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Test plan records D4 as fixed
+- **Change:** `docs/planning/test-suite-plan.md`: the Status line names D4's commit and leaves D6, D5 and D2; D4's §4 row is tagged fixed; a new "As implemented (D4, Session 17)" note under §6 records what the page showed before (a green "Loaded" status, cards without timestamps, an empty chart, and, with `pm25` first, no PM2.5 card or series), the fix and why `errors="replace"` stays, that the key-stripping alternative passes the same tests, why `tests-passed` moved by 2, and that `/api/hourly`'s CSV can't be checked for a BOM without credentials
+- **Commit/PR:** this commit
+- **Session:** S17 · **Verified:** n/a — docs-only; the note's claims match the Session 17 probe output and red-drives; the Status line's new wrap moved every later plan line down by 1 (measured: the D3 note is at `:603`, the D4 note at `:624`), and the one live citation of a plan line number, in Session 15's history in `SESSION_NOTES.md`, is archived at close-out
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] D4 — a CSV that starts with a UTF-8 byte-order mark loads with clean headers; tests-passed 122 → 124
 - **Change:** `app.py` `upload_csv` decodes the upload as `utf-8-sig` instead of `utf-8` (`:249`, same line, so no cited `app.py` line moves), which drops a leading BOM before the delimiter check and the header parse; `errors="replace"` stays. `tests/test_csv_routes.py`: D4's strict-xfail marker removed; its test now pins the whole body and the stored row, uses a visible `"﻿"` escape instead of an invisible literal BOM, and moves above the "Known defects" block. A new test uploads a `;`-delimited BOM file whose first column is `pm25`. The module docstring now names D2 as the only xfail left in the file. `README.md` §"1. CSV / SD-card upload" gains one clause, inside its existing line. `.quality-gates.json` `tests-passed` tightened from 122 to 124 (D4's xfail turned pass, plus the new test). Fourth of the plan's §6 fix sessions
 - **Commit/PR:** this commit
