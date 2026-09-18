@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] No-source contract and CSV-path tests — test-suite plan Phase 2, commit 2 of 3
+- **Change:** adds `tests/test_csv_routes.py` with 19 passing tests (T2.1–T2.8) and 3 strict xfails (D2's timeseries half, D3, D4). The breakdown: T2.1 is a 6-route table; T2.2 has 2 tests; T2.3 covers 3 delimiters; T2.4, T2.5, T2.7 and T2.8 have one test each; T2.6 has 4. `.quality-gates.json` tightens `tests-passed` from 9 to 28, the measured count. **Change from the plan's text:** the plan's D2 and D3 assertions are `status_code < 500`, but the `client` fixture runs with `TESTING` on, so Flask raises the route's exception into the test instead of answering 500. Each xfail therefore names the exception it expects today (`raises=ValueError`, `AttributeError`, `AssertionError`), so any other kind of failure still reports as FAILED
+- **Commit/PR:** this commit (ships this entry)
+- **Session:** S11 · **Verified:** `python3 -m pytest -q` and plain `pytest -q` both give `28 passed, 3 xfailed`, exit 0; `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 0dc3acde972e · manifest 770382cd43d3`. Red-drives in the working tree, each restored (`app.py` shasum unchanged): `.lower()` removed at `app.py:261` fails T2.4; `data[:500]` fails the 500-row cap test; `_csv_data[0]` fails the last-row test; dropping the `;` branch fails T2.3's semicolon case; `utf-8-sig` (a D4 fix) gives `XPASS(strict)` and fails the suite; one test hidden from collection fails `tests-passed` (measured 27)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 11 claimed — test-suite Phase 2 begins (in progress)
 - **Change:** the operator picked Phase 2 of `docs/planning/test-suite-plan.md` (the no-source contract and the CSV path) in the Phase 0 picker. Session claimed on branch `test/suite-phase2` (off `main` `fbacf96`)
 - **Commit/PR:** the claim commit (ships this entry)
