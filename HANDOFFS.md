@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S15
+date: 2026-09-17
+status: pending
+active_task: Fix D7 (picked by the operator in the Session 15 picker; plan section 6's second fix session): remove the strict xfail marker at tests/test_serial_routes.py:51, fix serial_reader.py:64-69 and app.py:141-147 so a port that fails to open is not served as data with 200, tighten tests-passed from 119 (by the measured delta), runtime-check the fix, and red-drive it against the whole suite with the marker restored, on branch fix/d7-port-open-failure. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S14
 date: 2026-09-17
 status: complete

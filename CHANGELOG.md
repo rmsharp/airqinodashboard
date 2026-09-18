@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 15 claimed — D7 fix begins (in progress)
+- **Change:** the operator picked the D7 fix (open item 1; `docs/planning/test-suite-plan.md` §6's second fix session) in the Phase 0 picker. D7: a serial port that fails to open is served as data with 200. Session claimed on branch `fix/d7-port-open-failure` (off `main` `b710ac0`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S15 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 14 closed out — D1 fixed, the plan's first fix session done; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the Session 13 handoff evaluation (9/10, its one gap: an earlier session's probe fix for D1 was carried into the recipe without being re-verified, and it regresses on a trailing separator), the full D1 write-up and a 9/10 self-assessment. `docs/planning/test-suite-plan.md` gains a "fixed, Session 14" tag on D1's §4 row, an updated Status line, and an "As implemented (D1, Session 14)" note under §6 recording the rejected design and why `tests-passed` moved by 2, not 1. Open item 1 now recommends D7 next and records the rejected design as a warning. Open item 3 gains a second, newly-found `context_budget.py` instrument bug: its `max_lines` check counts `text.split("\n")`, one more than the real line count for any file with a trailing newline — a tooling defect, not grounds to cut real content from this file. A new open item 8 records that the CARTO map tiles (`static/js/dashboard.js:336`) now return an "API KEY REQUIRED" image, found incidentally in this session's before/after screenshots. The S14 `HANDOFFS.md` receipt is `status: complete`. A mid-session model switch (Claude Opus 5 (1M context) → Claude Sonnet 5, after the fix commit) is recorded in both files rather than smoothed over. On the operator's direction (a picker before close-out), `main` was fast-forwarded from `b5a336c` to `a14ff03` and is pushed to `origin/main` straight after this commit
 - **Commit/PR:** the close-out commit (ships this entry); session commits `0db8f73`, `d8e9bc5`, `a14ff03`
