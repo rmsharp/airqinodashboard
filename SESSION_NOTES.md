@@ -6,30 +6,37 @@
 
 ## ACTIVE TASK
 
-**Current focus:** Open — no task in progress. Session 8 (2026-09-17) merged the four-branch stack into `main`.
-Next session picks ONE open item below.
+**Current focus:** Test suite. Session 9 (2026-09-17) wrote `docs/planning/test-suite-plan.md`, which awaits the
+operator's approval. Next session implements **Phase 1 only**, once the plan is approved (or amended).
 **Status:**
-- **Branch/PR housekeeping: DONE.** PR #1 was merged as `9099569` and PR #2 as `8554078`, both with merge commits. The four
-  stack branches are deleted locally, and the two pushed ones are deleted on GitHub. `main` is now the only branch, local
-  and remote, and the close-out commit was pushed to `origin/main` after it was written. No PRs are open.
-- **Setup-banner fix (Session 7) and methodology BL-57 P6 / BL-56 (Session 6)** are both on `main`. Marking P6 and BL-56
-  done in the methodology repo's plan and backlog belongs to a methodology-repo session.
-- Earlier status (PART 2 re-vendor, README) and the Session 1–3 history: `git show 1402ad4:SESSION_NOTES.md`.
+- **Plan: WRITTEN, not approved.** `d813463` on branch `docs/test-suite-plan`. The branch is local and unpushed, 3
+  commits ahead of `main` `15b0a3f` counting this close-out. It has four phases, one session each: P1 harness +
+  setup-banner guard, P2 no-source + CSV, P3 serial, P4 API. The operator chose pytest, strict xfail for known
+  defects, monkeypatch fakes and Python-only scope (plan §2).
+- **7 defects found and reproduced** (plan §4, D1–D7), none fixed. Each becomes a strict-xfail test in its phase, then
+  a fix session of its own (plan §6). **D1 and D7 hit the serial path the operator is about to use:** a `;`-separated
+  `key=value` line loses its first sensor, and a port that fails to open shows "No readings available" with no error.
+- **No product code changed** since Session 7's fix (`e5f52e1`). The plan's `file:line` citations are against
+  `15b0a3f` and hold until a fix session edits product code.
+- Session 8's merges, and earlier status: `git show 15b0a3f:SESSION_NOTES.md` and `git show 1402ad4:SESSION_NOTES.md`.
 
 ### Open items — next session picks ONE (1-and-done)
 
-1. **Plan a test suite — recommended next.** The dashboard's only HIGH risk is "No test infrastructure" (0 test files;
-   health 54/100). It is also product work, after four sessions of mostly process work (FM #28's drift warning). This is a
-   planning session: write `docs/planning/test-suite-plan.md` with a grep-based inventory. The surfaces are `app.py`
-   (8 non-static routes, `:64`–`:236`; `active_source()` at `:51`), `airqino_client.py` (149 lines) and `serial_reader.py`
-   (161 lines). `requirements.txt` has no pytest. A natural first case is the setup banner rendered through Flask's test
-   client with no data source, asserting "Serial Adapter" is present and "Arduino" absent. Session 7's fix has no
-   automated guard.
+1. **Implement Phase 1 of the test-suite plan — recommended next, after approval.** Plan §5 "Phase 1"
+   (`docs/planning/test-suite-plan.md:161-290`):
+   - files: `requirements-dev.txt`, `pytest.ini`, `tests/conftest.py` (skeleton in the plan, verified in a spike),
+     `tests/test_dashboard_page.py` (T1.1–T1.7), `.gitignore`, `README.md`, `.quality-gates.json` (2 gates);
+   - four commits, each of 5 files or fewer;
+   - DONE: suite green, ratchet 2/2, two red-drives recorded, and the dashboard's HIGH "No test infrastructure" gone.
+
+   **First, land the plan branch** (operator's call). `git switch main && git merge --ff-only docs/test-suite-plan`
+   keeps every SHA (learning #6). Or branch Phase 1 off `docs/test-suite-plan`. P2–P4 and the D1–D7 fixes follow in
+   plan order.
 2. **Decide the untracked files** — operator's call for each: commit, gitignore, or delete. `docs/HARDWARE.html` has been
    untracked since Session 3 (an HTML render of `docs/HARDWARE.md`; it holds no stale hardware copy). Three tool outputs
    have no `.gitignore` entry: `dashboard_history.jsonl` (written by every dashboard run); `.quality-gates-results.json`
-   (from `quality_ratchet.py --run`; the `.quality-gates.json` seed says to gitignore it); `.context-budget-history.jsonl`
-   (from `context_budget.py`).
+   (from `quality_ratchet.py --run`, which Phase 1 will run; the `.quality-gates.json` seed says to gitignore it);
+   `.context-budget-history.jsonl` (from `context_budget.py`). Phase 1 gitignores `.pytest_cache/` itself.
 3. **Give `CLAUDE.md` a statement of purpose.** The synced `context_budget.py` reports the `budget:protected` fence missing
    (`.context-budget.json` declares it for `CLAUDE.md`, minimum 800 B). `CLAUDE.md` has never had a fence or a Purpose
    section. `README.md`'s opening is the source text.
@@ -49,12 +56,117 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### Session 8 Handoff Evaluation (by Session 9)
+- **Score: 9/10**
+- **What helped:** Open item 1 gave everything a planning session starts from:
+  - the three surfaces with sizes and line ranges (`app.py:64`–`:236`, `active_source()` at `:51`);
+  - the missing pytest in `requirements.txt`;
+  - the first test case (the banner with "Serial Adapter" present and "Arduino" absent), which became T1.1.
+
+  The git state matched exactly (`main` = `origin/main` = `15b0a3f`, no PRs), as did the Issues-count prediction (0)
+  and the health score (54/100). "Start from `main` and branch" and "stage files by name" set up the claim with no
+  lookup.
+- **What was missing:** Toolchain facts that the plan's first decisions rest on. pytest 9.0.2 and pytest-cov were
+  already installed in the base env, and pytest 9 needs Python 3.10 while `README.md:13` says 3.9+. Each took one
+  command to find, and none was Session 8's area of work.
+- **What was wrong:** Nothing found. Every line range, line count and SHA matched.
+- **ROI:** Strongly positive. Orientation to the task took one picker round.
+
 ### What Session 9 Did
-**Deliverable:** Plan a test suite (open item 1) — `docs/planning/test-suite-plan.md` with a grep-based inventory
-(IN PROGRESS)
-**Started:** 2026-09-17 20:25
-**Status:** Session claimed on branch `docs/test-suite-plan` (off `main` `15b0a3f`). Work beginning.
-**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+**Deliverable:** Plan a test suite (open item 1): `docs/planning/test-suite-plan.md` — **COMPLETE** (the plan; approval
+pending)
+**Started / Closed:** 2026-09-17 20:25 · branch `docs/test-suite-plan` off `main` `15b0a3f` (local, not pushed)
+**Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
+`docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md` (research, then the design document). One optional Phase 2B
+picker settled the load-bearing decisions before writing.
+**Ledger:** 3 `CHANGELOG.md` entries, one per commit (claim, plan, close-out).
+
+**What was done:**
+- **Claim** `1177049`: the stub, a pending receipt and an *(in progress)* entry, committed before any research.
+- **Research:**
+  - Read all of `app.py`, `airqino_client.py`, `serial_reader.py`, `templates/dashboard.html` and
+    `static/js/dashboard.js`.
+  - Ran the grep inventory (plan §3): 8 routes, 3 helpers, 15 client methods, 8 `SerialReader` methods, 9 environment
+    variables, 3 module globals and every I/O or clock call.
+  - Found what the dashboard counts as source: 8 files and 5,475 lines, of which the product is 1,063.
+- **Probes** (scratch runs, repo untouched) reproduced **7 defects** (plan §4):
+  - D1 serial `;` `key=value` clobbers the first field;
+  - D2 `hours`/`days=abc` returns 500;
+  - D3 a ragged CSV row returns 500;
+  - D4 a CSV BOM corrupts the first header;
+  - D5 a partial set of API credentials shows "API Connected";
+  - D6 the badge's source order and the routes' source order disagree;
+  - D7 a serial open failure is swallowed as a 200.
+
+  D2's hourly half and D6 were first reasoned from the code, then probed after the plan was written.
+- **Operator decisions** (one four-question picker, the recommended option each time): pytest; strict xfail with fixes
+  later; monkeypatch fakes; Python only.
+- **Spike** (scratchpad, not committed): copies of the app beside a planted `.env`. Results:
+  - the `.env` leak is real, and the `isolated` fixture neutralises it;
+  - `pytest.ini` works with both `python3 -m pytest` and plain `pytest` (5 passed, 2 xfailed);
+  - the pty round trip works with real pyserial on `/dev/ttys008`;
+  - fake-client injection works;
+  - the two ratchet gates pass 2/2;
+  - 3 red-drives: the old banner wording, a fixed D1 as XPASS(strict), and the fixture turned off.
+- **Plan** `d813463` (585 lines): decisions, inventory, defects, 4 phases (tests, commits, DONE, surface, boundary),
+  fix-session protocol, alternatives, out-of-scope list, and the spike's evidence table.
+- **Citation check:** every `file:line` was re-grepped after writing, and 6 were wrong. There were 4 in
+  `dashboard.js`, 1 in `README.md` and 1 range in `methodology_dashboard.py`, all written from memory. They were fixed
+  before the commit.
+- **FM #28 reduction:** "Session 5/6 Handoff Evaluation" and "What Session 6/7 Did" were removed from this file
+  (`git show 15b0a3f:SESSION_NOTES.md`).
+
+**Verification:**
+- **Deliverable:** the plan satisfies `SESSION_RUNNER.md` §Planning Session Checklist (plan §10). One box stays
+  unticked: whether the deepest reasoning mode was set isn't recorded.
+- **Build:** all 7 root `.py` files compile, and `app` imports with 8 non-static routes (checked at Phase 0). No
+  product file changed: `git diff 15b0a3f -- '*.py' templates static` is empty.
+- **Runtime (3E):** n/a, since the deliverable is docs-only. The spike ran the app's own code in copies.
+
+**Key files:**
+- `docs/planning/test-suite-plan.md`:
+  - `:161-290` — Phase 1, including the `pytest.ini` and `conftest.py` text;
+  - `:122-146` — the defects table;
+  - `:556-574` — the spike evidence.
+- `app.py:12` (`load_dotenv()` at import), `app.py:19-21` (module globals), `app.py:51-59` (`active_source()`)
+- `templates/dashboard.html:33` (badge), `:40` (the HTML comment that also says "no data source"), `:55` (banner
+  text containing "no USB port")
+- `.quality-gates.json` (`"gates": []`, the field Phase 1 fills); `quality_ratchet.py:266-298` (how gates are measured)
+- `README.md:11-23` (Quick start, where "Running tests" goes), `README.md:131-142` (Key files)
+
+**Gotchas for the next session:**
+- **`load_dotenv()` walks up to `/`.** A `.env` in the repo *or any parent directory* leaks into tests at `import app`
+  (python-dotenv 1.2.1 `find_dotenv`). The `isolated` fixture must stay `autouse`. Never set `SERIAL_PORT` in a test
+  without injecting a fake reader or pointing it at a pty: `get_serial_reader()` starts a real thread, which the probe
+  showed.
+- **T1.1's banned-word list must not include "USB port":** the correct banner says "no USB port". "No Data Source"
+  matches twice case-insensitively (the badge and the HTML comment at `:40`), so assert on `>No Data Source<`.
+- **Keep the word "passed" out of xfail `reason=` strings.** The `tests-passed` gate's regex `(\d+) passed` scans
+  output that `-ra` prints them into.
+- **After Phase 1 the dashboard shows MEDIUM "Test coverage is very thin".** That's expected (plan §5, P1): it stays
+  until the test files total 548 lines, because 4,412 of the 5,475 source lines are vendored methodology tooling.
+  Don't pad tests.
+- **Untracked files will pile up:** `.pytest_cache/` (gitignored in Phase 1 commit 3) and
+  `.quality-gates-results.json` (open item 2). Stage files by name.
+- **The base env loads global pytest plugins** (cov, anyio, asyncio, langsmith). They didn't interfere in the spike.
+- **The spike lived in this session's scratchpad and is gone.** The plan carries the fixture text and the evidence.
+
+**Learnings (3C):** `CLAUDE.md` learning #7: probe the code paths a plan claims about before writing it, and re-grep
+every citation afterwards.
+
+**Self-assessment:**
+- **Score: 8/10**
+- (+) Research came before the design: every module was read, and the suspicions were probed into 7 reproduced
+  defects with repro strings and `file:line`.
+- (+) The load-bearing decisions were asked before writing (one picker), so there were no stakeholder corrections.
+- (+) The plan's mechanics were measured in a spike, with 3 red-drives, rather than asserted. The post-Phase-1
+  dashboard outcome was computed, not guessed (learning #13).
+- (+) Scope held: no test or product code in the repo; the plan only.
+- (−) 6 line citations were written from memory and were wrong. The post-write check caught them, but grepping while
+  writing would have avoided them (FM #11).
+- (−) One backup copy of the template went to `/tmp` instead of the scratchpad. It was deleted immediately.
+- (−) The harness prompted for status three times, which repeats a Session 6–8 minus.
+- (−) The plan runs 585 lines, and a Phase 1 executor needs about a third of it. The §-structure keeps it navigable.
 
 ### Session 7 Handoff Evaluation (by Session 8)
 - **Score: 9/10**
@@ -147,211 +259,8 @@ built here, because it changes a public repo's settings and the operator hasn't 
   finding, could have been batched into fewer.
 - (−) The close-out push is recorded only as a forward-looking claim, which the ledger's shape can't avoid.
 
-### Session 6 Handoff Evaluation (by Session 7)
-- **Score: 9/10**
-- **What helped:** Open item 1 could be done as written. It gave the line (`templates/dashboard.html:55`), quoted the old
-  text, named the source of truth (`docs/HARDWARE.md:33`) and asked for the follow-up grep (learning #3). A re-grep found
-  it unchanged. The gotchas "stage files by name" and "one ledger entry per commit" set the commit pattern with no
-  lookup. The five open items became the Phase 0 picker's options as written.
-- **What was missing:** Two small things. First, `CLAUDE.md` learning #3 said the stale copy "still lives" in the
-  template, so the fix owed a one-line learning update; nothing flagged that. Second, there was no recipe for
-  runtime-verifying this Flask UI, because no earlier session had booted the app. Session 7 worked one out (learning #5).
-- **What was wrong:** Nothing found. The line numbers, the branch base (`e947798`), the health score (54/100) and the
-  untracked-file list all matched.
-- **ROI:** Strongly positive. Orientation went straight to a verified fix, with no rediscovery.
-
-### What Session 7 Did
-**Deliverable:** Fix the stale USB Serial setup-banner text — **COMPLETE**
-**Started / Closed:** 2026-09-17 · branch `fix/usb-serial-banner` off `e947798` (local, not pushed)
-**Governing doc:** `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md`. It is a one-off fix, so research, plan and
-the verification checklist were applied at small scale.
-**Ledger:** 3 `CHANGELOG.md` entries, one per commit (claim, fix, close-out).
-
-**What was done:**
-- **Phase 0 ended with a picker.** On the operator's request, the report closed with an `AskUserQuestion` picker
-  of the open items; the operator picked item 1. The preference is in agent memory
-  (`~/.claude/projects/-Users-rmsharp-Development-airqino/memory/phase0-picker.md`), not in the repo.
-- **Claim** `38920e3`: stub, pending receipt and an *(in progress)* ledger entry, committed before any other work.
-- **Fix** `e5f52e1`, `templates/dashboard.html:54-55`:
-  - The heading changed from "2. USB Serial" to "2. Serial Adapter", because "USB Serial" suggests the device has a USB
-    port. The header badge for an active serial source still says "Serial" (`templates/dashboard.html:29`).
-  - The new text: "The REV6 board has no USB port. Open the enclosure and wire a 3.3V USB-to-TTL adapter to the board's
-    TX and GND pins (see `docs/HARDWARE.md`). Set `SERIAL_PORT` in `.env`". It says TX and GND only, which matches the
-    wiring at `docs/HARDWARE.md:53-66`: VCC and the board's RX are not connected.
-  - In the same commit, `CLAUDE.md:45` learning #3 changed from "still lives in the UI" to "stayed in the UI … until
-    Session 7".
-- **Surface inventory (learning #3):** `git grep -i` for `arduino|mega|usb cable|usb port|usb-b|usb serial` over every
-  tracked file except `docs/methodology/` and the three session records.
-  - Before the fix, the only stale hit was `templates/dashboard.html:55`.
-  - Already correct: `serial_reader.py:3-5`, `.env.example:12-15`, `README.md:9,53,123` and `docs/HARDWARE.md:33`.
-  - Neither `static/js/` nor `app.py` has connection instructions.
-  - After the fix, the only hit is learning #3's historical quote.
-- **FM #28 reduction:** "What Session 4 Did" was removed from this file (`git show e947798:SESSION_NOTES.md`).
-
-**Verification:**
-- **Runtime (3E):** ran `python3 app.py` in the background. There is no `.env`, so no source was configured and the
-  banner showed. `GET /` returned 200 with the new text and 0 matches for "Arduino" or "USB cable".
-- **Screenshot:** headless Chrome at 1200×700 showed the three cards. The Serial Adapter card is 8 lines tall against 5
-  for Cloud API, with no overflow. The server and Chrome were stopped afterwards, and port 5001 was free.
-- **Build:** no `.py` file changed. No test was added, because the project has no test infrastructure (open item 4).
-
-**Key files:**
-- `templates/dashboard.html:53-56` — the fixed option
-- `static/css/dashboard.css:65-72` — `.setup-option` is 220 px wide with 12 px text, so longer copy makes the card taller
-- `app.py:51-59` — `active_source()`, which decides whether the banner renders
-- `CLAUDE.md:45` (learning #3), `CLAUDE.md:47` (new learning #5, the runtime-verification recipe)
-- `docs/HARDWARE.md:31-33` (no USB port) and `:53-66` (wiring)
-
-**Gotchas for the next session:**
-- **The banner renders only when no data source is set.** `active_source()` returns api, serial or csv when
-  `AIRQINO_CLIENT_ID` or `SERIAL_PORT` is set (in the environment or `.env`) or a CSV has been uploaded. There is no
-  `.env` today. If one appears, unset those variables before checking the banner.
-- **Headless Chrome doesn't exit against this app.** `--screenshot` wrote the PNG within seconds, but the process kept
-  running until the 60 s tool timeout. Run it in the background and stop it (learning #5).
-- **The Phase 0 picker is in agent memory, not the repo.** Other machines and agents won't see it. If the operator wants
-  it for everyone, add it to `CLAUDE.md`'s *Additional Phase 0 steps*. That needs the operator's go-ahead.
-- **The branch stack is four deep, all local except PR #1** (open item 1). `fix/usb-serial-banner` contains every earlier
-  local commit.
-- **`context_budget.py` now shows 2 older red findings, down from 3:** the missing `CLAUDE.md` fence and the `^## `
-  minimum in this file. The long-lines finding cleared because its 3 lines were in the archived Session 4 block.
-  Running the tool writes `.context-budget-history.jsonl`; Session 7 deleted it. Verification tools write untracked files, so stage files by name. The Phase 0 dashboard run
-  added a line to `dashboard_history.jsonl` (now 5 lines), which is untracked and was left alone.
-
-**Learnings (3C):** `CLAUDE.md` learning #5, the Flask UI runtime-verification recipe. The stale-wording check could
-become a gate (a `.quality-gates.json` grep or a test) instead of a row; noted for the test-suite plan and not built here.
-
-**Self-assessment:**
-- **Score: 8/10**
-- (+) The claim was committed before any technical work, and the ledger has one entry per commit.
-- (+) Every surface was grepped before and after the fix, and learning #3 was updated so the resident file stays true.
-- (+) This is the first session to boot the app and look at the change. Served HTML and a screenshot were checked, not
-  just the template source.
-- (+) FM #28: removed a session's worth of history instead of only adding to this file.
-- (−) Long silences again. The harness prompted for status three times, which repeats a Session 6 minus.
-- (−) Renaming the heading was a user-facing call I made without asking. It is small and easy to revert.
-- (−) The headless-Chrome hang cost a 60 s timeout; running it in the background from the start would have avoided that.
-- (−) No automated guard against the old wording coming back (there's no test infrastructure).
-
-### Session 5 Handoff Evaluation (by Session 6)
-- **Score: 9/10**
-- **What helped:** Two gotchas turned out to be exactly this session's traps. First, "CHANGELOG now has two entries, not
-  one … carry both": the plan's P6 row still says "carry its one entry across". Second, the branch gotcha (after #80 merges,
-  cherry-pick the close-out commit) became live when #80 merged on 2026-09-15. The operator branched off `1402ad4`, which
-  keeps that commit. Learning #4 turned the stale-snapshot check into one `git reflog`. The FM #28 estimate (~410 lines)
-  called for archiving the Session 1–3 history at this close-out, and this close-out did it.
-- **What was missing:** Nothing Session 5 could have supplied. The new ledger rules (one entry per commit, an *(in progress)*
-  claim entry, month grouping) arrived with this session's sync.
-- **What was wrong:** One citation decayed. `changelog-rules-contradictions-plan.md:584` no longer points at the P6 row,
-  which is at `:760` today because the plan grew. The section name (`§P6–P11`) or a quoted phrase would have survived. This
-  is the same "built to go stale" point Session 5 made about Session 4. "Don't reformat the file in a project session" was
-  sound until the operator assigned P6 here.
-- **ROI:** Positive. The notes gave the branch context and the two-entry warning with no discovery needed.
-
-### What Session 6 Did
-**Deliverable:** Methodology BL-57 phase P6 for airqino, BL-56 folded in — **COMPLETE**
-**Started / Closed:** 2026-09-17 · branch `chore/methodology-bl57-p6` off `1402ad4` (local, not pushed)
-**Governing doc:** `~/Development/methodology/docs/planning/changelog-rules-contradictions-plan.md` §P6–P11 (P6 row
-`:760`; §9.8 block check `:977`); BL-56 detail at `docs/planning/BACKLOG-DETAIL.md:1682` in the same repo.
-**Ledger:** 5 `CHANGELOG.md` entries, one per commit (claim, sync, migration, `CLAUDE.md`, close-out).
-
-**What was done:**
-- **Claim** `2b0230a`: the stub, a pending receipt, and an *(in progress)* entry. It recorded the block to replace
-  (`CHANGELOG.md` lines 1–11, 0 `### ` lines) in a commit before any edit.
-- **Sync** `28022fe`, from fork `main` `ff02b5c` (Route B, on the operator's direction):
-  - **Before:** fork `main`'s `bin/status` read 12 tracked files behind, `quality_ratchet.py` missing and `CHANGELOG.md`
-    *present (stale format)*.
-  - **Dry run:** exit 0, no refusals.
-  - **Real run:** 12 tracked files updated, `quality_ratchet.py` created, and `.quality-gates.json` seeded with
-    `"gates": []`. The 5 existing seeds were left as they are.
-  - **After:** every tracked file reads `current`.
-  - The plan's Route A reason (BL-54 refusing four files) is out of date, because BL-54 was fixed fork-side in `865119f`.
-  - One commit of 15 files, over the 5-file cap, because a single tool run wrote them all.
-- **Migration** `5e4b483`: lines 1–11 replaced with fork `main`'s `starter-kit/CHANGELOG.md` header, with three decisions:
-  - **Sentinel:** dropped the 4-line seed-sentinel comment and the blank line after it. The ledger already has entries,
-    and both BL-56 and the seed say to delete it.
-  - **Trailing comment:** kept `<!-- Entries go below … -->` verbatim, as Session 5 did in `HANDOFFS.md`.
-  - **`## [Unreleased]`:** dropped. The rules group by month, not by release, and a ledger without month headings starts
-    them at its next new month (`docs/methodology/FRAMEWORK_APPARATUS.md` §The Action Ledger, *Placement*).
-  - A Python script asserted every anchor before cutting (plan hazard 5).
-- **`CLAUDE.md`** `9f150a5`: a new Adaptations subsection, *Ledger (`CHANGELOG.md`) conventions* (`CLAUDE.md:28-33`). It
-  covers source tags and the legacy layout. The protocol block is unchanged: it already matches `CLAUDE_TEMPLATE.md:12-14`,
-  which has no ledger wording.
-- **Close-out:** this note, the S6 receipt and the close-out entry. The Session 1–3 history was removed from this file
-  (FM #28); it survives in `git show 1402ad4:SESSION_NOTES.md`.
-
-**Verification — the plan's DONE list, counts re-derived per commit:**
-- **`bin/status` reads `present`:** yes from fork `main` (`ff02b5c`), and yes from upstream `main` (`6b29d3d`, run from a
-  scratch `--no-local` clone). That meets BL-56's "both versions" criterion.
-- **Only the block changed:** the plan's §9.8 script on `5e4b483` prints "only the block changed". The other three session
-  commits removed 0 `CHANGELOG.md` lines. The pre-session entries at `1402ad4` are the byte-identical tail of HEAD.
-- **Heading count:** the block held 0 `### ` lines and the migration added 1 entry, so the prediction was +1. Measured
-  4 → 5 across `5e4b483`, which confirms the plan's "0 elsewhere". Across the session: 2 (`1402ad4`) → 6 (`9f150a5`),
-  and 7 after close-out.
-- **Audit count:** the block held 0 matches, so the prediction was +1. Measured 4 → 5, and zsh equals bash; 0 shards.
-  Across the session: 2 → 6, and 7 after close-out.
-- **Build:** all 7 `.py` files parse; `app` imports (9 routes). No test suite exists.
-- **Runtime (3E):** no app code changed and the Flask app wasn't launched. Each synced tool was run: dashboard v2.18.0
-  (health 54/100), `quality_ratchet.py --run` (0/0 gates), `methodology_trim.py --check` (trigger does not fire), and
-  `context_budget.py` (3 findings that predate this session; see gotchas).
-
-**Findings for the methodology repo** (not edited from here, per the session-notes boundary):
-- **Plan P6 row (`:760`):** two statements are out of date. The Route A reason no longer holds (BL-54 is fixed), and
-  "carry its one entry across" is wrong: there were two entries, and now there are seven.
-- **Status:** P6 and BL-56 are done and need marking so in the methodology repo's plan and backlog.
-- **Seed comment:** the seed's trailing comment ("Delete the seed-sentinel line near the top …") stays behind after the
-  sentinel goes, in every migrated adopter.
-- **Missing `.gitignore` entry:** the `.quality-gates.json` seed says to gitignore `.quality-gates-results.json`, but
-  `bin/sync` adds no such entry.
-- **Disclosure:** Session 6 ran `git fetch upstream` in `~/Development/methodology`, which updates remote-tracking refs only.
-
-**Key files:**
-- `CHANGELOG.md:1-16` — the new header; `:12` holds the `ledger-format: 2` marker; entries start at `:18`
-- `CLAUDE.md:28-33` — the ledger conventions (source tags, legacy layout)
-- `.quality-gates.json` — the gates seed, with no gates declared
-- `templates/dashboard.html:55` — open item 1
-
-**Gotchas for the next session:**
-- **One ledger entry per commit.** The claim commit carries an *(in progress)* entry, and close-out adds its own.
-  `[BL-<id>]` means this repo's `BACKLOG.md` only (`CLAUDE.md:32`).
-- **Month headings.** The first entry dated 2026-10 opens `## 2026-10` at the top of the entries. Don't add `## 2026-09`.
-- **Verification runs write untracked files:** `.quality-gates-results.json`, `.context-budget-history.jsonl` and
-  `dashboard_history.jsonl`. Session 6 deleted the first two after creating them. Stage files by name, never `git add -A`.
-- **`context_budget.py` reports 3 red findings, all older than this session.** Each one reproduces on `1402ad4`'s tree
-  with the new tool:
-  - `CLAUDE.md`'s `budget:protected` fence is missing (open item 4).
-  - `SESSION_NOTES.md` lines over 280 B: 11 at `1402ad4`, 3 after this close-out's rewrite.
-  - The `SESSION_NOTES.md` pattern `^## ` matches 1 heading against a declared minimum of 2.
-
-  Fix the file or `.context-budget.json` in plan mode, and never loosen a ceiling just to go green.
-- **The branch stack is local-only** (open item 3). `chore/methodology-bl57-p6` is based on `1402ad4`, so discarding
-  `chore/methodology-read-set-budgets` loses nothing.
-- **Seeds are never re-synced.** `HANDOFFS.md`, `SESSION_NOTES.md`, `ROADMAP.md` and `.context-budget.json` keep older text.
-  For example, the synced runner cites `HANDOFFS.md` §Citing the gate run, which this repo's `HANDOFFS.md` lacks. That
-  doesn't matter while no gates are declared.
-- **A stale dashboard copy remains.** `docs/methodology/tools/methodology_dashboard.py` is v2.6.1 and isn't in the sync
-  manifest; the root copy is now v2.18.0.
-
-**Learnings (3C):** no new `CLAUDE.md` learning row this session. The durable rules went into the new ledger-conventions
-subsection. The side-effect-files trap is a gotcha, and a gitignore gate candidate (open item 2), rather than a row. The
-FM #28 reduction was done: the Session 1–3 history was removed.
-
-**Self-assessment:**
-- **Score: 8/10**
-- (+) The Phase 1B claim was committed on its own before technical work (a Session 5 minus), with the block range in it.
-- (+) Every claim in each ledger entry was verified on the working tree before the commit that ships it, since entries
-  are never edited.
-- (+) The DONE counts were re-derived per commit, not just read off the end state. BL-56's "both versions" criterion was
-  checked by running upstream's `bin/status`, not inferred from the marker text.
-- (+) The 3 budget findings were shown to be older than this session (reproduced on `1402ad4`), not assumed so, and were
-  left unfixed as out of scope.
-- (−) The 15-file sync commit breaks the 5-file cap. One tool run justifies it, but I didn't raise it with the operator
-  before committing.
-- (−) `git fetch upstream` changed the methodology repo's refs. It was harmless and is disclosed, but the scratch clone
-  used later would have done it without touching that repo.
-- (−) The verification runs left two untracked files that needed cleanup; the tools' side effects weren't anticipated.
-- (−) Long stretches without a progress update; the harness prompted twice.
-
-### Sessions 1–5 (archived by Sessions 6, 7 and 8)
+### Sessions 1–7 (archived by Sessions 6–9)
 Removed to keep this mandated read under its ceiling (FM #28). Sessions 1–3, including their handoff evaluations:
 `git show 1402ad4:SESSION_NOTES.md`. "What Session 4 Did": `git show e947798:SESSION_NOTES.md`. "Session 4 Handoff
-Evaluation" and "What Session 5 Did": `git show a31fea6:SESSION_NOTES.md`.
+Evaluation" and "What Session 5 Did": `git show a31fea6:SESSION_NOTES.md`. "Session 5 Handoff Evaluation", "What
+Session 6 Did", "Session 6 Handoff Evaluation" and "What Session 7 Did": `git show 15b0a3f:SESSION_NOTES.md`.

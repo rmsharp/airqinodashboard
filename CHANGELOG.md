@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 9 closed out — test-suite plan written, approval pending
+- **Change:** `SESSION_NOTES.md` carries the handoff, the Session 8 evaluation (9/10) and the self-assessment (8/10). Its open items are renumbered, with Phase 1 of the plan recommended next after approval. The Session 5–7 notes were archived (`git show 15b0a3f:SESSION_NOTES.md`; FM #28; 350 → 266 lines). `CLAUDE.md` gains learning #7: probe the code before a plan claims how it behaves, and re-grep citations after writing. The S9 `HANDOFFS.md` receipt is `status: complete`. The branch `docs/test-suite-plan` stays local and unpushed
+- **Commit/PR:** the close-out commit (ships this entry); session commits `1177049`, `d813463`
+- **Session:** S9 · **Verified:** n/a — docs-only; `git diff 15b0a3f -- '*.py' templates static` is empty; the receipt's `changelog_ref` matches this heading
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Test-suite plan written — `docs/planning/test-suite-plan.md` (open item 1)
 - **Change:** a four-phase pytest plan, one session per phase: P1 harness + setup-banner guard, P2 no-source contract + CSV path, P3 serial (real pty), P4 API client + API routes. It has a grep-based inventory (§3), and each phase names its DONE criteria, verification commands, surface and session boundary. It records 7 defects (D1–D7) reproduced by scratch probes; each becomes a strict-xfail test and a later fix session. The operator chose pytest, strict xfail, monkeypatch fakes and Python-only scope in one four-question picker. No product code changed
 - **Commit/PR:** the plan commit (ships this entry)
