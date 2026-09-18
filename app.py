@@ -246,7 +246,7 @@ def upload_csv():
     if not f.filename:
         return jsonify({"error": "No file selected"}), 400
 
-    text = f.read().decode("utf-8", errors="replace")
+    text = f.read().decode("utf-8-sig", errors="replace")  # -sig drops a leading BOM
 
     # Auto-detect delimiter
     first_line = text.split("\n")[0]

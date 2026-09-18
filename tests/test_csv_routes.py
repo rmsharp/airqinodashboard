@@ -4,11 +4,11 @@ Phase 2 of docs/planning/test-suite-plan.md (T2.1-T2.8). With no source configur
 every JSON route must say so with a 4xx/5xx body, not crash. The CSV upload is the
 path README.md calls the fastest way to see data.
 
-D2 (timeseries half) and D4 are strict xfails (plan §4). A fix makes its test
-XPASS, which fails the suite until the marker comes off (plan §6). The client
-fixture runs with TESTING on, so Flask raises a route's exception into the test
-instead of answering 500; each marker names the exception it expects today.
-D3's test (fixed in Session 16) sits above them, with the passing tests.
+D2 (timeseries half) is a strict xfail (plan §4). A fix makes its test XPASS,
+which fails the suite until the marker comes off (plan §6). The client fixture
+runs with TESTING on, so Flask raises a route's exception into the test instead
+of answering 500; the marker names the exception it expects today. D3's and
+D4's tests (fixed in Sessions 16 and 17) sit above it, with the passing tests.
 """
 
 import io
@@ -172,16 +172,23 @@ def test_ragged_rows_keep_their_header_fields_and_are_counted(client):
     assert app_module._csv_data == [{"a": 1.0, "b": 2.0}, {"a": 4.0, "b": 5.0}, {"a": 6.0, "b": 7.0}]
 
 
+# D4 (plan §4): a leading UTF-8 byte-order mark, which Excel's "CSV UTF-8" export writes,
+# stayed in the first header. dashboard.js reads row.timestamp, so the chart was empty,
+# and a sensor in the first column lost its reading card and its chart series.
+def test_bom_is_not_part_of_the_first_header(client):
+    resp = upload(client, "﻿timestamp,pm25\n2026-09-17T00:00,7\n")
+    assert resp.get_json() == {"rows": 1, "columns": ["timestamp", "pm25"]}
+    assert app_module._csv_data == [{"timestamp": "2026-09-17T00:00", "pm25": 7.0}]
+
+
+def test_bom_before_a_sensor_column_keeps_its_readings(client):
+    upload(client, "﻿pm25;timestamp\n7;2026-09-17T00:00\n")
+    assert app_module._csv_data == [{"pm25": 7.0, "timestamp": "2026-09-17T00:00"}]
+
+
 # Known defects (plan §4). Keep the word for a green test out of these reasons:
 # -ra prints them into the output the tests-passed gate's regex scans.
 @pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?hours= with no validation (app.py:175)")
 def test_timeseries_bad_hours_is_a_client_error(client):
     resp = client.get("/api/timeseries?hours=abc")
     assert resp.status_code < 500
-
-
-@pytest.mark.xfail(raises=AssertionError,
-                   reason="D4: decoded as utf-8, not utf-8-sig, so a BOM stays in the first header (app.py:249)")
-def test_bom_is_not_part_of_the_first_header(client):
-    resp = upload(client, "﻿timestamp,pm25\n2026-09-17T00:00,7\n")
-    assert resp.get_json()["columns"][0] == "timestamp"
