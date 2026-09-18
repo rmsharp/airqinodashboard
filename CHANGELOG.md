@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] D5's citation follows the check the D6 fix moved; the plan's "no citation moves" claim corrected
+- **Change:** `tests/test_api_routes.py`: D5's xfail reason cites `app.py:55`, not `:53`, since `5056055` moved the `AIRQINO_CLIENT_ID` check there. `docs/planning/test-suite-plan.md` §6's D6 note (`91ea569`) said the swap moved no `app.py` citation, because the line count held; it moved the content of `:53` and `:55`. The note now says so and points §4's D5 citation at `:55`. Found at close-out by grepping every surface for citations into `app.py:51-59`. Earlier ledger entries and receipts citing `:53` stay as written
+- **Commit/PR:** this commit
+- **Session:** S18 · **Verified:** `sed -n 55p app.py` prints the `AIRQINO_CLIENT_ID` check; whole suite `128 passed, 3 xfailed`, exit 0; byte grep of both files: no BOM, zero-width space or no-break space added (the plan's 1 BOM is Session 9's §4 D4 row)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Test plan records D6 as fixed, and a serial-reader race the D6 probe found
 - **Change:** `docs/planning/test-suite-plan.md`: the Status line names D6 as fixed (`5056055`), with D5 and D2 left; D6's §4 row is marked fixed; a new "As implemented (D6, Session 18)" note in §6 (`:634`) records the probe, the one design the xfail and README allow, the four-mix test (124 → 128), and the metadata "Project" row side effect. The note also records a defect outside §4, found by the probe: when `/api/current` and `/api/timeseries` are the first two requests and arrive together, as on every page load (`static/js/dashboard.js:484-485`), `get_serial_reader()` (`app.py:38-48`) starts two `SerialReader`s on one port, and they split its byte stream (pty only, not a real adapter). No test covers it, and it was not fixed here
 - **Commit/PR:** this commit

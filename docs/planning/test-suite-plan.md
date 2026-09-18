@@ -640,7 +640,8 @@ allow: making the routes API-first instead fails four tests. D6's test now cover
 sources (serial+api, serial+csv, api+csv, all three), and each asserts that `active_source()`, the badge,
 `/api/status`, `/api/current` and `/api/timeseries` agree. So `tests-passed` went from 124 to 128. The two mixes
 without both serial and the API passed before the fix too, and they pin the rest of the order. The fix swaps two
-lines in place, so no `app.py` citation moves. One side effect: the metadata panel's "Project" row
+checks without changing the line count, but the `AIRQINO_CLIENT_ID` check moved from `:53` to `:55`, so §4's D5
+citation (`app.py:53`) now reads `:55`. D5's xfail reason was updated to match. One side effect: the metadata panel's "Project" row
 (`templates/dashboard.html:111`) is gated on `source == 'api'`, so it no longer renders when serial is also
 configured. `renderMetadata` replaces that panel once `/api/metadata` answers, so the row showed only when that call
 failed.

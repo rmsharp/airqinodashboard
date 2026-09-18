@@ -223,7 +223,7 @@ def test_status_in_api_mode(client, configured, monkeypatch):
 # -ra prints them into the output the tests-passed gate's regex scans.
 @pytest.mark.xfail(raises=AssertionError,
                    reason="D5: active_source() says api when only AIRQINO_CLIENT_ID is set, "
-                          "but get_api_client() needs all four credentials (app.py:53, :32)")
+                          "but get_api_client() needs all four credentials (app.py:55, :32)")
 def test_one_credential_is_not_an_api_connection(client, monkeypatch):
     monkeypatch.setenv("AIRQINO_CLIENT_ID", "cid")
     assert "API Connected" not in client.get("/").get_data(as_text=True)
