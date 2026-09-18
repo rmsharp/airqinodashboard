@@ -140,7 +140,7 @@ def test_current_returns_the_api_values(client, fake_client, configured, query, 
     assert fake_client.calls == [("get_current_values", (station,), {})]
 
 
-# README.md:36 documents serial → API → CSV, and the data routes follow it (app.py:141, :175).
+# README.md:36 documents serial → API → CSV, and the data routes follow it (app.py:141, :179).
 # D6 below is about the badge, which doesn't.
 @pytest.mark.parametrize("url", ["/api/current", "/api/timeseries"])
 def test_serial_is_served_before_the_api(client, fake_client, idle_reader, configured, url):
@@ -201,7 +201,7 @@ def test_one_credential_is_not_an_api_connection(client, monkeypatch):
 # sends no request.
 @pytest.mark.xfail(raises=AssertionError,
                    reason="D6: active_source() checks the API before serial, "
-                          "but the data routes check serial first (app.py:53-58, :141-163)")
+                          "but the data routes check serial first (app.py:53-58, :141-167)")
 def test_badge_source_is_the_source_the_routes_serve(fake_client, idle_reader, monkeypatch):
     for var, value in CREDS.items():
         monkeypatch.setenv(var, value)
@@ -209,6 +209,6 @@ def test_badge_source_is_the_source_the_routes_serve(fake_client, idle_reader, m
     assert app_module.active_source() == "serial"
 
 
-@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?days= with no validation (app.py:220)")
+@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?days= with no validation (app.py:224)")
 def test_hourly_bad_days_is_a_client_error(client, fake_client, configured):
     assert client.get("/api/hourly?days=abc").status_code < 500

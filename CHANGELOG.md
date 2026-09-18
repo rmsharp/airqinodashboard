@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Test comments and xfail reasons follow the lines D7 moved
+- **Change:** D7's fix inserted 4 lines into `app.py` at `:143-146` and 1 into `serial_reader.py` at `:43`, and part 1 grew `static/js/dashboard.js`. That moved 11 `file:line` citations in 4 test files, and each now points at its line again: `app.py` `:175`→`:179`, `:141-163`→`:141-167`, `:220`→`:224` (D2-hourly's reason), `:178-182`→`:182-186` (twice), `:171`→`:175` (D2-timeseries), `:258-261`→`:262-265` (D3), `:245`→`:249` (D4); `dashboard.js:432`→`:451`; `serial_reader.py` `:65`→`:66` and `:143-148`→`:144-149`. Comments and reason strings only (learning #7: re-grep every `file:line` after an edit)
+- **Commit/PR:** this commit
+- **Session:** S15 · **Verified:** each new target read at its line; every replacement matched exactly once; `python3 -m pytest -q -rx` gives `120 passed, 6 xfailed`, exit 0, and prints the new reasons; `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results a29b9250f033 · manifest 41bd5cf14af2`
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] D7, part 3 of 3 — README documents the serial error; tests-passed 119 → 120
 - **Change:** `README.md` §"3. Direct serial" gains a paragraph: if the port can't be opened, the readings area shows the error within a minute of loading the page; the reader tries the port once and doesn't retry, so fix the setting or connection and restart. The paragraph moves the "Known quirks" line from `README.md:108` to `:110`, so `tests/test_api_routes.py:159`'s citation follows it (learning #3: re-grep cited lines after an edit). `.quality-gates.json` `tests-passed` tightened from 119 to 120 (D7's xfail turned pass; the other changed tests were edited, not added)
 - **Commit/PR:** this commit

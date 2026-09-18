@@ -59,7 +59,7 @@ def test_parse_line(line, parsed):
     assert unstarted()._parse_line(line) == parsed
 
 
-# T3.2 — the mapping in _normalize (serial_reader.py:143-148)
+# T3.2 — the mapping in _normalize (serial_reader.py:144-149)
 @pytest.mark.parametrize("alias, field", [
     ("pm2.5", "pm25"), ("pm2_5", "pm25"),
     ("extt", "extT"), ("ext_t", "extT"), ("temperature", "extT"),
@@ -137,7 +137,7 @@ def test_reader_thread_reads_a_real_tty(pty_port):
         os.write(master, b"co=1.5,pm25=7\r\n")
         assert poll(lambda: reader.get_current() is not None), "no reading arrived"
     finally:
-        reader.stop()  # never join(): readline blocks for up to 5 s (serial_reader.py:65)
+        reader.stop()  # never join(): readline blocks for up to 5 s (serial_reader.py:66)
     current = reader.get_current()
     assert (current["co"], current["pm25"]) == (1.5, 7.0)
     assert current["raw_line"] == "co=1.5,pm25=7"

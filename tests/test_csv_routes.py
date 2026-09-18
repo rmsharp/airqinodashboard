@@ -24,7 +24,7 @@ SMALL_CSV = "timestamp,pm25\n2026-09-17T00:00,7\n2026-09-17T01:00,8\n"
 
 
 def upload(client, content, filename="data.csv"):
-    """POST a file under the field name the dashboard's FormData uses (dashboard.js:432)."""
+    """POST a file under the field name the dashboard's FormData uses (dashboard.js:451)."""
     if isinstance(content, str):
         content = content.encode("utf-8")
     return client.post(
@@ -132,7 +132,7 @@ def test_timeseries_returns_the_last_500_rows(client, uploaded_501):
 
 def test_timeseries_sensor_filter_keeps_rows_with_that_key(client):
     upload(client, SMALL_CSV)
-    # Unlike the serial branch (app.py:178-182), CSV rows come back whole, not reshaped.
+    # Unlike the serial branch (app.py:182-186), CSV rows come back whole, not reshaped.
     assert len(client.get("/api/timeseries?sensor=pm25").get_json()["data"]) == 2
     assert client.get("/api/timeseries?sensor=no2").get_json() == {"source": "csv", "data": []}
 
@@ -156,21 +156,21 @@ def test_invalid_utf8_is_replaced_not_rejected(client):
 
 # Known defects (plan §4). Keep the word for a green test out of these reasons:
 # -ra prints them into the output the tests-passed gate's regex scans.
-@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?hours= with no validation (app.py:171)")
+@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?hours= with no validation (app.py:175)")
 def test_timeseries_bad_hours_is_a_client_error(client):
     resp = client.get("/api/timeseries?hours=abc")
     assert resp.status_code < 500
 
 
 @pytest.mark.xfail(raises=AttributeError,
-                   reason="D3: extra fields land under the key None, and k.strip() fails on it (app.py:258-261)")
+                   reason="D3: extra fields land under the key None, and k.strip() fails on it (app.py:262-265)")
 def test_ragged_row_is_not_a_server_error(client):
     resp = upload(client, "a,b\n1,2,3\n")
     assert resp.status_code < 500
 
 
 @pytest.mark.xfail(raises=AssertionError,
-                   reason="D4: decoded as utf-8, not utf-8-sig, so a BOM stays in the first header (app.py:245)")
+                   reason="D4: decoded as utf-8, not utf-8-sig, so a BOM stays in the first header (app.py:249)")
 def test_bom_is_not_part_of_the_first_header(client):
     resp = upload(client, "﻿timestamp,pm25\n2026-09-17T00:00,7\n")
     assert resp.get_json()["columns"][0] == "timestamp"
