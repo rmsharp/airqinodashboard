@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S9
+date: 2026-09-17
+status: pending
+active_task: Plan a test suite (open item 1): write docs/planning/test-suite-plan.md with a grep-based inventory of app.py, airqino_client.py and serial_reader.py. Planning session only; no test code. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S8
 date: 2026-09-17
 status: complete

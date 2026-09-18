@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 9 claimed — plan a test suite (in progress)
+- **Change:** session claimed on branch `docs/test-suite-plan` (off `main` `15b0a3f`); the operator picked open item 1 from the Phase 0 picker. The deliverable is `docs/planning/test-suite-plan.md`, a plan only
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S9 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 8 closed out — four-branch stack merged into main; main is the only branch
 - **Change:** `SESSION_NOTES.md` carries the handoff, the Session 7 evaluation (9/10) and the self-assessment (9/10). Its open items are renumbered, with planning a test suite recommended next. "Session 4 Handoff Evaluation" and "What Session 5 Did" were archived (`git show a31fea6:SESSION_NOTES.md`; FM #28; 437 → 350 lines). `CLAUDE.md` gains learning #6: never squash or rebase, because the records cite SHAs. The S8 `HANDOFFS.md` receipt is `status: complete`. This commit is pushed to `origin/main` directly after it is made, on the operator's direction
 - **Commit/PR:** the close-out commit (ships this entry); session commit `a31fea6`
