@@ -15,6 +15,18 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Session 15 closed out — D7 fixed, the plan's second fix session done; main fast-forwarded, pushed with this commit
+- **Change:** `SESSION_NOTES.md` carries the Session 14 handoff evaluation (8/10; its wrong claims: the notes' line count at close-out, 407 committed, not 400; "flags unchanged" after its own BL-1 had added a LOW flag; and a `context_budget.py:346` citation that is neither `measure_file`, `:329`, nor its split, `:347`), the full D7 write-up and an 8/10 self-assessment. Open item 1 now recommends D3, with a new first step: run the candidate fix on the page before designing. Open item 4 gains a probed finding: a port that opens and then fails is never reported, and the last reading keeps being served with 200. Open item 9 points to BL-1, BL-2 and BL-3. "Session 12 Handoff Evaluation" and "What Session 13 Did" were archived (`git show c159ac8:SESSION_NOTES.md`; FM #28), which leaves 387 lines, under the 399 that `context_budget.py`'s count allows. `CLAUDE.md` gains learning #12 (a green xfail isn't the user-visible fix: run the candidate fix on the page before choosing the design) and #13 (list the dashboard's flags from its output, not by grepping for the ones a handoff named). The S15 `HANDOFFS.md` receipt is `status: complete`. On the operator's direction (a picker before close-out), `main` was fast-forwarded from `b710ac0` to `87c7535` after a `git fetch` showed `origin/main` was an ancestor, and it is pushed to `origin/main` straight after this commit
+- **Commit/PR:** the close-out commit (ships this entry); session commits `2fc1d25`, `d24ab0e`, `192e831`, `222f02c`, `9698f9c`, `87c7535`, `2519647`, `c159ac8`
+- **Session:** S15 · **Verified:** `python3 -m pytest -q` gives `120 passed, 6 xfailed`, exit 0; `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results a29b9250f033 · manifest 41bd5cf14af2`; dashboard 68/100, High+ risk 0, 5 flags listed from `dashboard.html`; every `file:line` in the handoff re-grepped against the current files; `wc -l SESSION_NOTES.md` is 387; the receipt's `changelog_ref` matches this heading
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-18 · [ad hoc] Local branch `fix/d7-port-open-failure` deleted
+- **Change:** on the operator's direction, the fully merged local branch `fix/d7-port-open-failure` (tip `87c7535`) was deleted with `git branch -d`. It was never pushed, so there was no remote branch to delete. `main` is again the only branch
+- **Commit/PR:** the close-out commit (ships this entry); branch op, no commit of its own
+- **Session:** S15 · **Verified:** before deletion, `git merge-base --is-ancestor fix/d7-port-open-failure main` succeeded; afterwards `git branch -vv` lists only `main`
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Test plan records D7 as fixed; BL-1's map-tile citation follows the moved line
 - **Change:** `docs/planning/test-suite-plan.md`: the Status line names D7's three commits and the five defects left (D3, D4, D6, D5, D2); D7's §4 row is tagged fixed (`9698f9c`); an "As implemented (D7, Session 15)" note under §6 records that §4's user-impact cell was wrong about the page (non-2xx responses are only logged, so a server-only fix leaves "Loading readings…" indefinitely), the three-commit fix the operator chose, T3.7's change, and that the plan's `app.py` citations past `:142` now read 4 lower than the code. `BACKLOG.md` BL-1: the map tiles' attribution moved from `static/js/dashboard.js:337` to `:356`
 - **Commit/PR:** this commit
