@@ -44,6 +44,13 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 7 Did
+**Deliverable:** Fix the stale USB Serial setup-banner text (`templates/dashboard.html:55`), then grep every surface for
+the old "USB cable / Arduino Mega port" wording (`CLAUDE.md` learning #3) (IN PROGRESS)
+**Started:** 2026-09-17 20:07
+**Status:** Session claimed on branch `fix/usb-serial-banner` (off `e947798`). Work beginning.
+**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+
 ### Session 5 Handoff Evaluation (by Session 6)
 - **Score: 9/10**
 - **What helped:** Two gotchas turned out to be exactly this session's traps. First, "CHANGELOG now has two entries, not

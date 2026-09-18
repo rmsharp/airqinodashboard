@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S7
+date: 2026-09-17
+status: pending
+active_task: Fix the stale USB Serial setup-banner text at templates/dashboard.html:55 so it describes the REV6 USB-to-TTL adapter path, then grep every surface for the old wording. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S6
 date: 2026-09-17
 status: complete
