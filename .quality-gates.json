@@ -24,11 +24,11 @@
     {
       "name": "tests-passed",
       "direction": "min",
-      "threshold": 124,
+      "threshold": 128,
       "unit": "tests",
       "command": "python3 -m pytest -q",
       "extract": "(\\d+) passed",
-      "why": "measured 124 on 2026-09-18 (Session 17, the D4 fix: its xfail plus one new test; was 122 after the D3 fix, 120 after the D7 fix, 119 after the D1 fix, 116 after plan Phase 4, 58 after Phase 3, 28 after Phase 2, 9 after Phase 1); tests cannot be deleted silently, and each fix session tightens it"
+      "why": "measured 128 on 2026-09-18 (Session 18, the D6 fix: its xfail became four cases, one per mix of sources; was 124 after the D4 fix, 122 after the D3 fix, 120 after the D7 fix, 119 after the D1 fix, 116 after plan Phase 4, 58 after Phase 3, 28 after Phase 2, 9 after Phase 1); tests cannot be deleted silently, and each fix session tightens it"
     }
   ]
 }

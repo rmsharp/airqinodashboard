@@ -5,7 +5,7 @@ the plan's inventory (§3.1) assigns to this phase. FakeClient (conftest.py) ans
 the 7 AirQinoClient methods app.py calls and checks each call against the real method's
 signature.
 
-D5, D6 and D2's hourly half are strict xfails (plan §4). The client fixture runs with
+D5 and D2's hourly half are strict xfails (plan §4). The client fixture runs with
 TESTING on, so D2's ValueError reaches the test instead of a 500.
 """
 
@@ -141,13 +141,46 @@ def test_current_returns_the_api_values(client, fake_client, configured, query, 
 
 
 # README.md:36 documents serial → API → CSV, and the data routes follow it (app.py:141, :179).
-# D6 below is about the badge, which doesn't.
 @pytest.mark.parametrize("url", ["/api/current", "/api/timeseries"])
 def test_serial_is_served_before_the_api(client, fake_client, idle_reader, configured, url):
     idle_reader.latest = {"co": 9.0}
     idle_reader.history.append({"co": 9.0})
     assert client.get(url).get_json()["source"] == "serial"
     assert fake_client.calls == []
+
+
+# D6 (fixed, Session 18): active_source() checked the API before serial, so with both
+# configured the badge said "API Connected" over serial readings. Now the badge and
+# /api/status name the source the data routes serve, for every mix of sources. The API
+# has all four credentials, so a D5 fix can't flip a case. The reader and client are
+# installed only for their own source, so no case starts a thread or sends a request.
+BADGES = {"serial": ">Serial<", "api": ">API Connected<", "csv": ">CSV Data<"}
+
+
+@pytest.mark.parametrize("sources, served", [
+    pytest.param(("serial", "api"), "serial", id="serial+api"),
+    pytest.param(("serial", "csv"), "serial", id="serial+csv"),
+    pytest.param(("api", "csv"), "api", id="api+csv"),
+    pytest.param(("serial", "api", "csv"), "serial", id="all-three"),
+])
+def test_badge_source_is_the_source_the_routes_serve(client, configured, monkeypatch, request,
+                                                     sources, served):
+    if "serial" in sources:
+        monkeypatch.setenv("SERIAL_PORT", "/dev/ttyUSB0")
+        reader = request.getfixturevalue("idle_reader")
+        reader.latest = {"co": 9.0}
+        reader.history.append({"co": 9.0})
+    if "api" in sources:
+        for var, value in CREDS.items():
+            monkeypatch.setenv(var, value)
+        request.getfixturevalue("fake_client")
+    if "csv" in sources:
+        monkeypatch.setattr(app_module, "_csv_data", [{"timestamp": "2026-09-17T00:00:00", "co": 9.0}])
+    assert app_module.active_source() == served
+    assert BADGES[served] in client.get("/").get_data(as_text=True)
+    assert client.get("/api/status").get_json()["source"] == served
+    for url in ("/api/current", "/api/timeseries"):
+        assert client.get(url).get_json()["source"] == served
 
 
 # T4.13: 12 hours or less asks for the last 12 h. More asks for a date range from the clock.
@@ -194,19 +227,6 @@ def test_status_in_api_mode(client, configured, monkeypatch):
 def test_one_credential_is_not_an_api_connection(client, monkeypatch):
     monkeypatch.setenv("AIRQINO_CLIENT_ID", "cid")
     assert "API Connected" not in client.get("/").get_data(as_text=True)
-
-
-# Both sources are fully configured, so a D5 fix can't flip this test. They are installed
-# too, so a fix that asks get_serial_reader() or get_api_client() starts no thread and
-# sends no request.
-@pytest.mark.xfail(raises=AssertionError,
-                   reason="D6: active_source() checks the API before serial, "
-                          "but the data routes check serial first (app.py:53-58, :141-167)")
-def test_badge_source_is_the_source_the_routes_serve(fake_client, idle_reader, monkeypatch):
-    for var, value in CREDS.items():
-        monkeypatch.setenv(var, value)
-    monkeypatch.setenv("SERIAL_PORT", "/dev/ttyUSB0")
-    assert app_module.active_source() == "serial"
 
 
 @pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?days= with no validation (app.py:224)")

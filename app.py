@@ -49,11 +49,11 @@ def get_serial_reader():
 
 
 def active_source():
-    """Return which data source is configured."""
-    if os.getenv("AIRQINO_CLIENT_ID"):
-        return "api"
+    """Return the source the data routes serve: serial, then API, then CSV (README.md:36)."""
     if os.getenv("SERIAL_PORT"):
         return "serial"
+    if os.getenv("AIRQINO_CLIENT_ID"):
+        return "api"
     if _csv_data:
         return "csv"
     return None
