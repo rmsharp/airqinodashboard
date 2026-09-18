@@ -11,7 +11,7 @@ operator's approval. Next session implements **Phase 1 only**, once the plan is 
 **Status:**
 - **Plan: WRITTEN, not approved.** `d813463`, now on `main`. On the operator's direction, `main` was fast-forwarded
   to `docs/test-suite-plan` (`f49da64`) and pushed to `origin`, and the next commit (this note) was pushed with it.
-  The local branch `docs/test-suite-plan` still exists and is fully merged. The plan has four phases, one session
+  The branch `docs/test-suite-plan` was then deleted locally (it was never pushed). The plan has four phases, one session
   each: P1 harness + setup-banner guard, P2 no-source + CSV, P3 serial, P4 API. The operator chose pytest, strict
   xfail for known defects, monkeypatch fakes and Python-only scope (plan §2).
 - **7 defects found and reproduced** (plan §4, D1–D7), none fixed. Each becomes a strict-xfail test in its phase, then

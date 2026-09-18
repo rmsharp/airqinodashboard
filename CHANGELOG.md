@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Local branch `docs/test-suite-plan` deleted
+- **Change:** on the operator's direction, the fully merged local branch `docs/test-suite-plan` (tip `f49da64`) was deleted with `git branch -d`. It was never pushed, so there was no remote branch to delete. `main` is again the only branch. `SESSION_NOTES.md`'s ACTIVE TASK no longer says the branch exists
+- **Commit/PR:** this commit (ships this entry); branch op, no commit of its own
+- **Session:** S9 (operator-directed follow-on after close-out) · **Verified:** before deletion, `git merge-base --is-ancestor docs/test-suite-plan main` succeeded; afterwards `git branch -vv` lists only `main`
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Plan branch landed — main fast-forwarded to `docs/test-suite-plan` and pushed to origin
 - **Change:** on the operator's direction, local `main` was fast-forwarded from `15b0a3f` to `f49da64` (`git merge --ff-only`, so Session 9's SHAs `1177049`, `d813463` and `f49da64` are unchanged; learning #6). `SESSION_NOTES.md`'s ACTIVE TASK and open item 1 no longer call the branch unpushed. This commit is pushed to `origin/main` directly after it is made, together with the three Session 9 commits. The local branch `docs/test-suite-plan` is kept (fully merged; not pushed)
 - **Commit/PR:** this commit (ships this entry); fast-forward to `f49da64`; push to `origin/main`
