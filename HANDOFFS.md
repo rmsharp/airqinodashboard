@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S8
+date: 2026-09-17
+status: pending
+active_task: Branch/PR housekeeping (open item 1): publish or merge the four-branch stack (PR #1 chore/methodology-pr2527-remediation, then chore/methodology-read-set-budgets, chore/methodology-bl57-p6, fix/usb-serial-banner) in the order the operator chooses. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S7
 date: 2026-09-17
 status: complete

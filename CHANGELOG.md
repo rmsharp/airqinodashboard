@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 8 claimed — branch/PR housekeeping for the four-branch stack (in progress)
+- **Change:** session claimed on branch `fix/usb-serial-banner` (tip of the stack, `3712164`); the operator picked open item 1 from the Phase 0 picker
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S8 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 7 closed out — setup-banner serial fix complete
 - **Change:** `SESSION_NOTES.md` carries the handoff, the Session 6 evaluation (9/10) and the self-assessment (8/10). Its open items are renumbered, and branch/PR housekeeping is recommended next. "What Session 4 Did" was archived (`git show e947798:SESSION_NOTES.md`; FM #28). `CLAUDE.md` gains learning #5, a runtime-verification recipe for the Flask UI. The S7 `HANDOFFS.md` receipt is `status: complete`. Not pushed
 - **Commit/PR:** the close-out commit (ships this entry); session commits `38920e3`, `e5f52e1`
