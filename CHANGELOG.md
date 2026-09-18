@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] D3, part 1 of 2 — the upload status says how many rows had more fields than the header
+- **Change:** `static/js/dashboard.js` `uploadFile`: when the upload response carries `ragged_rows`, the status line adds "N row(s) has/have more fields than the header; the extra fields were ignored." and turns amber (`--moderate`) instead of green. Does nothing until the server sends the field (part 2). The operator chose this design ("B: keep rows, say so") in a picker, after a probe of three candidates in scratchpad copies of the real app, each driven by a headless-Chrome drag-and-drop of the same ragged CSV: A (drop the extras silently) loaded the file as if it were clean; B (drop and count) loaded it with the amber note; C (reject with 400) showed "Error: Line 4 has 6 fields, but the header has 5" and loaded nothing. Today the page shows "Upload failed: Unexpected token '<', "<!doctype "... is not valid JSON", because the 500 is Werkzeug's HTML debugger page
+- **Commit/PR:** this commit
+- **Session:** S16 · **Verified:** `node --check static/js/dashboard.js` exit 0; `python3 -m pytest -q` on this commit's tree gives `120 passed, 6 xfailed`, exit 0 (no JS tests exist). Runtime evidence is in part 2's entry
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Session 16 claimed — D3 fix begins (in progress)
 - **Change:** the operator picked the D3 fix (open item 1; `docs/planning/test-suite-plan.md` §6's third fix session) in the Phase 0 picker. D3: a ragged CSV row puts its extra fields under the key `None`, and `k.strip()` fails. Session claimed on branch `fix/d3-ragged-csv-row` (off `main` `a1cb7ec`)
 - **Commit/PR:** the claim commit (ships this entry)

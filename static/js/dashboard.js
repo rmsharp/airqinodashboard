@@ -458,6 +458,13 @@ function setupUpload() {
             } else {
                 status.textContent = 'Loaded ' + result.rows + ' rows (' + result.columns.length + ' columns)';
                 status.style.color = 'var(--good)';
+                // Rows longer than the header load without their extra fields; say how many.
+                if (result.ragged_rows) {
+                    status.textContent += '. ' + result.ragged_rows
+                        + (result.ragged_rows === 1 ? ' row has' : ' rows have')
+                        + ' more fields than the header; the extra fields were ignored.';
+                    status.style.color = 'var(--moderate)';
+                }
                 loadCurrent();
                 loadTimeseries();
             }
