@@ -135,7 +135,9 @@ async function fetchJSON(url) {
     const resp = await fetch(url);
     if (!resp.ok) {
         const body = await resp.json().catch(() => ({}));
-        throw new Error(body.error || 'HTTP ' + resp.status);
+        const err = new Error(body.error || 'HTTP ' + resp.status);
+        err.source = body.source;  // set when a configured source itself failed
+        throw err;
     }
     return resp.json();
 }
@@ -146,6 +148,11 @@ async function loadCurrent() {
         renderReadings(result);
     } catch (e) {
         console.warn('loadCurrent:', e.message);
+        // The reader does not retry a port that failed to open, so say how to recover.
+        if (e.source === 'serial') {
+            renderReadingsError('Serial port error: ' + e.message
+                + '. Check SERIAL_PORT in .env and the adapter, then restart the dashboard.');
+        }
     }
 }
 
@@ -219,6 +226,18 @@ function renderReadings(result) {
             + '</div>';
     }
     grid.innerHTML = html || '<div class="placeholder">No readings available</div>';
+}
+
+function renderReadingsError(message) {
+    const grid = document.getElementById('readingsGrid');
+    if (!grid) return;
+    const div = document.createElement('div');
+    div.className = 'placeholder';
+    div.style.gridColumn = '1 / -1';
+    div.style.color = 'var(--unhealthy)';
+    div.style.textAlign = 'center';
+    div.textContent = message;  // not innerHTML: the message carries the port path from .env
+    grid.replaceChildren(div);
 }
 
 function renderChart(result) {

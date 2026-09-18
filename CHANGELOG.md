@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] D7, part 1 of 3 — the page shows a failed serial source's error in the readings grid
+- **Change:** `static/js/dashboard.js`: `fetchJSON` now tags its thrown `Error` with the response body's `source`, and `loadCurrent`'s catch, which only logged to the console, now also calls a new `renderReadingsError` when that source is `serial`. It shows "Serial port error: <message>. Check SERIAL_PORT in .env and the adapter, then restart the dashboard." in red in the readings grid, set with `textContent`, not `innerHTML`, since the message carries the port path. Other errors, which name no source (no source configured, API upstream failures), are still only logged, so the no-source page and API mode are unchanged. Does nothing until the server sends a serial error (part 2). The operator chose "server + page" in a picker, after a probe showed a server-only fix leaves the page on "Loading readings…" indefinitely: plan §4's D7 row assumed the page reports non-2xx responses, and it only logs them
+- **Commit/PR:** this commit
+- **Session:** S15 · **Verified:** `node --check static/js/dashboard.js` exit 0; `python3 -m pytest -q` unaffected (no JS tests exist). Runtime evidence is in part 2's entry
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [BL-3] Backlog item added — decide whether this repository would benefit from a CI/CD pipeline
 - **Change:** at the operator's request mid-session, `BACKLOG.md` gains BL-3 under "Up Next", a decision item. It records the current state (no CI of any kind; the dashboard's MEDIUM "No CI/CD pipeline", `methodology_dashboard.py:3275`; CI/CD scoring 0 of 20, `:3226-3231`), the case for CI (a fast suite and ratchet that need no credentials or hardware), the case against and the open questions (sessions already run both before each commit; work lands by local fast-forward, so CI would report rather than gate; no deploy target), the decisions that are the operator's, and a DONE line. Not started; the session's deliverable stays D7, whose uncommitted changes stay out of this commit
 - **Commit/PR:** this commit
