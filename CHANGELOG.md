@@ -15,6 +15,18 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 11 close-out amended — merge-settings gate recorded, receipt brought to session end
+- **Change:** after the first close-out (`803a785`), the operator asked why turning off squash and rebase merges had been ranked behind Phase 2, then directed it done. Per learning #8, Phase 3 re-ran. `SESSION_NOTES.md` records the follow-on action. Its old open item 4 is removed, and the CSV findings are renumbered to item 4. The self-assessment drops from 8/10 to 7/10 for the ranking miss. `CLAUDE.md` learning #6 now records the gate and its reach: PR merges only, since local squash and rebase still work. The S11 `HANDOFFS.md` receipt is overwritten in place: `self_score: 7`, and its `changelog_ref` names this entry
+- **Commit/PR:** the amended close-out commit (ships this entry). Pushed to `origin/main` straight after it is made, on the operator's direction
+- **Session:** S11 · **Verified:** the receipt's `changelog_ref` matches this heading; `SESSION_NOTES.md` is 349 lines, under the 400-line ceiling; `python3 -m pytest -q` still gives `28 passed, 3 xfailed`
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] GitHub squash and rebase merges turned off — learning #6 becomes a gate
+- **Change:** on the operator's direction, `gh repo edit rmsharp/airqinodashboard --enable-squash-merge=false --enable-rebase-merge=false`. PRs into this public repo can now merge only with a merge commit, which keeps every commit SHA the ledger, the receipts and the `git show <sha>:SESSION_NOTES.md` pointers cite. Reversible with the same flags set to `true`
+- **Commit/PR:** the amended close-out commit (ships this entry); repository-settings change, no commit of its own
+- **Session:** S11 · **Verified:** `gh repo view --json mergeCommitAllowed,squashMergeAllowed,rebaseMergeAllowed` gave `true, true, true` before and `true, false, false` after
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 11 closed out — test-suite Phase 2 complete; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the handoff, the Session 10 evaluation (9/10) and the self-assessment (8/10). Phase 3 is recommended next, and open item 5 is new: two CSV-path findings (after an empty upload `has_csv` stays true while `source` is null; CSV mode ignores `?hours=`), left untested for the operator to decide. "Session 8 Handoff Evaluation" and "What Session 9 Did" were archived (`git show fa73763:SESSION_NOTES.md`; FM #28; 342 → 336 lines, under the 400-line ceiling). `docs/planning/test-suite-plan.md` gains an "As implemented (Session 11)" note under Phase 2's DONE list (the `raises=` markers) and a Status line naming both implemented phases. The S11 `HANDOFFS.md` receipt is `status: complete`. No new `CLAUDE.md` learning: the D2/D3 surprise is learning #9 recurring
 - **Commit/PR:** the close-out commit (ships this entry); session commits `7d02af9`, `fa73763`. Pushed to `origin/main` straight after it is made, on the operator's direction

@@ -11,8 +11,10 @@ done**. Next session implements **Phase 3 only**: the serial path.
 **Status:**
 - **Phase 2: COMPLETE, on `main`.** It is `fa73763`: `tests/test_csv_routes.py` and the tightened gate. On the
   operator's direction, `main` was fast-forwarded to the Session 11 branch, which was then deleted. `main` is the only
-  branch. Session 11's close-out commit is pushed straight after it is made, together with `7d02af9` and `fa73763`.
-  Check with `git status -sb`.
+  branch. `7d02af9`, `fa73763` and the first close-out `803a785` are on `origin/main`; the amended close-out is pushed
+  straight after it is made. Check with `git status -sb`.
+- **Merge settings:** since Session 11, GitHub allows merge commits only (squash and rebase are off), so learning #6
+  is a gate for PR merges.
 - **Suite:** `python3 -m pytest -q` gives `28 passed, 3 xfailed` in about 0.2 s. The ratchet gives `quality_ratchet:
   2/2 pass · 0 fail · 0 unmeasured · results 0dc3acde972e · manifest 770382cd43d3`. The gates are `tests-exit`
   (max 0) and `tests-passed` (min 28).
@@ -50,12 +52,7 @@ done**. Next session implements **Phase 3 only**: the serial path.
    headings, but this file has 1, and so does the synced seed `docs/methodology/starter-kit/SESSION_NOTES.md`.
    That's a mismatch inside the methodology's own files. Raise it upstream rather than restructuring this file to
    satisfy it.
-4. **Make learning #6 a gate (operator's call, one command).** GitHub still allows squash and rebase merges, either of
-   which would orphan the SHAs the ledger cites. `gh repo edit rmsharp/airqinodashboard --enable-squash-merge=false
-   --enable-rebase-merge=false` makes a merge commit the only option. It changes a public repo's settings, so it needs
-   the operator's go-ahead. Session 11 explained it at Phase 0 (all three methods are enabled today); the operator
-   picked Phase 2 instead.
-5. **Decide two CSV-path findings (new in Session 11; the operator's call).** Session 11 found both while probing.
+4. **Decide two CSV-path findings (new in Session 11; the operator's call).** Session 11 found both while probing.
    Neither is in the plan's §4 defect list, and no test pins either:
    - After an empty upload, `/api/status` returns `source: null` with `has_csv: true`. `app.py:87` checks
      `_csv_data is not None`, but `active_source()` (`:57`) checks truthiness, and `[]` is falsy. No front-end code
@@ -99,22 +96,24 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 **Deliverable:** Implement Phase 2 of `docs/planning/test-suite-plan.md` (open item 1): the no-source contract and the
 CSV path — **COMPLETE**
 **Started / Closed:** 2026-09-17 22:29. Claimed on branch `test/suite-phase2` off `main` `fbacf96`. Closed on `main`
-after a fast-forward, and pushed straight after this commit.
+after a fast-forward and pushed (`803a785`). Close-out amended after the operator had squash and rebase merges turned
+off (learning #8); the amended close-out is pushed straight after it is made.
 **Governing docs:** `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md`, and plan §5 "Phase 2", the approved
 contract. At the start, `git diff --stat 15b0a3f` over the product files was empty, so the contract still held.
-**Ledger:** 5 `CHANGELOG.md` entries: the claim, the tests (commit 2), the fast-forward and push, the branch deletion,
-and this close-out.
+**Ledger:** 7 `CHANGELOG.md` entries: the claim, the tests (commit 2), the fast-forward and push, the branch deletion,
+the first close-out, the merge-settings change, and this amended close-out.
 
 **What was done:**
 - **Phase 0:** before picking, the operator asked what open item 4 means. Answer: GitHub's squash and rebase merges
   rewrite SHAs, so once the branch is deleted, every ledger, receipt and `git show <sha>:SESSION_NOTES.md` citation
-  of its commits points at nothing. `gh repo view` showed all three methods enabled. Item 4 stays open.
+  of its commits points at nothing. `gh repo view` showed all three methods enabled. The operator picked Phase 2, and
+  the item was done after close-out (below).
 - **Claim** `7d02af9`.
 - **Probe first** (learning #7), in the scratchpad, against the repo's `app.py` through the test client with
   `TESTING` on. Every T2.x behaviour the plan claims held. Three findings:
   - D2 raises `ValueError` and D3 `AttributeError` into the caller; neither returns a 500;
-  - an empty upload leaves `has_csv: true` with `source: null` (open item 5);
-  - CSV mode ignores `?hours=` (open item 5).
+  - an empty upload leaves `has_csv: true` with `source: null` (open item 4);
+  - CSV mode ignores `?hours=` (open item 4).
 - **Tests** `fa73763`: `tests/test_csv_routes.py` (176 lines), 19 passing tests and 3 strict xfails;
   `.quality-gates.json` `tests-passed` 9 → 28. **Change from the plan's text:** each xfail names its exception
   (`raises=ValueError`, `AttributeError`, `AssertionError`), so any other failure reports as FAILED. The plan records
@@ -135,6 +134,17 @@ and this close-out.
   or local paths. Then `git merge --ff-only` and `git branch -d`, with the push after this commit.
 - **FM #28 reduction:** "Session 8 Handoff Evaluation" and "What Session 9 Did" were archived
   (`git show fa73763:SESSION_NOTES.md`).
+- **First close-out** `803a785`, pushed to `origin/main`.
+- **Follow-on action, directed by the operator after that close-out:** the operator asked why I had recommended
+  delaying the merge-settings item. I had no good reason. I ranked it behind the active test campaign under
+  1-and-done, and treated "needs your go-ahead" as "can wait". The exposure is small today (no open PRs, and landings
+  are fast-forwards), but the fix is one reversible command. The operator said to go ahead:
+  - `gh repo edit rmsharp/airqinodashboard --enable-squash-merge=false --enable-rebase-merge=false`. `gh repo view`
+    before: merge, squash and rebase all `true`; after: `mergeCommitAllowed: true`, `squashMergeAllowed: false`,
+    `rebaseMergeAllowed: false`.
+  - `CLAUDE.md` learning #6 now records the gate, and that it covers PR merges only (local squash and rebase still
+    work).
+  - The old open item 4 is removed; the CSV findings are now item 4.
 
 **Verification:**
 - **Plan §5 P2 DONE, every item met:**
@@ -184,19 +194,22 @@ and its 500s didn't carry over to the suite's `client`, whose setup differs. Pro
 (learning #7) caught it before any test was written.
 
 **Self-assessment:**
-- **Score: 8/10**
+- **Score: 7/10.** The first close-out scored itself 8. One point comes off for the ranking miss below.
 - (+) Every behaviour the tests assert was probed on the suite's own setup first. That surfaced the `TESTING`
   difference and two findings the plan doesn't have.
 - (+) Six red-drives: each targeted test failed on its own break, a real D4 fix proved the strict-xfail flip, and the
   tightened gate refused 27.
-- (+) Scope held: no product code, 3 files in commit 2, and the two findings went to open item 5, not into tests.
+- (+) Scope held: no product code, 3 files in commit 2, and the two findings went to open item 4, not into tests.
 - (+) The landing was decided before close-out (learning #8), so this handoff describes the session's real end.
 - (+) The handoff's forward claims (D1's and D2-hourly's failure modes) were probed, not reasoned.
 - (−) Four harness nudges for silence during long runs of tool calls. That repeats a Session 6–10 minus.
 - (−) The first suite run checked `$?` after a pipe, so it reported `tail`'s exit code, not pytest's. The next command
   re-ran it properly (exit 0), but for one step it was a check that couldn't fail.
-- (−) The first Phase 0 picker described open item 4 by its command, not its consequence, so the operator had to ask
-  what it meant before choosing.
+- (−) The first Phase 0 picker described the merge-settings item by its command, not its consequence, so the operator
+  had to ask what it meant before choosing.
+- (−) I ranked that item behind Phase 2 without weighing it on its merits, and the close-out report left it parked.
+  The operator had to ask why. A one-command, reversible guard against a silent failure should have been recommended
+  for immediate action. That miss costs the point: 8 → 7.
 - (−) A draft of this handoff cited `.quality-gates.json:196`, a line number read off a `cat -n` of three files at
   once, which numbers them as one listing. The pre-commit re-grep caught it (the gate is at `:24-32`). It's learning
   #7's failure again: a line number read by eye, not grepped.
