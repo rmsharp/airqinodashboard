@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 13 claimed — test-suite Phase 4 begins (in progress)
+- **Change:** the operator picked Phase 4 of `docs/planning/test-suite-plan.md` (the API client and the API-mode routes) in the Phase 0 picker. Session claimed on branch `test/suite-phase4` (off `main` `ace379d`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S13 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 12 closed out — test-suite Phase 3 complete; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the handoff, the Session 11 evaluation (9/10) and the self-assessment (8/10). By plan order, Phase 4 is recommended next; the D1 and D7 fixes are the alternative if the adapter is about to arrive. Open item 4 becomes three findings: `?hours=` is ignored in serial mode as well as CSV mode, and in D7's state `/api/timeseries` answers 200 with `data: []`. Open item 5 is new: a methodology sync is available, since canonical `SAFEGUARDS.md` is 1 commit ahead (`0d63410`). "Session 9 Handoff Evaluation" and "What Session 10 Did" were archived (`git show be5723c:SESSION_NOTES.md`; FM #28; 376 lines, under the 400-line ceiling). `docs/planning/test-suite-plan.md` gains an "As implemented (Session 12)" note under Phase 3's DONE list and a Status line naming three implemented phases. `CLAUDE.md` gains learning #10: read an exit code with no pipe in between. The S12 `HANDOFFS.md` receipt is `status: complete`. On the operator's direction (a picker before close-out), `main` was fast-forwarded from `e3e7a0a` to `be5723c` and is pushed to `origin/main` straight after this commit
 - **Commit/PR:** the close-out commit (ships this entry); session commits `1c21529`, `d0e3b8d`, `be5723c`
