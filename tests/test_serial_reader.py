@@ -5,8 +5,8 @@ port, so the first live data will come through a USB-to-TTL adapter and this mod
 What the board actually prints is unknown: the formats _parse_line accepts are
 guesses (its docstring), and no capture exists yet.
 
-T3.6 runs the real thread and real pyserial over a pseudo-terminal. D1 is a strict
-xfail (plan §4). A fix makes it XPASS, which fails the suite until the marker comes off.
+T3.6 runs the real thread and real pyserial over a pseudo-terminal. D1 (plan §4) was
+fixed in Session 14; its test is the last one here.
 """
 
 import os
@@ -39,6 +39,11 @@ def poll(condition, deadline=2.0):
     pytest.param('{"pm2.5": 7, "Temperature": 21.5, "humidity": 40}',
                  {"pm25": 7, "extT": 21.5, "rh": 40}, id="json-aliases"),
     pytest.param("co=1.5,pm25=7", {"co": 1.5, "pm25": 7.0}, id="comma-key-value"),
+    pytest.param("co=235;no2=17;o3=17;pm10=25;pm25=13",  # the docstring's own example
+                 {"co": 235.0, "no2": 17.0, "o3": 17.0, "pm10": 25.0, "pm25": 13.0},
+                 id="semicolon-key-value"),
+    # D1's mirror image: a ; in a comma line must not end up inside a value.
+    pytest.param("co=1.5,pm25=7;", {"co": 1.5, "pm25": 7.0}, id="trailing-separator"),
     pytest.param("1;2;3;4;5;6;7;8;9;10",
                  {"co": 1.0, "no2": 2.0, "o3": 3.0, "pm10": 4.0, "pm25": 5.0,
                   "rh": 6.0, "extT": 7.0, "intT": 8.0, "co2": 9.0, "voc": 10.0},
@@ -149,10 +154,7 @@ def test_open_failure_is_recorded_and_stops_the_reader(tmp_path):
     assert "no-such-port" in reader.latest["error"]
 
 
-# Known defect (plan §4). Keep the word for a green test out of the reason:
-# -ra prints it into the output the tests-passed gate's regex scans.
-@pytest.mark.xfail(raises=AssertionError,
-                   reason="D1: a ;-joined line is split on , too, which overwrites its first key "
-                          "(serial_reader.py:106-117)")
+# D1 (plan §4): the parser split a ;-joined line on , as well, and that second pass
+# overwrote the first key with the rest of the line.
 def test_semicolon_key_value_line_keeps_its_first_key():
     assert unstarted()._parse_line("co=235;no2=17")["co"] == 235.0

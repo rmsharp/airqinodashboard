@@ -102,19 +102,19 @@ class SerialReader:
             except json.JSONDecodeError:
                 pass
 
-        # Try key=value pairs (semicolon or comma separated)
+        # Try key=value pairs (semicolon or comma separated). Split on both in
+        # one pass: a second pass per separator re-reads the first one's pairs
+        # as a single value and overwrites the first key.
         if "=" in line:
             data = {}
-            for sep in [";", ","]:
-                parts = line.split(sep)
-                for part in parts:
-                    if "=" in part:
-                        k, _, v = part.partition("=")
-                        k = k.strip().lower()
-                        try:
-                            data[k] = float(v.strip())
-                        except ValueError:
-                            data[k] = v.strip()
+            for part in re.split(r"[;,]", line):
+                if "=" in part:
+                    k, _, v = part.partition("=")
+                    k = k.strip().lower()
+                    try:
+                        data[k] = float(v.strip())
+                    except ValueError:
+                        data[k] = v.strip()
             if data:
                 return self._normalize(data)
 
