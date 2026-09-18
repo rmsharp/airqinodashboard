@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+"""check-links — validate distributed-file cross-references in the ADOPTER layout.
+
+The canonical repo and an adopter project use different directory layouts
+(canonical: framework at repo root + starter-kit/; adopter: framework under
+docs/methodology/ + the starter-kit root-files at the project root). A relative
+markdown link can therefore be correct in one layout and dangling in the other
+(the "link-topology paradox", B1 plan section 4). The methodology's convention is
+that *distributed files author their cross-references for the adopter layout* and
+are validated there, not in-repo. This script enforces that convention: it
+materializes a simulated adopter tree (each distributable copied to its adopter
+destination) and asserts every relative link in every distributed markdown file
+resolves — treating the handful of adopter-owned files (instances, overflow
+valves, template placeholders) as allowed-absent rather than fabricating them
+(issue #36: a checker must not write to the tree it validates).
+
+Part of B1 / issue #32 (Phase 2 added this checker; Phase 3 moved the
+DISTRIBUTION map to bin/_manifest.py — the single source of truth now shared with
+bin/sync, plan Decision 5).
+
+Usage:  ./bin/check-links            # run from anywhere
+Exit:   0 = all relative links resolve; 1 = one or more dangling links.
+Python 3 stdlib only; cross-platform.
+"""
+import os
+import re
+import shutil
+import sys
+import tempfile
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _manifest import DISTRIBUTION  # noqa: E402  (bin/ is on sys.path above)
+
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Legitimate link targets that are NOT part of the distribution: files an adopter
+# creates locally (instances / overflow valves) and intentional template
+# placeholders. Treated as allowed-absent — a link resolving to one of these is
+# accepted without an existence check (they may legitimately not exist yet),
+# rather than fabricated in the tree. Keep this list tight — every entry is a
+# real adopter-layout file, so an unexpected dangling link still fails rather
+# than being masked.
+ADOPTER_LOCAL_FILES = [
+    "CONTEXT.md",            # instance of CONTEXT_TEMPLATE.md (adopter-owned)
+    "CLAUDE.md",             # instance of CLAUDE_TEMPLATE.md (adopter-owned)
+    "BACKLOG.md",            # adopter-created task list
+    "PROJECT_LEARNINGS.md",  # CLAUDE.md overflow valve (BOOTSTRAP.md)
+    # Template placeholder inside TEMPLATE_CAMPAIGN.md — the adopter replaces it
+    # with their actual parent-workstream filename.
+    "docs/methodology/workstreams/PARENT_WORKSTREAM.md",
+]
+
+# Markdown inline link target: the (...) after ](. Targets in these docs contain
+# no ')'; an optional ' "title"' is stripped below.
+LINK_RE = re.compile(r"\]\(([^)]+)\)")
+
+# Inline code spans. Text inside backticks renders as literal code, never as a
+# live link, so a ](...) that falls inside one is documented syntax (e.g. the
+# `![...](...)` image example in the toolchain table), not a real reference.
+CODE_SPAN_RE = re.compile(r"`[^`]*`")
+
+
+def is_external(target):
+    return target.startswith(("http://", "https://", "mailto:", "#"))
+
+
+def materialize_distribution(tree):
+    """Copy every distributed file to its adopter destination (simulated tree)."""
+    for src, dest, _disp in DISTRIBUTION:
+        dpath = os.path.join(tree, dest)
+        os.makedirs(os.path.dirname(dpath) or tree, exist_ok=True)
+        shutil.copyfile(os.path.join(REPO, src), dpath)
+
+
+def check(tree):
+    failures = []
+    checked = 0
+    # Adopter-owned files (instances, overflow valves, template placeholders) are
+    # allowed to be absent: accept links to them without an existence check rather
+    # than fabricating them, so validating a real tree never writes to it (#36).
+    allowed_absent = {os.path.normpath(os.path.join(tree, rel))
+                      for rel in ADOPTER_LOCAL_FILES}
+    md_files = [(s, d) for s, d, _disp in DISTRIBUTION if d.endswith(".md")]
+    for _src, dest in md_files:
+        dpath = os.path.join(tree, dest)
+        if not os.path.exists(dpath):
+            # In --tree mode a distributed file may be absent if sync failed to
+            # write it; report rather than crash.
+            failures.append((dest, 0, "<distributed file missing from tree>"))
+            continue
+        ddir = os.path.dirname(dpath)
+        with open(dpath, encoding="utf-8") as fh:
+            for lineno, line in enumerate(fh, 1):
+                code_spans = [(m.start(), m.end())
+                              for m in CODE_SPAN_RE.finditer(line)]
+                for match in LINK_RE.finditer(line):
+                    if any(s <= match.start() < e for s, e in code_spans):
+                        continue  # documented syntax inside a code span
+                    target = match.group(1).strip()
+                    if is_external(target):
+                        continue
+                    # Strip an optional link title: ](path "Title")
+                    path = target.split(" ", 1)[0]
+                    # Strip an anchor fragment; file existence only (Phase 2).
+                    path = path.split("#", 1)[0]
+                    if not path:  # pure in-page anchor
+                        continue
+                    checked += 1
+                    resolved = os.path.normpath(os.path.join(ddir, path))
+                    if resolved in allowed_absent:
+                        continue  # adopter-owned, allowed-absent (issue #36)
+                    if not os.path.exists(resolved):
+                        failures.append((dest, lineno, target))
+    return checked, failures, len(md_files)
+
+
+def main():
+    argv = sys.argv[1:]
+    if argv and argv[0] in ("-h", "--help"):
+        print("usage: check-links [--tree <adopter-project-dir>]\n"
+              "  (no args)      validate a freshly simulated adopter tree\n"
+              "  --tree <dir>   validate an existing tree, e.g. one bin/sync produced")
+        return 0
+
+    tree_arg = None
+    if argv:
+        if argv[0] == "--tree" and len(argv) == 2:
+            tree_arg = argv[1]
+        else:
+            print("usage: check-links [--tree <adopter-project-dir>]", file=sys.stderr)
+            return 2
+
+    if tree_arg:
+        # Validate a real, caller-owned tree (e.g. bin/sync output) in place. The
+        # distribution is already present; adopter-owned placeholders are treated
+        # as allowed-absent by check(), so we never write to — or delete from —
+        # the caller's tree (issue #36).
+        tree = os.path.abspath(tree_arg)
+        if not os.path.isdir(tree):
+            print("check-links: --tree path is not a directory: %s" % tree, file=sys.stderr)
+            return 2
+        checked, failures, n_files = check(tree)
+        where = "the tree at %s" % tree
+    else:
+        tree = tempfile.mkdtemp(prefix="methodology-adopter-tree-")
+        try:
+            materialize_distribution(tree)
+            checked, failures, n_files = check(tree)
+        finally:
+            shutil.rmtree(tree, ignore_errors=True)
+        where = "the simulated adopter tree"
+
+    if failures:
+        print("check-links: FAIL — %d dangling link(s) in %s:" % (len(failures), where))
+        for dest, lineno, target in failures:
+            print("  %s:%d  ->  %s" % (dest, lineno, target))
+        print("\nDistributed files author cross-references for the ADOPTER "
+              "layout (B1 plan section 4). Fix the target above, not the layout.")
+        return 1
+
+    print("check-links: OK — %d relative link(s) across %d distributed markdown "
+          "files resolve in %s." % (checked, n_files, where))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
