@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] API client tests — plan Phase 4, T4.1–T4.9
+- **Change:** new `tests/test_airqino_client.py`: 25 passing tests. They cover the password grant, sent exactly with its form fields and `timeout=15`, then the bearer header on the GET that follows. They also cover reuse of the token until 30 s before expiry, where 1269.9 reuses it and 1270.0 refreshes, and the exact refresh grant. A failed refresh falls back to the password grant, and a missing `expires_in` means 300 s. A 13-row table gives each of the 11 endpoint methods' method, URL, params, header and `timeout=30`. `get_hourly_avg` returns the text, with `pivot=true` only on request. `generate_report` POSTs its JSON body. An HTTP error reaches the caller, from `_get`, `get_hourly_avg`, `generate_report` or a refused password grant. The URL constants are written out in the tests, not read from the module. `tests/conftest.py` gains `FakeResponse`, `FakeRequests` (`grant`, `refuse` and `answer`, with every call recorded as passed) and `FakeClock`, patched onto `airqino_client`'s own `requests` and `time` names. No product code changed
+- **Commit/PR:** this commit
+- **Session:** S13 · **Verified:** `python3 -m pytest -q` gives `83 passed, 5 xfailed`, exit 0. Every behaviour was probed first in the scratchpad against the real client. Ten red-drives on `airqino_client.py` each failed only their target, among them the plan's `- 30` → `+ 30` at `:23`, which failed T4.3, T4.4 and T4.5. The file was restored byte-identical (shasum `8a7c798…`)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 13 claimed — test-suite Phase 4 begins (in progress)
 - **Change:** the operator picked Phase 4 of `docs/planning/test-suite-plan.md` (the API client and the API-mode routes) in the Phase 0 picker. Session claimed on branch `test/suite-phase4` (off `main` `ace379d`)
 - **Commit/PR:** the claim commit (ships this entry)
