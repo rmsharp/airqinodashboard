@@ -1,7 +1,7 @@
 # Test Suite Plan: airqino dashboard
 
 **Status:** approved as written by the operator, 2026-09-17 (Session 10's Phase 0 picker). Phase 1 was
-implemented in Session 10 and Phase 2 in Session 11.
+implemented in Session 10, Phase 2 in Session 11 and Phase 3 in Session 12.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.
@@ -416,6 +416,21 @@ get their xfails.
 - The ratchet passes 2/2 with the new count.
 - A red-drive is recorded: for example, delete the `"humidity": "rh"` mapping and watch T3.2 fail.
 - The whole suite still runs in well under 10 s.
+
+**As implemented (Session 12):** three changes from the text above.
+
+- **The injected reader is a real `SerialReader` that is never started** (`idle_reader` in `tests/conftest.py`),
+  not a hand-written `FakeReader`. With a fake, the route tests would run the fake's copy of `get_current` and
+  `get_history`, which could drift from the real methods. Without `start()`, no thread and no port are involved.
+  The fixture moved to commit 3, where its first user lands.
+- **T3.6 writes only after the reader has opened the port** (`reader._serial is not None`). pyserial flushes input
+  on open, and a probe lost a line written before it. The noise line goes in before the reading, so the check that
+  it was dropped means something.
+- **The D7 poll's timeout calls `pytest.fail`,** which reports FAILED and can never count as the xfail.
+
+The DONE criteria were met: `58 passed, 5 xfailed` in 0.69 s, and the ratchet passes 2/2 at 58. There were 7
+red-drives on `serial_reader.py` (among them `"humidity": "rh"` and a real D1 fix, which gave XPASS strict), 5 on
+`app.py` (among them a real D7 fix) and 1 on the gate.
 
 **Surface:**
 

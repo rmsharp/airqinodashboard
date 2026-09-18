@@ -15,6 +15,18 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 12 closed out — test-suite Phase 3 complete; main fast-forwarded, pushed with this commit
+- **Change:** `SESSION_NOTES.md` carries the handoff, the Session 11 evaluation (9/10) and the self-assessment (8/10). By plan order, Phase 4 is recommended next; the D1 and D7 fixes are the alternative if the adapter is about to arrive. Open item 4 becomes three findings: `?hours=` is ignored in serial mode as well as CSV mode, and in D7's state `/api/timeseries` answers 200 with `data: []`. Open item 5 is new: a methodology sync is available, since canonical `SAFEGUARDS.md` is 1 commit ahead (`0d63410`). "Session 9 Handoff Evaluation" and "What Session 10 Did" were archived (`git show be5723c:SESSION_NOTES.md`; FM #28; 376 lines, under the 400-line ceiling). `docs/planning/test-suite-plan.md` gains an "As implemented (Session 12)" note under Phase 3's DONE list and a Status line naming three implemented phases. `CLAUDE.md` gains learning #10: read an exit code with no pipe in between. The S12 `HANDOFFS.md` receipt is `status: complete`. On the operator's direction (a picker before close-out), `main` was fast-forwarded from `e3e7a0a` to `be5723c` and is pushed to `origin/main` straight after this commit
+- **Commit/PR:** the close-out commit (ships this entry); session commits `1c21529`, `d0e3b8d`, `be5723c`
+- **Session:** S12 · **Verified:** `python3 -m pytest -q` gives `58 passed, 5 xfailed`, exit 0; `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results dcc07cbf2359 · manifest fe94344ce1e7`; dashboard 68/100 (62 before), with the MEDIUM "thin coverage" cleared; every `file:line` in the handoff re-grepped; the receipt's `changelog_ref` matches this heading
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] Local branch `test/suite-phase3` deleted
+- **Change:** on the operator's direction, the fully merged local branch `test/suite-phase3` (tip `be5723c`) was deleted with `git branch -d`. It was never pushed, so there was no remote branch to delete. `main` is again the only branch
+- **Commit/PR:** the close-out commit (ships this entry); branch op, no commit of its own
+- **Session:** S12 · **Verified:** before deletion, `git merge-base --is-ancestor test/suite-phase3 main` succeeded; afterwards `git branch -vv` lists only `main`
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Serial route tests — plan Phase 3, T3.8–T3.9 and the D7 strict xfail; tests-passed 28 → 58
 - **Change:** new `tests/test_serial_routes.py`: 4 passing tests and 1 strict xfail. It pins `/api/current` as 200 with a reading and 202 before one, and `/api/timeseries` as the history, with `?sensor=` reshaping rows. D7 is marked `raises=AssertionError`; it runs the real reader through `get_serial_reader()` and polls until the 202 turns. A poll timeout calls `pytest.fail`, which reports FAILED and can never count as the xfail. `tests/conftest.py` gains `idle_reader`, a real `SerialReader` that is never started, where the plan specified a hand-written `FakeReader`: the routes then run the reader's own methods, and no copy of them can drift. `.quality-gates.json` `tests-passed` tightens from 28 to 58. No product code changed
 - **Commit/PR:** this commit
