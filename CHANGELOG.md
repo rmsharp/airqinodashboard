@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [BL-2] Backlog item added — put `BACKLOG.md` items in a form the dashboard can read
+- **Change:** at the operator's request mid-session, `BACKLOG.md` gains BL-2 under "Up Next". The dashboard's LOW signal "done-mark format not recognized (no `- [x]` checkboxes and no Status column)" fires because BL-1 is a plain bullet, so the unmigrated-work check is off for this repo. The item records where the signal comes from (`methodology_dashboard.py:1961`, `:2068`), that it began with BL-1 (`d8e9bc5`), the fix (a `- [ ]` checkbox on each top-level item, the starter kit's form, or a table with a Status column) and a DONE line. Not started; the session's deliverable stays D7. The Phase 0 report missed this signal: its grep matched only three flag strings
+- **Commit/PR:** this commit
+- **Session:** S15 · **Verified:** `_scan_backlog_done(Path('.'))` returns `format: unrecognized`, `recognized: False`; `dashboard.html` carries the signal's text; `git show b5a336c:BACKLOG.md` has no items; the cited lines grepped
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 15 claimed — D7 fix begins (in progress)
 - **Change:** the operator picked the D7 fix (open item 1; `docs/planning/test-suite-plan.md` §6's second fix session) in the Phase 0 picker. D7: a serial port that fails to open is served as data with 200. Session claimed on branch `fix/d7-port-open-failure` (off `main` `b710ac0`)
 - **Commit/PR:** the claim commit (ships this entry)
