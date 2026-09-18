@@ -35,3 +35,19 @@
     with a Status column is the other form it reads; the operator picks. The dashboard is synced, so don't edit it.
   - **Done when:** `_scan_backlog_done` returns `format: checkbox` (or `table`) with `recognized: True`, and the
     signal is gone from `dashboard.html`.
+- **BL-3 · Decide whether this repository would benefit from a CI/CD pipeline.** Added 2026-09-18 at the operator's
+  request (Session 15). A decision first; any pipeline would be its own session after it.
+  - **Now:** no CI of any kind (no `.github/workflows/`). The dashboard flags it MEDIUM ("No CI/CD pipeline",
+    `methodology_dashboard.py:3275`). The health score gives CI/CD 0 of its 20 points (`:3226-3231`): one
+    workflow file would score 15, and two would score 20. The repo is public on GitHub (`rmsharp/airqinodashboard`).
+  - **For:** the suite (`python3 -m pytest -q`, about 120 tests in under a second) and the ratchet
+    (`quality_ratchet.py --run`) need no credentials or hardware, so they could run on every push and PR. GitHub
+    Actions minutes are free for public repos. The pty test (T3.6) needs a POSIX runner, which `ubuntu-latest` is.
+  - **Against, or open:** sessions already run the suite and the ratchet before each commit. Most work lands by a
+    local fast-forward of `main`, not a PR, so CI would report after the push, not gate it; gating needs PRs and
+    branch protection. There is no deploy target (the app runs next to the device, on the operator's machine), so
+    "CD" may not apply. The live API test (open item 7) would need credentials stored as secrets.
+  - **The operator decides:** CI or not; if CI, when it runs (push, PR, or both), whether `main` gets a required
+    status check, and whether anything counts as "CD" here.
+  - **Done when:** the decision is recorded here or in `CHANGELOG.md`, and either a follow-up item describes the
+    pipeline or this item is closed with the reason.

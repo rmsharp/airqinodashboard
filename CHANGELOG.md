@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [BL-3] Backlog item added — decide whether this repository would benefit from a CI/CD pipeline
+- **Change:** at the operator's request mid-session, `BACKLOG.md` gains BL-3 under "Up Next", a decision item. It records the current state (no CI of any kind; the dashboard's MEDIUM "No CI/CD pipeline", `methodology_dashboard.py:3275`; CI/CD scoring 0 of 20, `:3226-3231`), the case for CI (a fast suite and ratchet that need no credentials or hardware), the case against and the open questions (sessions already run both before each commit; work lands by local fast-forward, so CI would report rather than gate; no deploy target), the decisions that are the operator's, and a DONE line. Not started; the session's deliverable stays D7, whose uncommitted changes stay out of this commit
+- **Commit/PR:** this commit
+- **Session:** S15 · **Verified:** `ls .github` finds nothing; `gh repo view` gives `rmsharp/airqinodashboard`, `PUBLIC`; the cited dashboard lines grepped; `requirements-dev.txt` read
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [BL-2] Backlog item added — put `BACKLOG.md` items in a form the dashboard can read
 - **Change:** at the operator's request mid-session, `BACKLOG.md` gains BL-2 under "Up Next". The dashboard's LOW signal "done-mark format not recognized (no `- [x]` checkboxes and no Status column)" fires because BL-1 is a plain bullet, so the unmigrated-work check is off for this repo. The item records where the signal comes from (`methodology_dashboard.py:1961`, `:2068`), that it began with BL-1 (`d8e9bc5`), the fix (a `- [ ]` checkbox on each top-level item, the starter kit's form, or a table with a Status column) and a DONE line. Not started; the session's deliverable stays D7. The Phase 0 report missed this signal: its grep matched only three flag strings
 - **Commit/PR:** this commit
