@@ -7,57 +7,60 @@
 ## ACTIVE TASK
 
 **Current focus:** The test suite is complete (all four phases on `main`). Of the plan's fix sessions (§6), D1
-(Session 14) and D7 (Session 15) are done. Next: D3 (plan §6's order continues D3 and D4, then D6, D5 and D2), or
-any other open item.
+(Session 14), D7 (Session 15) and D3 (Session 16) are done. Next: D4 (plan §6's order continues D4, then D6, D5 and
+D2), or any other open item.
 **Status:**
-- **D7: FIXED, Session 15, on `main`** (`222f02c` page, `9698f9c` server and tests, `87c7535` README and gate). A
-  serial port that fails to open is now a 503 `{"source": "serial", "data": null, "error": …}`, not a 200 with the
-  error as data, and the page shows the error in red in the readings grid. The reader keeps the failure in a new
-  `error` field instead of `latest`. `main` was fast-forwarded to the Session 15 branch, which was then deleted.
-  `main` is the only branch, and it is pushed straight after the close-out commit. Check with `git status -sb`.
-- **Suite:** `python3 -m pytest -q` gives `120 passed, 6 xfailed` in about 0.36 s. The ratchet gives
-  `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results a29b9250f033 · manifest 41bd5cf14af2`. The gates
-  are `tests-exit` (max 0) and `tests-passed` (min 120).
-- **Dashboard:** 68/100, unchanged, with High+ risk 0. It has 5 flags, listed from `dashboard.html` (not grepped for
-  known ones; see gotchas): MEDIUM "No CI/CD pipeline" (now BL-3); MEDIUM, a large file, the synced
-  `docs/methodology/tools/methodology_dashboard.py`; LOW "No LICENSE file" (BL-1); LOW "BACKLOG.md: done-mark format
-  not recognized" (BL-2; it began with BL-1 in Session 14, whose handoff called the flags unchanged); LOW, new this
-  session, `CHANGELOG.md` past its one-read budget (59,986 B of 56,750 B), which the dashboard says needs no action.
-- **Defects (plan §4):** D1 and D7 fixed. D2, D3, D4, D5, D6 still have strict xfails, 6 tests in all (D2 has two).
-- **BACKLOG.md** has three items, none started: BL-1 (MIT licensing, Session 14), and two the operator added
-  mid-Session-15: BL-2 (give items `- [ ]` checkboxes so the dashboard's done-mark check works) and BL-3 (decide
-  whether the repo needs CI/CD).
+- **D3: FIXED, Session 16, on `main`** (`31e50f2` page, `5e37cb1` server, tests, README and gate, `c3004b7` plan).
+  A CSV row with more fields than the header now loads without its extra fields, instead of failing the whole
+  upload with a 500. The response gains `ragged_rows` when any row had extras, and the page's upload status then
+  says how many, in amber. The operator chose this design ("B") over dropping the extras silently ("A") or
+  rejecting the file ("C"), after all three were probed on the real page. `main` was fast-forwarded to the Session
+  16 branch, which was then deleted. `main` is the only branch, and it is pushed straight after the close-out
+  commit. Check with `git status -sb`.
+- **Suite:** `python3 -m pytest -q` gives `122 passed, 5 xfailed` in about 0.3 s. The ratchet gives
+  `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 4c59862276a3 · manifest 6947b3732825`. The gates
+  are `tests-exit` (max 0) and `tests-passed` (min 122).
+- **Dashboard:** 68/100, unchanged, with High+ risk 0. It has 6 flags, listed from `dashboard.html` at close-out:
+  MEDIUM "No CI/CD pipeline" (BL-3); MEDIUM, a large file, the synced `docs/methodology/tools/methodology_dashboard.py`;
+  LOW "No LICENSE file" (BL-1); LOW "BACKLOG.md: done-mark format not recognized" (BL-2); LOW `CHANGELOG.md` and LOW
+  `HANDOFFS.md`, each past the 56,750 B one-read budget, which the dashboard calls expected for a ledger. Session
+  15's handoff listed 5: its own close-out commit took `HANDOFFS.md` from 56,534 B to 60,283 B after it counted.
+  This close-out can't add a size flag, since both ledgers are already flagged.
+- **Defects (plan §4):** D1, D7 and D3 fixed. D2, D4, D5, D6 still have strict xfails, 5 tests in all (D2 has two).
+- **BACKLOG.md** has three items, none started: BL-1 (MIT licensing), BL-2 (`- [ ]` checkboxes so the dashboard's
+  done-mark check works) and BL-3 (decide whether the repo needs CI/CD).
 - **Merge settings:** GitHub allows merge commits only (squash and rebase are off), so learning #6 is a gate for PR
   merges.
-- Earlier status: Session 14's is at `git show b710ac0:SESSION_NOTES.md`, Session 13's at `git show b5a336c:SESSION_NOTES.md`.
+- Earlier status: Session 15's is at `git show a1cb7ec:SESSION_NOTES.md`, Session 14's at `git show b710ac0:SESSION_NOTES.md`.
 
 ### Open items — next session picks ONE (1-and-done)
 
-1. **Fix D3 (recommended next): the plan's fix sessions (§6), one defect per session.** D1 and D7 are done. The
-   remaining order is D3 and D4, then D6, D5 and D2. Each session, on a new branch off `main`:
+1. **Fix D4 (recommended next): the plan's fix sessions (§6), one defect per session.** D1, D7 and D3 are done.
+   The remaining order is D4, then D6, D5 and D2. Each session, on a new branch off `main`:
    - removes the defect's `xfail` marker and watches its test fail on the unfixed code;
-   - **before choosing a design, runs the candidate fix end to end on the surface the user sees** (learning #12):
-     for D3 and D4 that is a CSV upload in the real app, then the chart and readings grid;
+   - **before choosing a design, runs the current code and each candidate fix end to end on the surface the user
+     sees** (learning #12). For D4 that is a CSV upload through the page, then the upload status, readings grid and
+     chart. `--screenshot` alone can't upload; learning #14 has the drag-and-drop driver Session 16 used;
    - fixes the product code and watches the test pass;
-   - tightens `tests-passed` by the measured delta (1 for D3, D4, D5, D6; 2 for D2 — but measure);
-   - red-drives the fix against the whole suite with the original marker restored (learning #11). Also run the
-     whole suite on the fix alone: in Session 15, that is how T3.7 showed up pinning D7's representation;
-   - re-greps every `file:line` citation after editing product code (Session 15 moved 11 in the tests).
+   - tightens `tests-passed` by the measured delta (D3's was 2: its xfail, plus a test for the chosen design);
+   - red-drives the fix against the whole suite with the original marker restored (learning #11), and runs the
+     whole suite on the fix alone (that found T3.7 pinning D7 in Session 15; nothing pinned D3);
+   - re-greps every `file:line` citation after editing, and measures a line shift instead of computing it (Session
+     16's first plan note got one wrong by arithmetic).
 
    Where each one is:
-   - **D3:** `app.py:262-265`; its xfail is `tests/test_csv_routes.py:167` (marker `:165`). A ragged CSV row puts
-     extras under the key `None`, and `k.strip()` fails.
-   - **D4:** `app.py:249`; its xfail is `tests/test_csv_routes.py:174` (marker `:172`). A UTF-8 BOM stays in the
-     first header.
-   - **D2:** `app.py:175` and `:224`; its xfails are `tests/test_csv_routes.py:160` and `tests/test_api_routes.py:213`.
+   - **D4:** `app.py:249` decodes as `utf-8`, not `utf-8-sig`; its xfail is `tests/test_csv_routes.py:185` (marker
+     `:183`). A BOM stays in the first header, and the page reads `row.timestamp` for the chart
+     (`static/js/dashboard.js:270`) and `data.timestamp` for the reading cards (`:202`).
+   - **D2:** `app.py:175` and `:224`; its xfails are `tests/test_csv_routes.py:178` and `tests/test_api_routes.py:213`.
    - **D5:** `app.py:53`; its xfail is `tests/test_api_routes.py:194`. **A real D5 fix also fails Phase 1's T1.5**
      (`tests/test_dashboard_page.py:97`), which sets only `AIRQINO_CLIENT_ID`. That session must set all four
      credentials in T1.5 as well.
    - **D6:** `app.py:53-58`; its xfail is `tests/test_api_routes.py:205`.
 
-   The plan's own `app.py` citations past `:142` read 4 lower than the code since D7 (noted in the plan). Use the
-   lines above. Probe fixes carried in these notes are starting points, not verified designs (D1's was rejected
-   in Session 14; D7's "2-line 503" would have left the page stuck on "Loading readings…").
+   The plan's own `app.py` citations read lower than the code: by 4 past `:142` since D7, and by more inside
+   `upload_csv` since D3 (both noted in the plan). Use the lines above. Probe fixes carried in these notes are
+   starting points, not verified designs.
 2. **Decide the untracked files.** For each one, commit, gitignore or delete; that's the operator's call.
    - `docs/HARDWARE.html` has been untracked since Session 3. It is an HTML render of `docs/HARDWARE.md` and holds no
      stale hardware copy.
@@ -75,7 +78,7 @@ any other open item.
 
    Both are mismatches inside the methodology's own tooling. Raise them upstream rather than restructuring this
    file to satisfy either one.
-4. **Decide four findings (the operator's call).** No test pins any of them, and none is in the plan's §4 list:
+4. **Decide five findings (the operator's call).** No test pins any of them, and none is in the plan's §4 list:
    - After an empty CSV upload, `/api/status` returns `source: null` with `has_csv: true`. `app.py:87` checks
      `_csv_data is not None`, but `active_source()` (`:57`) checks truthiness, and `[]` is falsy. No front-end code
      calls `/api/status`. (Session 11.)
@@ -90,11 +93,17 @@ any other open item.
      reading with 200. Each reading card shows its timestamp, so the age is visible. Related gaps: the reader never
      retries a port that failed to open (restart needed, now said in `README.md:73`), and on a fresh page load the
      error appears only at the 60 s refresh, because the first request starts the reader and gets 202.
+   - **(new, Session 16, probed)** A CSV whose first line is blank loads as rows with no columns. `csv.DictReader`
+     takes the blank line as the header, so every value is an extra field: the upload answers 200 with `ragged_rows`
+     equal to the row count, the source becomes `csv`, and the grid shows "No readings available". It was a 500
+     before D3's fix. The delimiter check (`app.py:251-258`) reads the blank line too.
 
    Each could become a new defect with a strict xfail (a plan amendment), or be recorded as intended.
 5. **Sync the methodology (new in Session 12).** `context_budget.py` reports that `SAFEGUARDS.md` differs from
    canonical: the local copy is `df926b6` (2026-09-16), 1 commit behind `0d63410` (BL-63, how to commit a `bin/sync`
-   run). Run `bin/sync` from `~/Development/methodology`. Don't edit the synced file here.
+   run). Run `bin/sync` from `~/Development/methodology`. Don't edit the synced file here. Re-checked in Session 16
+   against `~/Development/methodology/starter-kit/`: only `SAFEGUARDS.md` differs; `SESSION_RUNNER.md` and the three
+   synced tools match.
 6. **Declare a coverage floor (new in Session 13).** Plan §8 defers it until after Phase 4, then to its own session:
    measure with pytest-cov (installed, 7.1.0), declare the floor at the measured value in `.quality-gates.json`, and
    pair it with a mutation spot-check. Sessions 13–15's red-drives are the start of that check.
@@ -105,8 +114,9 @@ any other open item.
    31 is unknown.
 8. **The map's tile provider now demands an API key (Session 14, no test pins it).** `static/js/dashboard.js:355`
    loads `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png` with no key. A direct `curl` of one tile
-   returns 200 with an image reading "API KEY REQUIRED", not a 4xx, so nothing in the app's code or tests would
-   catch it. Whether a free key exists and how to wire it in, or which other tile source to use, is a design
+   returns 200 with the real map and "API KEY REQUIRED / carto.com/basemaps/apikey" stamped across it, not a 4xx,
+   so nothing in the app's code or tests would catch it (re-checked in Session 16). A page screenshot can look
+   normal when the stamp falls outside the visible part of the map, as in Session 16's. Whether a free key exists and how to wire it in, or which other tile source to use, is a design
    question for its own session. BL-1 (MIT licensing) also touches this, since a tile provider swap changes what is
    credited and under what licence.
 9. **The three backlog items** (BL-1, BL-2, BL-3 in `BACKLOG.md`). BL-2 is small and mechanical (checkboxes, one
@@ -124,11 +134,113 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 *Session history accumulates below this line. Newest session at the top.*
 
 ### What Session 16 Did
-**Deliverable:** Fix D3 (open item 1; plan §6's third fix session): a ragged CSV row puts its extra fields under
-the key `None`, and `k.strip()` fails (`app.py:262-265`) (IN PROGRESS)
-**Started:** 2026-09-18 00:23, on branch `fix/d3-ragged-csv-row` off `main` `a1cb7ec`
-**Status:** Session claimed. Work beginning.
-**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest.
+**Deliverable:** Fix D3 (open item 1; plan §6's third fix session): a CSV row with more fields than the header put
+its extras under the key `None`, and `k.strip()` failed (`app.py:262-265` at the start) — **COMPLETE**
+**Started / Closed:** 2026-09-18 00:23 / 00:48. Claimed on branch `fix/d3-ragged-csv-row` off `main` `a1cb7ec`.
+Closed on `main` after a fast-forward, and pushed straight after the close-out commit.
+**Governing docs:** `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md` (read in full), and plan §6 (fix
+sessions), the approved contract from Session 9's plan.
+**Ledger:** 6 `CHANGELOG.md` entries: the claim, D3 parts 1 and 2, the plan update, the branch deletion, and this
+close-out, which also records the fast-forward and the push.
+
+**What was done:**
+- **Claim** `5c93025`. The operator picked D3 in the Phase 0 picker.
+- **Probed before designing** (learnings #7 and #12). `--screenshot` can't upload, so a scratchpad Node script drove
+  headless Chrome over the DevTools protocol and dropped a CSV on `#uploadArea` (learning #14, new). The real app
+  reproduced D3: `curl` got a 500 as Werkzeug's HTML debugger page, and the page read "Upload failed: Unexpected
+  token '<', "<!doctype "... is not valid JSON" with nothing loaded. Three candidates in scratchpad copies of the
+  app, given the same 5-row CSV (a trailing comma on row 3, an extra value on the last row): A (drop the extras
+  silently) loaded as if clean; B (drop and count) loaded with an amber note; C (a 400 naming the line) loaded
+  nothing. The operator chose B in a picker.
+- **Red on the unfixed code:** with the marker removed, only D3's test failed (`AttributeError` at `app.py:265`).
+- **D3, two commits, each green and true at its own point** (6 files, so the 5-file cap split it):
+  - `31e50f2` page: `uploadFile` adds the ragged-row count to the status, in amber, when the response has
+    `ragged_rows`. A no-op until part 2; that commit's tree gave `120 passed, 6 xfailed`.
+  - `5e37cb1` server: `upload_csv` skips the `None` key and counts those rows; `ragged_rows` is in the body only
+    when it isn't 0. D3's test pins the new body and moved above the known-defects block; a new test covers an
+    extra value, a clean row and a trailing delimiter. A README sentence, inside its line, so no cited line moved.
+    `tests-passed` 120 → 122.
+- **Red-drives**, each against the whole suite, files restored byte-identical (`shasum -c`): the fix with the
+  original marker and assertion (only D3's `XPASS(strict)`); the new tests on the unfixed code (both fail); design A
+  (both D3 tests fail); counting once per file (only the multi-row test fails); always sending `ragged_rows` (T2.3's
+  three cases and T2.7 fail, which pins "only when not 0"); keeping the extras under a key (both fail). The gate:
+  with the new test hidden, `tests-passed` measured 121 and the ratchet exited 2.
+- **Runtime (learning #5):** the real app, before and after, by the drag-and-drop driver, `curl` and screenshots.
+  After the fix: the amber note, four reading cards (the last row, without its extra value) and two 5-point chart
+  series. Adjacent paths: a reload shows the "CSV Data" badge and the same data; a clean CSV dropped on the bottom
+  upload area reads "Loaded 5 rows (5 columns)" in green, and `curl` of it returns no `ragged_rows`. App and Chrome
+  stopped each time; port 5001 free (`lsof` exit 1).
+- **Plan updated** (`c3004b7`): the Status line, D3's §4 row, and an "As implemented (D3, Session 16)" note.
+- **Checked three carried claims before repeating them:** open item 8 (the tile is the map with "API KEY REQUIRED"
+  stamped on it: still true), open item 5 (only `SAFEGUARDS.md` differs from canonical: still true), and Session
+  15's flag count (see the evaluation below).
+- **Landing:** the operator picked "fast-forward main + push" before close-out (learning #8). After a `git fetch`,
+  `origin/main` = `a1cb7ec` was an ancestor of the branch; a scan of the added lines found no secrets or local
+  paths. Then `git merge --ff-only` and `git branch -d`, with the push after this commit.
+- **FM #28 reduction:** "Session 13 Handoff Evaluation" and "What Session 14 Did" were archived
+  (`git show c3004b7:SESSION_NOTES.md`).
+
+**Verification:**
+- **Plan §6 DONE, every item met:** marker removed and watched red; product code fixed and the test watched green;
+  `tests-passed` tightened 120 → 122 (measured); runtime check done; red-driven against the whole suite with the
+  marker restored.
+- `python3 -m pytest -q`: `122 passed, 5 xfailed`, exit 0, read from a file with no pipe (learning #10).
+  `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 4c59862276a3 · manifest 6947b3732825`; `--precommit`
+  passed on the staged manifest. `node --check static/js/dashboard.js` exit 0.
+- **Runtime (3E):** verified live above. Not covered: the file input's click-to-choose path (the driver drops a
+  file; both paths call the same `uploadFile`), and a real SD-card file (none exists; plan Phase 2's surface note).
+
+**Key files:**
+- `app.py:260-283` (`upload_csv`'s parse loop and body; the fix at `:262`, `:266-268` and `:277-283`).
+- `static/js/dashboard.js:449-475` (`uploadFile`; the ragged note at `:461-467`).
+- `tests/test_csv_routes.py:158-172` (D3's two tests), `:177` and `:183` (D2's and D4's remaining markers).
+- `.quality-gates.json:27` (`tests-passed`, 122); `README.md:40` (the CSV paragraph).
+- `docs/planning/test-suite-plan.md` §6, the "As implemented (D3, Session 16)" note.
+
+**Gotchas for the next session:**
+- **An upload needs a driver, not a screenshot** (learning #14). Its recipe rebuilds the driver in a few minutes.
+- **In the real app a 500 is HTML** (`debug=True`), so the page's `resp.json()` throws and the status shows a JSON
+  parse error. D4 isn't a 500, but any CSV-path error that is will look like that.
+- **Upload state persists in a running app** (`_csv_data`), and the upload area moves from the setup banner to the
+  bottom panel once a source is active. Restart the app between probes that need the no-source page.
+- **zsh expands an unquoted `--include=*.py`** in `grep -r` and fails with "no matches found". Quote it.
+- **Exit codes (learning #10):** redirect to a scratchpad file, then `echo $?`. **Stage files by name** (the 4
+  untracked files remain, open item 2). **Cite the ratchet summary line from the final run.**
+- **This file must stay at 399 lines or fewer by `wc -l`** (open item 3).
+
+**Learnings (3C):** `CLAUDE.md` learning #14 (an interaction needs a driver, not a screenshot; the recipe).
+
+**Self-assessment:**
+- **Score: 8/10**
+- (+) Probed the current behaviour and three designs on the real page with a real drag-and-drop. That found the
+  page's actual symptom (a JSON parse error, not a 500), and the operator chose on evidence.
+- (+) Built the driver when `--screenshot` couldn't reach the surface, rather than settling for `curl`.
+- (+) 6 product red-drives and 1 gate red-drive, all against the whole suite; each rejected design has a test that
+  fails on it.
+- (+) The 5-file cap held; both D3 commits were green at their own point (commit 1's tree checked with the test
+  change stashed).
+- (+) Re-checked three carried claims instead of repeating them, and measured the predecessor's flag miss.
+- (−) The plan note's first draft said "11 lower past `:257`", computed rather than measured; the 7 lines went in
+  at three places. Caught before the commit by mapping the lines (learning #7's trap again).
+- (−) A zsh glob trap in the first citation grep; caught from its output.
+- (−) Two harness nudges for silence during long runs of tool calls, which repeats Sessions 6–15's minus.
+
+### Session 15 Handoff Evaluation (by Session 16)
+- **Score: 9/10**
+- **What helped:**
+  - Open item 1's D3 recipe held on a fresh read: `app.py:262-265`, the xfail at `tests/test_csv_routes.py:167`
+    (marker `:165`), and the surface: "a CSV upload in the real app, then the chart and readings grid".
+  - Learning #12 and "probe fixes carried in these notes are starting points" sent me to the page before designing,
+    which is where the real symptom was.
+  - "Run the whole suite on the fix alone" and "measure the delta" both applied as written (the delta was 2).
+  - The ratchet citation matched `.quality-gates-results.json`; both frontiers sat at `a1cb7ec` with nothing to
+    reconcile. Learning #13's gotcha found the sixth flag at Phase 0.
+- **What was wrong:** "It has 5 flags" was true when counted, but the close-out commit took `HANDOFFS.md` from
+  56,534 B to 60,283 B, past its budget, so the committed state had 6: the "measured before the last edit" pattern
+  Session 15 itself found in Session 14's line count.
+- **What was missing:** that `--screenshot` can't exercise an upload, so D3 and D4 need a browser driver. Session 15
+  only loaded pages, so it had no way to know; learning #14 records it now.
+- **ROI:** strongly positive. Phase 0 to a probed design needed no rediscovery, only the driver.
 
 ### What Session 15 Did
 **Deliverable:** Fix D7 (open item 1; plan §6's second fix session): a serial port that fails to open was served
@@ -248,140 +360,7 @@ the page first) and #13 (list the dashboard's flags from its output, not by grep
   (Session 9).
 - **ROI:** strongly positive. Phase 0 to a probed design needed no rediscovery.
 
-### What Session 14 Did
-**Deliverable:** Fix D1 (open item 1; plan §6's first fix session): a `;`-joined serial line is split on `,` too,
-which overwrites its first key (`serial_reader.py:106-117`) — **COMPLETE**
-**Started / Closed:** 2026-09-17 23:28 / 23:39. Claimed on branch `fix/d1-serial-delimiter` off `main` `b5a336c`.
-Closed on `main` after a fast-forward, and pushed straight after the close-out commit.
-**Governing docs:** `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md`, and plan §6 (fix sessions), the approved contract from Session 9's plan.
-**Ledger:** 4 `CHANGELOG.md` entries: the claim, the BL-1 backlog addition, the fix, and this close-out, which
-also records the fast-forward and the push. Also 1 note (mid-session model switch, below).
-
-**A note on the acting model:** the harness switched from Claude Opus 5 (1M context) to Claude Sonnet 5 partway
-through this session, after the fix was already committed. Everything through `a14ff03` (claim, BL-1, the fix)
-is Opus 5's; the close-out onward — this write-up, the plan-doc note, the ledger, the landing — is Sonnet 5's.
-Commit trailers reflect this split; they were not rewritten.
-
-**What was done:**
-- **Claim** `0db8f73`. The operator picked D1 in the Phase 0 picker.
-- **Mid-session, out of band:** the operator asked to add a backlog item for full MIT compliance. `BACKLOG.md`
-  gained its first item, BL-1 (`d8e9bc5`), recording the current state (no root `LICENSE`, GitHub license `null`),
-  the catch (`docs/methodology/LICENSE` is a non-MIT attribution/no-redistribution license and needs a carve-out),
-  and two decisions left to the operator. This was committed on its own, separate from the D1 diff.
-- **Probed three parser designs before writing the fix** (learning #7), in the scratchpad, against 10 hand-picked
-  lines including the docstring's own example, mixed separators, a trailing separator and a decimal comma:
-  - the original two-pass code (confirmed the defect);
-  - Session 12's suggested probe fix, one separator per line (`;` if present, else `,`) — **rejected**: it turns
-    `"co=1.5,pm25=7;"` into `{"co": "1.5,pm25=7"}`, a new regression on a case the old code got right;
-  - a single pass over both separators (`re.split(r"[;,]", line)`) — correct on every probed case, and no worse
-    than the old code on the one it still can't handle (a decimal comma inside a value).
-- **Fix** `a14ff03`: `serial_reader.py` `_parse_line` uses the single-pass split. D1's xfail marker removed;
-  `tests/test_serial_reader.py` T3.1 gains two rows (the docstring's full example, and the trailing-`;` case that
-  broke the rejected design). `.quality-gates.json` `tests-passed` tightened from 116 to 119 (not 117: one row
-  is the repro, the second was added once the rejected design's regression was known). No other product code
-  changed.
-- **Red-drives**, in the working tree, each restored with `git checkout`, with the shasum the same before and
-  after (`serial_reader.py`, `tests/test_serial_reader.py`):
-  - the fix with D1's original marker restored, run against the whole suite: only D1 flips, `XPASS(strict)` —
-    no other test pins D1 (learning #11, checked from the start this time, not after the fact);
-  - the rejected one-separator design: fails only the new trailing-`;` row;
-  - `;`-only splitting: fails the comma row, the trailing-`;` row and the pty test (T3.6);
-  - the original two-pass code: fails the 3 target rows.
-  - The gate: with one test (`trailing-separator`) hidden, `tests-passed` measured 118 and the ratchet exited 2.
-- **Runtime (learning #5, D1 is user-visible):** a real `python3 app.py` process, a real `os.openpty()` pty fed
-  `"co=235;no2=17;o3=17;pm10=25;pm25=13"` (the docstring's example) once a second, `/api/current` and
-  `/api/timeseries?sensor=co` queried by `curl`, and a headless-Chrome screenshot of `/`, both before and after
-  the fix. Before: `co` arrived as the string `"235;no2=17;o3=17;pm10=25;pm25=13"` and the readings grid had no
-  CO card. After: `co` is `235.0`, the timeseries rows are numeric, and the CO card shows 235 mg/m³. The app and
-  Chrome were stopped and port 5001 confirmed free (`lsof`, exit 1) each time.
-- **Plan updated:** `docs/planning/test-suite-plan.md` — the Status line and D1's §4 row note the fix and its
-  commit; an "As implemented (D1, Session 14)" note under §6 records the rejected design and the two-row count.
-- **Landing:** the operator picked "fast-forward main + push" in a picker before close-out (learning #8). After
-  a `git fetch`, `origin/main` = `b5a336c` was an ancestor of the branch. A scan of the added lines found no
-  secrets or local paths. Then `git merge --ff-only` and `git branch -d`, with the push after this commit.
-- **FM #28 reduction:** "Session 11 Handoff Evaluation" and "What Session 12 Did" were archived
-  (`git show a14ff03:SESSION_NOTES.md`).
-
-**Verification:**
-- **Plan §6 DONE, every item met:** marker removed and watched red (1 test failed on the unfixed code, matching
-  the xfail's own assertion); product code fixed and the test watched green; `tests-passed` tightened (116→119,
-  more than the "by 1" default, recorded above); the D1/D3/D4/D7 runtime check ran; the fix was red-driven
-  against the whole suite with the marker restored.
-- `python3 -m pytest -q` gives `119 passed, 7 xfailed`, exit 0, read from a file with no pipe (learning #10).
-  `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 71b7ac5ea8f1 · manifest 973c1b7d973d`, and
-  `--precommit` passed on the staged manifest.
-- **Runtime (3E):** verified live above — not a build-only claim.
-
-**Key files:**
-- `serial_reader.py:105-115` (`_parse_line`'s key=value branch, the fix).
-- `tests/test_serial_reader.py:42-46` (the two new T3.1 rows), `:157-159` (D1's test, marker removed).
-- `.quality-gates.json:27` (`tests-passed`, 119).
-- `docs/planning/test-suite-plan.md`: the Status line, the D1 row in §4's table, and the "As implemented (D1,
-  Session 14)" note under §6.
-- `BACKLOG.md` (BL-1, new).
-
-**Gotchas for the next session:**
-- **D1's suggested probe fix in earlier notes ("split on `;` or `,`, never both") is wrong** — it regresses on a
-  trailing separator. Don't reuse it for anything else without probing first.
-- **Red-drive with the original marker restored, not just the new tests removed**, and do it before the commit,
-  not after (learning #11 — this session did it from the start; Session 13 found the gap after committing).
-- **`tests-passed` doesn't always tighten by exactly 1.** This fix added 2 test rows for 1 defect, because the
-  probing that found the rejected design's regression turned into a second pinned case. Measure, don't assume.
-- **The CARTO map tiles need an API key now** (open item 8) — not a test gap, a live-service change. Neither
-  screenshot this session showed real map tiles.
-- **Exit codes (learning #10):** redirect to a scratchpad file, then `echo $?`.
-- **Stage files by name** (the 4 untracked files remain, open item 2).
-- **The ratchet's `results` hash changes only when a measurement does.** Cite the summary line from the final run.
-- **The acting model switched mid-session** (Opus 5 → Sonnet 5, see above). If a future handoff evaluation finds
-  a seam in quality or voice between the fix and the close-out, this is why.
-
-**Learnings (3C):** none new. Learning #11 (red-drive against the whole suite) was applied correctly from the
-start this session, unlike Session 13's after-the-fact catch — no new row needed, the existing one worked.
-
-**Self-assessment:**
-- **Score: 9/10**
-- (+) Probed three designs, not one, before writing the fix. The rejected design was Session 12's own suggestion,
-  carried in this file's open items — probing it instead of trusting it caught a real regression before it
-  reached product code.
-- (+) Red-drove with the original marker restored, against the whole suite, before the commit — learning #11
-  applied proactively, not as a post-commit catch.
-- (+) A gate red-drive confirmed the tightened threshold actually gates (118 fails, 119 passes).
-- (+) Full runtime verification: a real process, a real pty, real HTTP calls and two screenshots, not just a
-  passing test suite.
-- (+) An out-of-band request (BL-1) was handled without touching the D1 diff: its own commit, its own ledger
-  entry, no scope bleed.
-- (+) Scope held: fix commit touched 4 files; commits were 3, 1 and (this one) several docs files; landing
-  decided before close-out (learning #8); no exit code read after a pipe (learning #10).
-- (+) Found and recorded a live finding outside the session's contract (the CARTO API-key wall) as a new open
-  item rather than either fixing it (scope creep) or silently dropping it.
-- (−) `tests-passed`'s "+1 per fix" assumption in the plan and in this file's own open items turned out not to
-  hold for D1 (it needed +2). Not caught until the fix was already probed; worth flagging in the plan for the
-  remaining fix sessions rather than assuming a fixed increment.
-- (−) A mid-session model switch (noted above) is outside this session's control, but it does mean this report's
-  own voice isn't uniform. Recorded rather than smoothed over.
-
-### Session 13 Handoff Evaluation (by Session 14)
-- **Score: 9/10**
-- **What helped:**
-  - Open item 1 was an exact recipe for D1: `serial_reader.py:106-117`, the xfail at
-    `tests/test_serial_reader.py:157` (marker `:154`), and the fix-session steps (remove marker, fix, tighten by
-    1, runtime-check, red-drive). Every citation held on a fresh read.
-  - The ratchet citation matched a fresh `--run` exactly (`263dc2f189c8` / `970ed02cfdc1`), and the ledger and
-    `HANDOFFS.md` frontiers both sat at the close-out commit with no gap to reconcile.
-  - The three-findings list (open item 4) and the coverage-floor and live-API-test items (5–7) gave enough
-    context to leave them alone without rediscovering their history.
-- **What was missing:** the suggested D1 fix — "split on `;` or `,`, never both," attributed to a Session 12
-  probe — wasn't re-verified before being carried into this handoff's recipe. It has a real regression (above).
-  This wasn't Session 13's own probe, and Session 13 didn't claim it as verified beyond Session 12's own tests,
-  but repeating it in the recipe without a caveat cost this session an extra probing round to catch. Worth a
-  standing note: a probe fix carried forward from an earlier session's notes is not re-verified just by being
-  repeated.
-- **What was wrong:** nothing else found. The `tests-passed` 58→116 arithmetic, the file line counts, and every
-  other `file:line` citation checked out.
-- **ROI:** strongly positive. Phase 0 to a green fix needed one extra probing round (the rejected design), not a
-  rediscovery of anything the handoff should have supplied.
-
-### Sessions 1–13 (archived by Sessions 6–15)
+### Sessions 1–14 (archived by Sessions 6–16)
 Removed to keep this mandated read under its ceiling (FM #28). Sessions 1–3, including their handoff evaluations:
 `git show 1402ad4:SESSION_NOTES.md`. "What Session 4 Did": `git show e947798:SESSION_NOTES.md`. "Session 4 Handoff
 Evaluation" and "What Session 5 Did": `git show a31fea6:SESSION_NOTES.md`. "Session 5 Handoff Evaluation", "What
@@ -392,3 +371,4 @@ Session 6 Did", "Session 6 Handoff Evaluation" and "What Session 7 Did": `git sh
 "Session 10 Handoff Evaluation" and "What Session 11 Did": `git show 5084680:SESSION_NOTES.md`.
 "Session 11 Handoff Evaluation" and "What Session 12 Did": `git show a14ff03:SESSION_NOTES.md`.
 "Session 12 Handoff Evaluation" and "What Session 13 Did": `git show c159ac8:SESSION_NOTES.md`.
+"Session 13 Handoff Evaluation" and "What Session 14 Did": `git show c3004b7:SESSION_NOTES.md`.
