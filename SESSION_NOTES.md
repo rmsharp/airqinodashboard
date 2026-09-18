@@ -151,6 +151,14 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 19 Did
+**Deliverable:** Fix the serial-reader race (open item 1, found in Session 18, not in plan §4): `get_serial_reader()`
+(`app.py:38-48`) checks, then builds and starts a reader with no lock, so the page's two concurrent first requests
+(`static/js/dashboard.js:484-485`) each start a `SerialReader` on one port (IN PROGRESS)
+**Started:** 2026-09-18 16:34, on branch `fix/serial-reader-race` off `main` `34a0a75`
+**Status:** Session claimed. Work beginning.
+**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest.
+
 ### What Session 18 Did
 **Deliverable:** Fix D6 (open item 1; plan §6's fifth fix session): `active_source()` checked the API before serial
 (`app.py:53-58` at the start), but the data routes try serial first — **COMPLETE**

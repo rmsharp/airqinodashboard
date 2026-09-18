@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Session 19 claimed — serial-reader race fix begins (in progress)
+- **Change:** the operator picked the serial-reader race (open item 1, recommended) in the Phase 0 picker. Session 18's D6 probe found it and it is not in `docs/planning/test-suite-plan.md` §4: `get_serial_reader()` (`app.py:38-48`) checks `_serial_reader`, then builds and starts a `SerialReader` with no lock, and the page's first load sends `/api/current` and `/api/timeseries` together (`static/js/dashboard.js:484-485`), so two readers open one port and split its bytes. Session claimed on branch `fix/serial-reader-race` (off `main` `34a0a75`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S19 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Session 18 closed out — D6 fixed, the plan's fifth fix session done; a serial-reader race found and recorded; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the Session 17 handoff evaluation (9/10; nothing wrong found; missing only the serial-reader race, which no earlier handoff mentions), the full D6 write-up and a 7/10 self-assessment (a false "no citation moves" claim reached `91ea569` and was corrected by `2943371`; the operator was told "most likely a probe artifact" before anything was measured). Open item 1 now recommends the serial-reader race, then D5 and D2, with current citations (D5 at `app.py:55`, markers `tests/test_api_routes.py:224` and `:232`), a test design that plants the race, and a candidate lock fix labelled unverified. Open item 7's citation moved to `tests/test_api_routes.py:193`; open items 5 and 8 were re-checked and still hold. `CLAUDE.md` gains learning #16: an anomaly in a probe is evidence until a measurement explains it. The S18 `HANDOFFS.md` receipt is `status: complete`. FM #28 reduction: "Session 15 Handoff Evaluation" and "What Session 16 Did" archived (`git show 2943371:SESSION_NOTES.md`). On the operator's direction (the landing picker), `main` was fast-forwarded from `be44a02` to `91ea569`, then gained `2943371`, and is pushed to `origin/main` straight after this commit
 - **Commit/PR:** the close-out commit (ships this entry); session commits `2160d6b`, `5056055`, `91ea569`, `2943371`

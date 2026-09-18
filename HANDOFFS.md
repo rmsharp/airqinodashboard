@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S19
+date: 2026-09-18
+status: pending
+active_task: Fix the serial-reader race (picked by the operator in the Session 19 picker; found by Session 18's D6 probe, not in plan section 4): get_serial_reader() (app.py:38-48) checks _serial_reader, then builds and starts a SerialReader with no lock, so the page's two concurrent first requests (static/js/dashboard.js:484-485) each open the port and split its bytes. Write a test that plants the race and watch it fail on the unfixed code, probe the current code and each candidate fix from a fresh app with no warm-up request before choosing a design, fix, tighten tests-passed from 128 by the measured delta, and red-drive the fix against the whole suite, on branch fix/serial-reader-race. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S18
 date: 2026-09-18
 status: complete
