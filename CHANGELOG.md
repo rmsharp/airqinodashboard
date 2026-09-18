@@ -15,6 +15,36 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 8 closed out — four-branch stack merged into main; main is the only branch
+- **Change:** `SESSION_NOTES.md` carries the handoff, the Session 7 evaluation (9/10) and the self-assessment (9/10). Its open items are renumbered, with planning a test suite recommended next. "Session 4 Handoff Evaluation" and "What Session 5 Did" were archived (`git show a31fea6:SESSION_NOTES.md`; FM #28; 437 → 350 lines). `CLAUDE.md` gains learning #6: never squash or rebase, because the records cite SHAs. The S8 `HANDOFFS.md` receipt is `status: complete`. This commit is pushed to `origin/main` directly after it is made, on the operator's direction
+- **Commit/PR:** the close-out commit (ships this entry); session commit `a31fea6`
+- **Session:** S8 · **Verified:** n/a — docs-only; the receipt's `changelog_ref` matches this heading
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] Branch cleanup — local main fast-forwarded; the four stack branches deleted locally and the two pushed ones on GitHub
+- **Change:** local `main` was fast-forwarded from `03510d3` to `8554078`. `chore/methodology-pr2527-remediation`, `chore/methodology-read-set-budgets`, `chore/methodology-bl57-p6` and `fix/usb-serial-banner` were deleted locally with `git branch -d`. `origin`'s `chore/methodology-pr2527-remediation` and `fix/usb-serial-banner` were deleted and pruned. `main` is now the only branch, local and remote
+- **Commit/PR:** none (branch operations); on the operator's direction
+- **Session:** S8 · **Verified:** before deletion, `git merge-base --is-ancestor` confirmed each branch tip and every SHA the ledger cites is in `main`; afterwards `git branch -vv` and `git ls-remote --heads origin` each list only `main`
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] PR #2 merged into main with a merge commit
+- **Change:** PR #2 (`fix/usb-serial-banner` → `main`) merged as `8554078` (parents `9099569`, `a31fea6`). Sessions 5–8's work is now on `main`: the read-set-budgets sync, BL-57 P6 and the setup-banner fix. A merge commit keeps every SHA the ledger cites
+- **Commit/PR:** PR #2 · merge commit `8554078`
+- **Session:** S8 · **Verified:** `gh pr view 2` reads MERGED; `git diff a31fea6 main` is empty, so `main`'s tree is byte-identical to the verified branch tip
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] PR #2 opened — the rest of the stack, 11 commits dfe26fd..a31fea6
+- **Change:** pushed `fix/usb-serial-banner` to `origin` and opened https://github.com/rmsharp/airqinodashboard/pull/2 against `main`. It carries the three local branches that were stacked on PR #1, plus the Session 8 claim. The body lists the commits by branch and says to merge with a merge commit, not squash or rebase
+- **Commit/PR:** PR #2
+- **Session:** S8 · **Verified:** GitHub reported 11 commits, head `a31fea6`, MERGEABLE. Beforehand, `git merge-tree` showed no conflicts, and a scan of the added lines found no secrets
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] PR #1 merged into main with a merge commit
+- **Change:** PR #1 (`chore/methodology-pr2527-remediation` → `main`, open since 2026-06-12) merged as `9099569` (parents `765036c`, `0c59e5e`). This publishes `03510d3`, the hardware guide that had sat on local `main`, 1 commit ahead of `origin/main`
+- **Commit/PR:** PR #1 · merge commit `9099569`
+- **Session:** S8 · **Verified:** `gh pr view 1` reads MERGED; `origin/main` is `9099569` with the expected parents
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 8 claimed — branch/PR housekeeping for the four-branch stack (in progress)
 - **Change:** session claimed on branch `fix/usb-serial-banner` (tip of the stack, `3712164`); the operator picked open item 1 from the Phase 0 picker
 - **Commit/PR:** the claim commit (ships this entry)

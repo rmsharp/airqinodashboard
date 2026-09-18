@@ -6,22 +6,25 @@
 
 ## ACTIVE TASK
 
-**Current focus:** Open — no task in progress. Session 7 (2026-09-17) fixed the stale USB Serial setup-banner text.
+**Current focus:** Open — no task in progress. Session 8 (2026-09-17) merged the four-branch stack into `main`.
 Next session picks ONE open item below.
 **Status:**
-- **Setup-banner fix: DONE** on branch `fix/usb-serial-banner` (local, off `e947798`): claim `38920e3`, fix `e5f52e1`, plus
-  the close-out commit. Verified in the running app (curl and a headless-Chrome screenshot).
-- **Methodology BL-57 P6 / BL-56: DONE** by Session 6 (`2b0230a`..`e947798`). Marking P6 and BL-56 done in the methodology
-  repo's plan and backlog belongs to a methodology-repo session.
+- **Branch/PR housekeeping: DONE.** PR #1 was merged as `9099569` and PR #2 as `8554078`, both with merge commits. The four
+  stack branches are deleted locally, and the two pushed ones are deleted on GitHub. `main` is now the only branch, local
+  and remote, and the close-out commit was pushed to `origin/main` after it was written. No PRs are open.
+- **Setup-banner fix (Session 7) and methodology BL-57 P6 / BL-56 (Session 6)** are both on `main`. Marking P6 and BL-56
+  done in the methodology repo's plan and backlog belongs to a methodology-repo session.
 - Earlier status (PART 2 re-vendor, README) and the Session 1–3 history: `git show 1402ad4:SESSION_NOTES.md`.
 
 ### Open items — next session picks ONE (1-and-done)
 
-1. **Branch/PR housekeeping — recommended next.** Four stacked branches, and everything since 2026-06-12 is local only.
-   PR #1's `chore/methodology-pr2527-remediation` (`0c59e5e`) is pushed and open. On it sits
-   `chore/methodology-read-set-budgets` (`dfe26fd`, `1402ad4`), local. On that sits `chore/methodology-bl57-p6`
-   (`2b0230a`..`e947798`), local. On that sits `fix/usb-serial-banner` (Session 7), local and HEAD. The operator decides
-   the push and merge order.
+1. **Plan a test suite — recommended next.** The dashboard's only HIGH risk is "No test infrastructure" (0 test files;
+   health 54/100). It is also product work, after four sessions of mostly process work (FM #28's drift warning). This is a
+   planning session: write `docs/planning/test-suite-plan.md` with a grep-based inventory. The surfaces are `app.py`
+   (8 non-static routes, `:64`–`:236`; `active_source()` at `:51`), `airqino_client.py` (149 lines) and `serial_reader.py`
+   (161 lines). `requirements.txt` has no pytest. A natural first case is the setup banner rendered through Flask's test
+   client with no data source, asserting "Serial Adapter" is present and "Arduino" absent. Session 7's fix has no
+   automated guard.
 2. **Decide the untracked files** — operator's call for each: commit, gitignore, or delete. `docs/HARDWARE.html` has been
    untracked since Session 3 (an HTML render of `docs/HARDWARE.md`; it holds no stale hardware copy). Three tool outputs
    have no `.gitignore` entry: `dashboard_history.jsonl` (written by every dashboard run); `.quality-gates-results.json`
@@ -30,9 +33,10 @@ Next session picks ONE open item below.
 3. **Give `CLAUDE.md` a statement of purpose.** The synced `context_budget.py` reports the `budget:protected` fence missing
    (`.context-budget.json` declares it for `CLAUDE.md`, minimum 800 B). `CLAUDE.md` has never had a fence or a Purpose
    section. `README.md`'s opening is the source text.
-4. **Test suite** — the dashboard's only HIGH risk factor is "No test infrastructure" (0 test files; health 54/100).
-   A bigger deliverable; start with a planning session. A render test of the setup banner (no data source configured;
-   assert the text has no "Arduino" in it) would be an easy first case; Session 7's fix has no automated guard.
+4. **Make learning #6 a gate (operator's call, one command).** GitHub still allows squash and rebase merges, either of
+   which would orphan the SHAs the ledger cites. `gh repo edit rmsharp/airqinodashboard --enable-squash-merge=false
+   --enable-rebase-merge=false` makes a merge commit the only option. It changes a public repo's settings, so it needs
+   the operator's go-ahead.
 
 ### Connecting a Live Data Source (updated Session 2)
 The AirQino REV6 board has **NO USB port**. Three paths remain:
@@ -45,12 +49,96 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### Session 7 Handoff Evaluation (by Session 8)
+- **Score: 9/10**
+- **What helped:** Open item 1 laid out the stack exactly: four branches, which were pushed, and the SHA ranges. The gotcha
+  "`fix/usb-serial-banner` contains every earlier local commit" meant one PR could carry the rest, and that became the
+  approved plan. The four open items went straight into the Phase 0 picker. The "stage files by name" gotcha kept the two
+  untracked files out of every commit.
+- **What was missing:** Two facts the housekeeping depended on. First, local `main` was 1 commit ahead of `origin/main`
+  (`03510d3`, the 2026-04-12 hardware guide). It was already on PR #1's branch, so nothing was at risk, but no handoff had
+  said so. Second, the ledger and receipts cite SHAs, which rules out squash and rebase merges. That constraint had never
+  been written down (now learning #6). The repo's settings (public, no branch protection, no CI) weren't recorded either.
+- **What was wrong:** Nothing found. Every SHA, branch position and the health score (54/100) matched.
+- **ROI:** Strongly positive. Orientation to an approved plan took one picker round and one fact-gathering round.
+
 ### What Session 8 Did
-**Deliverable:** Branch/PR housekeeping (open item 1) — publish or merge the four-branch stack in the order the operator
-chooses (IN PROGRESS)
-**Started:** 2026-09-17 20:15
-**Status:** Session claimed on branch `fix/usb-serial-banner` (tip of the stack, `3712164`). Work beginning.
-**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+**Deliverable:** Branch/PR housekeeping (open item 1): merge the four-branch stack into `main` — **COMPLETE**
+**Started / Closed:** 2026-09-17 20:15 · claimed on `fix/usb-serial-banner`, closed on `main`
+**Governing doc:** `docs/methodology/ITERATIVE_METHODOLOGY.md` (no workstream covers git operations). Phases 3–5 at small
+scale: gather facts, present the options, STOP for approval, then carry out the approved plan.
+**Ledger:** 6 `CHANGELOG.md` entries: the claim, PR #1 merged, PR #2 opened, PR #2 merged, branch cleanup, and close-out.
+
+**What was done:**
+- **Claim** `a31fea6`, committed on the stack tip before any git operation.
+- **Facts gathered before proposing anything:**
+  - `rmsharp/airqinodashboard` is public, `main` has no branch protection, there is no CI, and all three merge methods
+    are allowed.
+  - History was linear: remote `main` `765036c` → local `main` `03510d3` → PR #1 head `0c59e5e` → HEAD `a31fea6`.
+  - `git merge-tree` showed no conflicts.
+  - A secret scan of the 11 unpublished commits' added lines found nothing, and no `.env` file is tracked. The device
+    serial and home paths were already public on PR #1's branch.
+- **Operator decisions**, from one four-question picker (the recommended option each time):
+  - Merge PR #1, then open one PR for the rest, both with merge commits.
+  - Session 8 merges them.
+  - Delete the local and remote branches.
+  - Push the close-out commit straight to `main`.
+- **PR #1 merged** as `9099569` (parents `765036c`, `0c59e5e`).
+- **PR #2 opened.** `fix/usb-serial-banner` was pushed and https://github.com/rmsharp/airqinodashboard/pull/2 opened. It
+  holds the 11 commits `dfe26fd`..`a31fea6`, and its body says not to squash or rebase.
+- **PR #2 merged** as `8554078` (parents `9099569`, `a31fea6`).
+- **Cleanup:**
+  - Local `main` was fast-forwarded from `03510d3` to `8554078`.
+  - Each of the four stack branches was confirmed to be an ancestor of `main`, and so was every SHA the ledger cites.
+  - The branches were then deleted with `git branch -d`, which refuses a branch that isn't merged.
+  - `origin`'s `chore/methodology-pr2527-remediation` and `fix/usb-serial-banner` were deleted, and `git fetch --prune` run.
+- **FM #28 reduction:** "Session 4 Handoff Evaluation" and "What Session 5 Did" were removed from this file
+  (`git show a31fea6:SESSION_NOTES.md`).
+
+**Verification:**
+- `git diff a31fea6 main` is empty, so the merged tree is byte-identical to the branch tip checked before merging.
+- `gh pr list` is empty. `git ls-remote --heads origin` lists only `main`, and `git branch -vv` shows only `main`, in
+  step with `origin/main`.
+- **Build:** all 7 root `.py` files parse, and `app` imports with 8 non-static routes. Session 6 counted 9, which
+  included the `static` route.
+- **Runtime (3E):** n/a. No file content changed (the tree is identical), so Session 7's runtime check of the banner
+  still holds.
+
+**Key files:**
+- `CHANGELOG.md:18` onward — this session's 6 entries
+- `CLAUDE.md:48` — new learning #6: merge with a merge commit or fast-forward, never squash or rebase
+- `app.py:51` (`active_source()`) and `app.py:64`–`:236` (the 8 routes) — where the test-suite plan (open item 1) starts
+- `requirements.txt:1-4` — flask, requests, python-dotenv, pyserial; no test dependency yet
+
+**Gotchas for the next session:**
+- **Start from `main` and branch for the deliverable.** The old stack branches are gone. Their commits are all on `main`
+  under merge commits `9099569` and `8554078`.
+- **`git log --oneline` now shows merge commits.** `a31fea6` is the second parent of `8554078`. The Phase 0 ledger
+  reconcile already uses `--no-merges`, so merge commits need no entries of their own. A PR merge is still an action and
+  still needs an entry.
+- **Never squash or rebase a PR here** (learning #6). GitHub still offers both (open item 4).
+- **The dashboard's "Issues" count included open PRs.** It read 1 in Phase 0 because of PR #1, and should read 0 now.
+- **This close-out's own push can't be recorded in its own ledger entry**, because the entry is written before the push.
+  The entry says the push follows. `git status -sb` on `main` shows whether local and origin match.
+- Verification tools still write untracked files (open item 2), so stage files by name.
+
+**Learnings (3C):** `CLAUDE.md` learning #6, a new row. Its gate is GitHub's merge settings (open item 4). That wasn't
+built here, because it changes a public repo's settings and the operator hasn't approved it.
+
+**Self-assessment:**
+- **Score: 9/10**
+- (+) The claim was committed before any git operation. Nothing outward-facing (merge, push, delete) happened before the
+  operator approved the plan.
+- (+) Found the constraint no document recorded: squash or rebase would orphan the ledger's SHAs. Offered only options
+  that preserve SHAs, and recorded the rule as learning #6.
+- (+) Checked the public repo before publishing: a simulated merge, a secret scan and a personal-data check.
+- (+) Confirmed every branch and cited SHA was in `main` before deleting anything, and proved the merged tree identical
+  to the verified tip.
+- (+) FM #28: this file was trimmed as well as added to.
+- (−) One harness nudge for silence during Phase 0.
+- (−) Phase 0 took seven rounds of tool calls. The document reads, and the remote checks behind the report's main-ahead
+  finding, could have been batched into fewer.
+- (−) The close-out push is recorded only as a forward-looking claim, which the ledger's shape can't avoid.
 
 ### Session 6 Handoff Evaluation (by Session 7)
 - **Score: 9/10**
@@ -256,94 +344,7 @@ FM #28 reduction was done: the Session 1–3 history was removed.
 - (−) The verification runs left two untracked files that needed cleanup; the tools' side effects weren't anticipated.
 - (−) Long stretches without a progress update; the harness prompted twice.
 
-### Session 4 Handoff Evaluation (by Session 5)
-- **Score: 9/10**
-- **What helped:** The one concrete recommendation was exact. Session 4 put the stale "Arduino Mega port" banner at
-  `templates/dashboard.html:54-55`; Session 5 re-grepped and found it unchanged (line 54 is the `2. USB Serial` heading,
-  line 55 the text). Item A named a precise trigger (PR #25 + #27 merging into `KJ5HST/main`), and the June methodology
-  sessions executed PART 2 when it fired. The "`docs/HARDWARE.html` is untracked — leave it" gotcha kept me off that file.
-- **What was missing:** Nothing Session 4 could have supplied. The work Session 5 had to do — classifying four later commits
-  with no airqino notes — came from methodology-repo sessions, which by the session-notes boundary rule write notes elsewhere.
-- **What was wrong:** Nothing was inaccurate on 2026-06-08. Two phrases were built to go stale: Item B's
-  "commit pending close-out" and "(close-out commit … follows this note)". Both were true when written and never updated;
-  "the close-out commit" instead of "pending" would have aged better. Item A's "NOT actionable" went stale four days later,
-  when its trigger fired — not a defect, but nothing owned refreshing it.
-- **ROI:** Positive. A few minutes of reading gave the recommended next deliverable and the context to classify everything since.
-
-### What Session 5 Did
-**Deliverable:** None — **no deliverable produced.** Orientation-only session: Phase 0 report delivered, then the operator
-directed close-out without assigning a task.
-**Started:** 2026-09-14 · **Closed:** 2026-09-15
-**Ledger:** `CHANGELOG.md` "2026-09-15 · [ad hoc] Session 5 — orientation-only session closed out; no deliverable"
-
-**What was done:**
-- **Phase 0 in full:** read `SESSION_RUNNER.md` and `SAFEGUARDS.md` completely, then this file; `gh issue list` (0 issues;
-  1 open PR); git status/log/diff; `methodology_dashboard.py`; the CHANGELOG + HANDOFFS reconcile.
-- **Stale session-start snapshot caught:** the harness snapshot showed `chore/methodology-pr2527-remediation` @ `0c59e5e`.
-  `git reflog` showed a methodology-repo session (S161) checked out `chore/methodology-read-set-budgets` at 2026-09-14
-  12:25:06 and committed `dfe26fd` at 12:26:27.
-- **Ghost-session check — none.** The four commits after Session 4 are methodology-repo work. Verified by hash
-  (`git -C ~/Development/methodology log --all -S<sha>`): `66abe78` is named in methodology `291f54e` (07-25, S15 close-out);
-  `28db357` and `0c59e5e` in `f2c49d2` (06-22, "mark BL-3 (airqino re-vendor) task 1 done → v2.9"); `dfe26fd` in `6eaa15f`
-  and `bb6eb72` (09-14, S161).
-- **Ledger reconcile — no-op; no backfill written.** CHANGELOG frontier = `dfe26fd` = HEAD (empty gap). HANDOFFS was seeded
-  at `dfe26fd` with no receipts and nothing `pending`. `7cafdbc..0c59e5e` is pre-ledger history: the runner vendored at
-  `66abe78` and `0c59e5e` has 0 hits for FM #27, ledger reconcile, or HANDOFFS, so those commits are not FM #27 misses.
-- **Verified Session 4's recommended next deliverable still applies** (`templates/dashboard.html:55`).
-- **Close-out:** rewrote the stale ACTIVE TASK (superseded Item A/B text removed), added `CLAUDE.md` learning #4, wrote
-  the first `HANDOFFS.md` receipt (seed sentinel removed), added the CHANGELOG entry.
-
-**Verification / state at close:**
-- Build equivalent: all 6 `.py` files pass `ast.parse`; flask, requests, python-dotenv and pyserial import (Flask 3.1.3).
-  No test suite exists.
-- Dashboard: health 54/100 (56 on 2026-06-12), risk HIGH — no tests (HIGH), no CI (MEDIUM), a 2,055-line file (MEDIUM),
-  no LICENSE (LOW). Methodology compliance 100%.
-- Runtime smoke (3E): n/a — docs-only close-out; no runtime behavior changed.
-
-**Commits:** the close-out commit only — it ships this note (see the `HANDOFFS.md` S5 receipt).
-
-**Key files:**
-- `templates/dashboard.html:55` — the stale banner text (open item 1)
-- `docs/HARDWARE.md:33` — the authoritative "REV6 has no USB port" statement to align the banner with
-- `CLAUDE.md:39` — new learning #4 (stale snapshot / out-of-band commits)
-- `HANDOFFS.md` — first receipt (S5)
-
-**Gotchas for the next session:**
-- **Don't trust the harness's session-start git snapshot** — it was stale in both Session 4 and Session 5. Run `git status`
-  and `git reflog -5` yourself (`CLAUDE.md` learning #4).
-- **A methodology-repo session was busy throughout Session 5** and had switched this repo's branch. Before touching git
-  state, check `git reflog -5` for anything that moved again.
-- **Branch:** HEAD is `chore/methodology-read-set-budgets` — local-only, not pushed — holding `dfe26fd` plus the Session 5
-  close-out commit, on top of PR #1's head `0c59e5e`. If that branch is re-synced or discarded (e.g. after upstream PR #80
-  merges), carry the close-out commit over with `git cherry-pick`, or the ACTIVE TASK refresh and the first receipt are lost.
-- **CHANGELOG now has two entries, not one.** Methodology plan P6 (`docs/planning/changelog-rules-contradictions-plan.md:584`
-  in `~/Development/methodology`) says to reseed this file and "carry its one entry across, unchanged". Whoever runs P6 must
-  carry both. Until then, add new entries in the existing format; don't reformat the file in a project session.
-- **Stale dashboard copies:** root `methodology_dashboard.py` is v2.10.7, canonical (`~/Development/methodology/starter-kit/`)
-  is v2.17.0, and `docs/methodology/tools/methodology_dashboard.py` is v2.6.1 (the dashboard's "large file" flag).
-  Syncing is portfolio-level work; don't hand-copy in a project session unless the operator asks.
-- **Untracked, left alone:** `docs/HARDWARE.html` (open item 2) and `dashboard_history.jsonl` (appended by every dashboard
-  run; `dashboard.html` is gitignored but the history file is not).
-- **Mandated-read size (FM #28):** this file is 320 lines / ~30 KB after Session 5 (a net +90 lines from 230), against
-  `.context-budget.json` ceilings of 400 lines / 120,000 B. Estimate: a next session that grows it as much lands at ~410, over
-  the line ceiling — archive the Session 1–3 history at or before that close-out. 11 older lines break the 280 B per-line cap; none new.
-
-**Self-assessment:**
-- **Score: 8/10**
-- (+) Phase 0 complete, including the reconcile; `SESSION_RUNNER.md` and `SAFEGUARDS.md` read in full, not skimmed.
-- (+) Didn't trust the session-start snapshot; the reflog established what changed, when, and by which session.
-- (+) Went past the mechanical reconcile: the frontier was HEAD, so the check "passed", but a one-entry ledger prompted a
-  check on whether older commits were owed. The answer (pre-ledger, not FM #27 misses) came from the runner vendored at those
-  commits, not from assumption. I offered the optional pointer line rather than writing it; at close-out I found the
-  methodology repo already owns that change (BL-56 → P6).
-- (+) Left git state alone while a methodology session was busy; removed superseded ACTIVE TASK text (FM #28).
-- (-) **No deliverable produced** — the operator closed the session at the Phase 0 STOP.
-- (-) The Phase 0 report mapped `66abe78` to methodology `58f51c1` from commit subjects alone; the hash check at close-out
-  put it in `291f54e`. The conclusion (not a ghost) held, but the citation was wrong. Now captured in learning #4.
-- (-) Phase 1B: the claim stub was written to the working tree at the start of close-out but not committed on its own; it
-  shipped in the single close-out commit.
-- (-) Phase 0 took four rounds of tool calls; the ledger-history and methodology-log checks could have run in round one.
-
-### Sessions 1–4 (archived by Sessions 6 and 7)
+### Sessions 1–5 (archived by Sessions 6, 7 and 8)
 Removed to keep this mandated read under its ceiling (FM #28). Sessions 1–3, including their handoff evaluations:
-`git show 1402ad4:SESSION_NOTES.md`. "What Session 4 Did": `git show e947798:SESSION_NOTES.md`.
+`git show 1402ad4:SESSION_NOTES.md`. "What Session 4 Did": `git show e947798:SESSION_NOTES.md`. "Session 4 Handoff
+Evaluation" and "What Session 5 Did": `git show a31fea6:SESSION_NOTES.md`.

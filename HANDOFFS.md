@@ -158,11 +158,28 @@ session need this block to continue the work without re-reading the whole repo?*
 ```handoff
 session: S8
 date: 2026-09-17
-status: pending
-active_task: Branch/PR housekeeping (open item 1): publish or merge the four-branch stack (PR #1 chore/methodology-pr2527-remediation, then chore/methodology-read-set-budgets, chore/methodology-bl57-p6, fix/usb-serial-banner) in the order the operator chooses. In progress.
-what_was_done: pending
+status: complete
+self_score: 9
+predecessor_score: 9
+active_task: No task in progress. Branch/PR housekeeping is complete: the four-branch stack is merged into main, main is the only branch (local and remote), and no PRs are open. SESSION_NOTES.md lists four open items; pick ONE, with planning a test suite recommended.
+what_was_done: Claim a31fea6. Before proposing anything, checked the remote (public, no branch protection, no CI, all merge methods allowed), ran a merge-tree conflict check (clean), and scanned the 11 unpublished commits for secrets (none). The operator approved the recommended option on all four questions. PR #1 was merged with a merge commit as 9099569. fix/usb-serial-banner was pushed and PR #2 opened for dfe26fd..a31fea6, then merged with a merge commit as 8554078. Local main was fast-forwarded from 03510d3. Every stack branch and cited SHA was confirmed to be an ancestor of main before deletion; the 4 local branches were deleted with git branch -d, and the 2 remote branches deleted and pruned. git diff a31fea6 main is empty. Close-out added CLAUDE.md learning #6 (never squash or rebase) and archived the Session 4 evaluation and the Session 5 notes from SESSION_NOTES.md.
+next_steps: Plan a test suite (open item 1): a planning session writing docs/planning/test-suite-plan.md with a grep-based inventory of app.py (8 non-static routes; active_source() at app.py:51), airqino_client.py and serial_reader.py. The first case: render / through Flask's test client with no data source and assert "Serial Adapter" is present and "Arduino" absent. Alternatives: decide the untracked files, give CLAUDE.md a fenced statement of purpose, or (operator's call) disable squash and rebase merges on GitHub to make learning #6 a gate.
+key_files: CLAUDE.md:48, app.py:51, app.py:64, requirements.txt:1, SESSION_NOTES.md:19
+gotchas: Start from main and branch for the deliverable; the stack branches are gone. git log now shows merge commits; the ledger reconcile uses --no-merges, but a PR merge still needs its own entry. Never squash or rebase a PR here (learning #6); GitHub still offers both. The close-out commit's push happens after its ledger entry is written, so check git status -sb on main. Verification tools write untracked files, so stage by name.
+runtime_smoke: n/a — no file content changed: git diff a31fea6 main is empty, so Session 7's runtime check of the banner still holds. All 7 root .py files parse; app imports with 8 non-static routes.
+changelog_ref: CHANGELOG.md "2026-09-17 · [ad hoc] Session 8 closed out — four-branch stack merged into main; main is the only branch"
 commit: pending
 ```
+
+Session 8 (Claude Opus 5, single-tier) ran on 2026-09-17. The operator picked branch/PR housekeeping from the Phase 0
+picker, then approved the recommended option on all four questions in a second picker: merge PR #1, then one PR for the
+rest, with merge commits; Session 8 merges; delete local and remote branches; push the close-out to main. Actions: claim
+commit, PR #1 merged, PR #2 opened and merged, branch cleanup, close-out. The session found an unrecorded constraint: squash
+or rebase would orphan the SHAs the ledger cites (now learning #6). Self-score 9/10. (+) No outward action before approval;
+public-repo checks before publishing; containment and tree identity proved before deleting. (−) One harness nudge for
+silence; Phase 0 took seven tool rounds. Predecessor (Session 7) scored 9/10: exact stack layout; it missed that local
+main was 1 ahead of origin and the SHA-citation constraint. Full notes are in `SESSION_NOTES.md` under
+"What Session 8 Did".
 
 ```handoff
 session: S7
