@@ -3,8 +3,8 @@
 **Status:** approved as written by the operator, 2026-09-17 (Session 10's Phase 0 picker). Phase 1 was
 implemented in Session 10, Phase 2 in Session 11, Phase 3 in Session 12 and Phase 4 in Session 13. All four
 phases are done. Of the fix sessions (§6), D1 was fixed in Session 14 (`a14ff03`), D7 in Session 15
-(`222f02c`, `9698f9c`, `87c7535`), D3 in Session 16 (`31e50f2`, `5e37cb1`) and D4 in Session 17 (`caec75a`).
-D6, D5 and D2 remain.
+(`222f02c`, `9698f9c`, `87c7535`), D3 in Session 16 (`31e50f2`, `5e37cb1`), D4 in Session 17 (`caec75a`)
+and D6 in Session 18 (`5056055`). D5 and D2 remain.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.
@@ -136,7 +136,7 @@ phase listed, asserting only the *minimal* correct behaviour, so the fix session
 | D3 **(fixed, Session 16, `5e37cb1`)** | A CSV row with more fields than the header. `csv.DictReader` puts the extras under the key `None`, and `k.strip()` fails on it (`app.py:258-261`) | Uploading `a,b\n1,2,3\n` → 500 `AttributeError: 'NoneType' object has no attribute 'strip'` | One ragged row in an SD-card export fails the whole upload with a 500. | `status_code < 500` | P2 |
 | D4 **(fixed, Session 17, `caec75a`)** | A UTF-8 byte-order mark is kept in the first header (`app.py:245` decodes with `utf-8`, not `utf-8-sig`) | Uploading `﻿timestamp,pm25\n…` → `columns[0] == '﻿timestamp'` | The chart reads `row.timestamp` (`dashboard.js:251`), so a BOM-prefixed CSV plots nothing. Excel's "CSV UTF-8" export writes a BOM. Whether the device's SD card does is unknown. | `columns[0] == "timestamp"` | P2 |
 | D5 | `active_source()` reports `"api"` when only `AIRQINO_CLIENT_ID` is set (`app.py:53`), but `get_api_client()` needs all four credential variables (`:32`) | With only `AIRQINO_CLIENT_ID` set: the badge says "API Connected", the banner is hidden, and `/api/current` returns 503 "No data source configured" | A half-filled `.env` hides the setup help and claims a connection that doesn't exist. | `"API Connected"` not in `GET /` | P4 |
-| D6 | The source order disagrees. `active_source()` is API → serial → CSV (`app.py:53-58`). The data routes use serial → API → CSV (`:141-163`, `:175-208`), and `README.md:27` documents serial → API → CSV. | With both sources configured, the badge says "API Connected" while `/api/current` serves serial data. | The badge contradicts the data shown. | `active_source() == "serial"` with both sources configured | P4 |
+| D6 **(fixed, Session 18, `5056055`)** | The source order disagrees. `active_source()` is API → serial → CSV (`app.py:53-58`). The data routes use serial → API → CSV (`:141-163`, `:175-208`), and `README.md:27` documents serial → API → CSV. | With both sources configured, the badge says "API Connected" while `/api/current` serves serial data. | The badge contradicts the data shown. | `active_source() == "serial"` with both sources configured | P4 |
 | D7 **(fixed, Session 15, `9698f9c`)** | A serial port that fails to open sets `latest = {"error": …}` (`serial_reader.py:64-69`), and `/api/current` returns it as data with **200** (`app.py:143-145`) | `SERIAL_PORT=/dev/does-not-exist` → first call 202 "No data received yet", then 200 `{"source": "serial", "data": {"error": "[Errno 2] could not open port …"}}` | The JS only reports errors on non-2xx responses (`dashboard.js:134-140`), so it shows "No readings available" and the port error never reaches the user. That is the first-hookup failure the operator is most likely to hit. | `status_code != 200` once the reader holds an error | P3 |
 
 **Characterized, not flagged as defects.** These get plain passing tests, each with a comment that it is current
@@ -630,6 +630,28 @@ Stripping U+FEFF from each header key gives the same page. The tests pin the key
 so they pass on either. D4's test now pins the body and the stored row, and a second test covers a `;` file with
 `pm25` first, so `tests-passed` went from 122 to 124, not 123. Whether the API's CSV (`/api/hourly`) starts with
 a BOM can't be checked without credentials.
+
+**As implemented (D6, Session 18):** §4's user impact held. On the real page, with a pty feeding sensor lines on
+`SERIAL_PORT` and four fake credentials (every proxy variable pointed at a closed port, so no request could reach
+the vendor), the header read "API Connected" over five serial reading cards, and `/api/status` said `api`. The
+fix checks `SERIAL_PORT` before `AIRQINO_CLIENT_ID` in `active_source()` (`5056055`, `app.py:53-56`), so the
+badge now reads "Serial" and nothing else on the page changes. It is the only design the xfail and `README.md:36`
+allow: making the routes API-first instead fails four tests. D6's test now covers the four mixes of two or more
+sources (serial+api, serial+csv, api+csv, all three), and each asserts that `active_source()`, the badge,
+`/api/status`, `/api/current` and `/api/timeseries` agree. So `tests-passed` went from 124 to 128. The two mixes
+without both serial and the API passed before the fix too, and they pin the rest of the order. The fix swaps two
+lines in place, so no `app.py` citation moves. One side effect: the metadata panel's "Project" row
+(`templates/dashboard.html:111`) is gated on `source == 'api'`, so it no longer renders when serial is also
+configured. `renderMetadata` replaces that panel once `/api/metadata` answers, so the row showed only when that call
+failed.
+
+The probe found a defect outside §4. When `/api/current` and `/api/timeseries` are the first two requests and
+arrive together, which is how the page loads (`startRefresh`, `static/js/dashboard.js:484-485`), both find
+`_serial_reader` unset in `get_serial_reader()` (`app.py:38-48`), and each starts a `SerialReader` on the same
+port. Both threads read it until the app stops, splitting the byte stream: the two readings the probe read back
+were both garbled (`no2` came back as `'1o37'`). In three fresh app starts each, two concurrent first requests
+left the port open twice, and two sequential ones left it open once. Only a pty was probed, not a real adapter.
+No test covers it.
 
 ## 7. Alternatives considered
 
