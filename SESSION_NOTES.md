@@ -133,6 +133,13 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 17 Did
+**Deliverable:** Fix D4 (open item 1; plan §6's fourth fix session): an upload is decoded as `utf-8`, not
+`utf-8-sig`, so a BOM stays in the first header (`app.py:249`) (IN PROGRESS)
+**Started:** 2026-09-18 00:58, on branch `fix/d4-csv-bom` off `main` `9995f62`
+**Status:** Session claimed. Work beginning.
+**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest.
+
 ### What Session 16 Did
 **Deliverable:** Fix D3 (open item 1; plan §6's third fix session): a CSV row with more fields than the header put
 its extras under the key `None`, and `k.strip()` failed (`app.py:262-265` at the start) — **COMPLETE**

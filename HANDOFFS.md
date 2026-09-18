@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S17
+date: 2026-09-18
+status: pending
+active_task: Fix D4 (picked by the operator in the Session 17 picker; plan section 6's fourth fix session): remove the strict xfail marker at tests/test_csv_routes.py:183, fix app.py:249 so a BOM at the start of an upload doesn't stay in the first header, drop a BOM-prefixed CSV on the real page with the current code and each candidate before choosing a design, tighten tests-passed from 122 (by the measured delta), and red-drive the fix against the whole suite with the marker restored, on branch fix/d4-csv-bom. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S16
 date: 2026-09-18
 status: complete

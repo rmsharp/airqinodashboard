@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Session 17 claimed — D4 fix begins (in progress)
+- **Change:** the operator picked the D4 fix (open item 1; `docs/planning/test-suite-plan.md` §6's fourth fix session) in the Phase 0 picker. D4: an upload is decoded as `utf-8`, not `utf-8-sig` (`app.py:249`), so a BOM stays in the first header. Session claimed on branch `fix/d4-csv-bom` (off `main` `9995f62`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S17 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Session 16 closed out — D3 fixed, the plan's third fix session done; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the Session 15 handoff evaluation (9/10; its one wrong claim: "5 flags", true when counted, but its own close-out commit took `HANDOFFS.md` from 56,534 B to 60,283 B, past the one-read budget, so the committed state had 6; its one gap, that `--screenshot` can't exercise an upload, it had no way to know), the full D3 write-up and an 8/10 self-assessment. Open item 1 now recommends D4, with current citations (`tests/test_csv_routes.py:185`, marker `:183`) and the drag-and-drop driver as the probe surface. Open item 4 gains a fifth finding, probed: a CSV whose first line is blank loads as rows with no columns. Open items 5 and 8 were re-checked and still hold (only `SAFEGUARDS.md` differs from canonical; a CARTO tile is the map with "API KEY REQUIRED" stamped across it). `CLAUDE.md` gains learning #14: an interaction needs a driver, not a screenshot, with the headless-Chrome DevTools recipe. The S16 `HANDOFFS.md` receipt is `status: complete`. FM #28 reduction: "Session 13 Handoff Evaluation" and "What Session 14 Did" archived (`git show c3004b7:SESSION_NOTES.md`). On the operator's direction (a picker before close-out), `main` was fast-forwarded from `a1cb7ec` to `c3004b7` and is pushed to `origin/main` straight after this commit
 - **Commit/PR:** the close-out commit (ships this entry); session commits `5c93025`, `31e50f2`, `5e37cb1`, `c3004b7`
