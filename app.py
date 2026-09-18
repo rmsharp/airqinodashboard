@@ -4,6 +4,7 @@ import csv
 import io
 import json
 import os
+import threading
 from datetime import datetime, timedelta
 
 from dotenv import load_dotenv
@@ -18,6 +19,7 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-key-change-me")
 
 _api_client = None
 _serial_reader = None
+_serial_lock = threading.Lock()  # so concurrent first requests build one reader
 _csv_data = None  # Uploaded CSV data cache
 
 
@@ -37,15 +39,16 @@ def get_api_client():
 
 def get_serial_reader():
     global _serial_reader
-    if _serial_reader:
+    with _serial_lock:
+        if _serial_reader:
+            return _serial_reader
+        port = os.getenv("SERIAL_PORT")
+        baud = int(os.getenv("SERIAL_BAUD", "9600"))
+        if port:
+            from serial_reader import SerialReader
+            _serial_reader = SerialReader(port, baud)
+            _serial_reader.start()
         return _serial_reader
-    port = os.getenv("SERIAL_PORT")
-    baud = int(os.getenv("SERIAL_BAUD", "9600"))
-    if port:
-        from serial_reader import SerialReader
-        _serial_reader = SerialReader(port, baud)
-        _serial_reader.start()
-    return _serial_reader
 
 
 def active_source():
