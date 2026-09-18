@@ -176,13 +176,13 @@ def test_ragged_rows_keep_their_header_fields_and_are_counted(client):
 # stayed in the first header. dashboard.js reads row.timestamp, so the chart was empty,
 # and a sensor in the first column lost its reading card and its chart series.
 def test_bom_is_not_part_of_the_first_header(client):
-    resp = upload(client, "﻿timestamp,pm25\n2026-09-17T00:00,7\n")
+    resp = upload(client, "\ufefftimestamp,pm25\n2026-09-17T00:00,7\n")
     assert resp.get_json() == {"rows": 1, "columns": ["timestamp", "pm25"]}
     assert app_module._csv_data == [{"timestamp": "2026-09-17T00:00", "pm25": 7.0}]
 
 
 def test_bom_before_a_sensor_column_keeps_its_readings(client):
-    upload(client, "﻿pm25;timestamp\n7;2026-09-17T00:00\n")
+    upload(client, "\ufeffpm25;timestamp\n7;2026-09-17T00:00\n")
     assert app_module._csv_data == [{"pm25": 7.0, "timestamp": "2026-09-17T00:00"}]
 
 

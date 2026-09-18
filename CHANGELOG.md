@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] D4's tests spell the byte-order mark as an escape, as `caec75a` said they did
+- **Change:** `tests/test_csv_routes.py`: the two D4 tests' uploads now hold the six-character escape `\ufeff` instead of the invisible character itself. `caec75a` meant to make that change, and its ledger entry and commit message say it did, but the editing tool decoded the `\ufeff` it was given into the character, so the file kept literal BOMs (U+FEFF, bytes `EF BB BF`), which the terminal shows as nothing. The same decoding put the character where `\ufeff` was meant once in `caec75a`'s commit message and twice in its ledger entry below. Entries are never edited, so this one records it. No behaviour change: at run time the escape and the character are the same string
+- **Commit/PR:** this commit
+- **Session:** S17 · **Verified:** a `grep -c` for the bytes `EF BB BF` in the test file gives 0 (it gave 2 at `caec75a`), and `od -c` shows the escape in both uploads. Whole suite `124 passed, 4 xfailed`, exit 0; with `app.py` decoding as `utf-8` again, only the two D4 tests fail (`2 failed, 122 passed, 4 xfailed`), and `app.py` was restored byte-identical (`shasum -c`). Found at close-out by grepping every file this session touched for the BOM's bytes
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Test plan records D4 as fixed
 - **Change:** `docs/planning/test-suite-plan.md`: the Status line names D4's commit and leaves D6, D5 and D2; D4's §4 row is tagged fixed; a new "As implemented (D4, Session 17)" note under §6 records what the page showed before (a green "Loaded" status, cards without timestamps, an empty chart, and, with `pm25` first, no PM2.5 card or series), the fix and why `errors="replace"` stays, that the key-stripping alternative passes the same tests, why `tests-passed` moved by 2, and that `/api/hourly`'s CSV can't be checked for a BOM without credentials
 - **Commit/PR:** this commit
