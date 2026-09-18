@@ -1,10 +1,13 @@
 """Shared fixtures. See docs/planning/test-suite-plan.md §5, Phase 1."""
 
+import inspect
+
 import pytest
 import requests
 
 import airqino_client
 import app as app_module
+from airqino_client import AirQinoClient
 from serial_reader import SerialReader
 
 # Every environment variable app.py reads per request. FLASK_SECRET_KEY is read
@@ -125,3 +128,42 @@ def fake_clock(monkeypatch):
     clock = FakeClock()
     monkeypatch.setattr(airqino_client, "time", clock)
     return clock
+
+
+class FakeClient:
+    """Stands in for AirQinoClient as the app's client: canned answers, recorded calls.
+
+    Only the 7 methods app.py calls exist. Each call is first bound to the real method's
+    signature, so a call the real client would refuse raises TypeError here too. Set
+    .returns[name] for a method's answer, or .error for an exception every method raises.
+    """
+
+    METHODS = ("get_stations", "get_session_info", "get_sensors", "get_current_values",
+               "get_last_station_data", "get_range", "get_hourly_avg")
+
+    def __init__(self):
+        self.calls = []
+        self.returns = {}
+        self.error = None
+
+    def __getattr__(self, name):
+        if name not in self.METHODS:
+            raise AttributeError(name)
+        signature = inspect.signature(getattr(AirQinoClient, name))
+
+        def method(*args, **kwargs):
+            signature.bind(self, *args, **kwargs)
+            self.calls.append((name, args, kwargs))
+            if self.error:
+                raise self.error
+            return self.returns.get(name)
+        return method
+
+
+@pytest.fixture
+def fake_client(monkeypatch):
+    """A FakeClient installed as the app's client. get_api_client() returns it as it is
+    (app.py:26-27), so no credentials are needed and nothing reaches the network."""
+    fake = FakeClient()
+    monkeypatch.setattr(app_module, "_api_client", fake)
+    return fake
