@@ -4,7 +4,8 @@
 implemented in Session 10, Phase 2 in Session 11, Phase 3 in Session 12 and Phase 4 in Session 13. All four
 phases are done. Of the fix sessions (§6), D1 was fixed in Session 14 (`a14ff03`), D7 in Session 15
 (`222f02c`, `9698f9c`, `87c7535`), D3 in Session 16 (`31e50f2`, `5e37cb1`), D4 in Session 17 (`caec75a`)
-and D6 in Session 18 (`5056055`). D5 and D2 remain.
+and D6 in Session 18 (`5056055`). D8, found by Session 18's probe and added to §4 by the operator in
+Session 19, was fixed in Session 19 (`b53303e`). D5 and D2 remain.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.
@@ -138,6 +139,7 @@ phase listed, asserting only the *minimal* correct behaviour, so the fix session
 | D5 | `active_source()` reports `"api"` when only `AIRQINO_CLIENT_ID` is set (`app.py:53`), but `get_api_client()` needs all four credential variables (`:32`) | With only `AIRQINO_CLIENT_ID` set: the badge says "API Connected", the banner is hidden, and `/api/current` returns 503 "No data source configured" | A half-filled `.env` hides the setup help and claims a connection that doesn't exist. | `"API Connected"` not in `GET /` | P4 |
 | D6 **(fixed, Session 18, `5056055`)** | The source order disagrees. `active_source()` is API → serial → CSV (`app.py:53-58`). The data routes use serial → API → CSV (`:141-163`, `:175-208`), and `README.md:27` documents serial → API → CSV. | With both sources configured, the badge says "API Connected" while `/api/current` serves serial data. | The badge contradicts the data shown. | `active_source() == "serial"` with both sources configured | P4 |
 | D7 **(fixed, Session 15, `9698f9c`)** | A serial port that fails to open sets `latest = {"error": …}` (`serial_reader.py:64-69`), and `/api/current` returns it as data with **200** (`app.py:143-145`) | `SERIAL_PORT=/dev/does-not-exist` → first call 202 "No data received yet", then 200 `{"source": "serial", "data": {"error": "[Errno 2] could not open port …"}}` | The JS only reports errors on non-2xx responses (`dashboard.js:134-140`), so it shows "No readings available" and the port error never reaches the user. That is the first-hookup failure the operator is most likely to hit. | `status_code != 200` once the reader holds an error | P3 |
+| D8 **(fixed, Session 19, `b53303e`; added by the operator in Session 19)** | `get_serial_reader()` checks `_serial_reader`, then builds and starts a `SerialReader`, with no lock (`app.py:38-48` before the fix). The page's first load sends `/api/current` and `/api/timeseries` together (`dashboard.js:484-485`), and Flask's dev server is threaded | Found by Session 18's D6 probe, not Session 9's: two concurrent first requests on a fresh app with `SERIAL_PORT` on a pty → the app holds the pty twice, and readings come back garbled (`no2` as `'1o37'`). Two sequential ones hold it once. | Two reader threads split the port's bytes for as long as the app runs, so the grid shows wrong values or drops a sensor card (CO in Session 19's probe). By reading, pyserial opens a POSIX port without an exclusive lock, so a real adapter would split the same way. | None: it had no xfail. The fix session wrote the test: two concurrent first requests build one reader | — |
 
 **Characterized, not flagged as defects.** These get plain passing tests, each with a comment that it is current
 behaviour and not necessarily intended:
@@ -652,7 +654,30 @@ arrive together, which is how the page loads (`startRefresh`, `static/js/dashboa
 port. Both threads read it until the app stops, splitting the byte stream: the two readings the probe read back
 were both garbled (`no2` came back as `'1o37'`). In three fresh app starts each, two concurrent first requests
 left the port open twice, and two sequential ones left it open once. Only a pty was probed, not a real adapter.
-No test covers it.
+No test covers it. (Session 19: the operator added it to §4 as D8, and it is fixed; see the next note.)
+
+**As implemented (D8, Session 19):** the operator added the race to §4 as D8 and kept `get_api_client()` out of
+scope. Each candidate was probed on a fresh app with no warm-up request, a pty feeding the docstring's
+`key=value` line once a second, and the page's two first requests sent together, 5 trials each. Unfixed: the
+app held the pty twice in 5 of 5, and 2 of 14 readings were clean. On the driven page, after a reload, the grid
+had lost its CO card and the PM2.5 series started near 1. A module-level `threading.Lock` around the check and
+the build: once in 5 of 5, 23 of 23 readings clean, all five cards. `exclusive=True` on the port: the pty held
+once, but the reader the app kept was usually the one that lost the lock, so `/api/current` answered 503
+"Could not exclusively lock port" in 4 of 5 trials and the page told the user to check the adapter and
+restart. The lock went in (`b53303e`, `app.py:40-51`). There was no xfail to remove, so the fix session wrote
+the test first: a stand-in reader that sleeps 0.2 s while it is built and starts no thread, and two threads
+released together by a `threading.Barrier` send the two requests. It failed on the unfixed code in 20 of 20 runs
+and passed on the fix in 20 of 20. Without the sleep it passed on the unfixed code in 10 of 10, so the delay is
+the planted hazard (learning #9). `tests-passed` went from 128 to 129. A lock around the check alone fails the
+test, and double-checked locking passes it.
+
+The fix added 3 lines to `app.py` (an import at `:7`, the lock at `:22` and a `with` at `:42`), so this plan's
+`app.py` citations now read low on top of the drift noted above: by 1 from the old `:7`, by 2 from `:21`, and
+by 3 from `:40`. The tests' own citations were updated (`b53303e`, `927dfe8`). `get_api_client()` has the same
+check-then-build shape, but a scratchpad probe found nothing a lock there would prevent. With the client's
+constructor slowed by 0.05 s to widen the window, three concurrent first calls built three clients; and one
+shared client, which is what a lock would give, still sent three token requests to a slow fake endpoint,
+because `_get_token` (`airqino_client.py:21-47`) races on its own. The cost is extra token requests at startup.
 
 ## 7. Alternatives considered
 
