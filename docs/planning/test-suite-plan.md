@@ -1,7 +1,7 @@
 # Test Suite Plan: airqino dashboard
 
-**Status:** approved as written by the operator, 2026-09-17 (Session 10's Phase 0 picker). Session 10 implements
-Phase 1.
+**Status:** approved as written by the operator, 2026-09-17 (Session 10's Phase 0 picker). Phase 1 was
+implemented in Session 10 and Phase 2 in Session 11.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.
@@ -337,6 +337,13 @@ Both gates share one command, so the ratchet runs pytest once (`quality_ratchet.
 - A red-drive is recorded: for example, remove `.lower()` at `app.py:261` in the working tree and watch T2.4 fail,
   then restore it.
 - No product file shows in `git diff`.
+
+**As implemented (Session 11):** the D2 and D3 xfails can't observe a 500. The `client` fixture sets `TESTING`,
+so Flask raises the route's exception into the test instead of answering. The markers therefore name the exception
+each defect raises today: `raises=ValueError` (D2), `raises=AttributeError` (D3) and `raises=AssertionError` (D4).
+Any other failure still reports as FAILED. The `status_code < 500` assertions stay as they are, and a fix makes each
+test XPASS(strict). Phase 4's hourly half of D2 raises `ValueError` the same way. The DONE criteria were met:
+`28 passed, 3 xfailed`, ratchet `2/2 pass`, with 5 red-drives on `app.py` and 1 on the gate.
 
 **Surface:**
 

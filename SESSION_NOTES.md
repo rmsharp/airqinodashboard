@@ -6,34 +6,37 @@
 
 ## ACTIVE TASK
 
-**Current focus:** Test suite. `docs/planning/test-suite-plan.md` is approved (Session 10), and **Phase 1 is done**.
-Next session implements **Phase 2 only**: the no-source contract and the CSV path.
+**Current focus:** Test suite. `docs/planning/test-suite-plan.md` is approved (Session 10), and **Phases 1 and 2 are
+done**. Next session implements **Phase 3 only**: the serial path.
 **Status:**
-- **Phase 1: COMPLETE, on `main`.** It is `067455f` (the harness and 9 tests) plus `4da62a1` (the wire-up and 2
-  gates). On the operator's direction, `main` was fast-forwarded to the Session 10 branch, which was then deleted.
-  `main` is the only branch. Session 10's close-out commit is pushed straight after it is made, together with
-  `7256c91`, `02016aa`, `067455f` and `4da62a1`. Check with `git status -sb`.
-- **Suite:** `python3 -m pytest -q` gives `9 passed`, 0 xfailed, in about 0.02 s. The ratchet gives `quality_ratchet:
-  2/2 pass · 0 fail · 0 unmeasured · results b7ff3e55b84d · manifest f394b801e28f`. The gates are `tests-exit`
-  (max 0) and `tests-passed` (min 9).
-- **Dashboard:** 54 → **62/100**, and High+ risk 1 → 0. "Test coverage is very thin (ratio: 0.03)" (MEDIUM) replaced
-  the HIGH, as the plan computed.
-- **7 defects (plan §4, D1–D7) are still unfixed.** Each gets its strict xfail in P2–P4, then a fix session of its
-  own. D1 and D7 hit the serial path the operator is about to use.
+- **Phase 2: COMPLETE, on `main`.** It is `fa73763`: `tests/test_csv_routes.py` and the tightened gate. On the
+  operator's direction, `main` was fast-forwarded to the Session 11 branch, which was then deleted. `main` is the only
+  branch. Session 11's close-out commit is pushed straight after it is made, together with `7d02af9` and `fa73763`.
+  Check with `git status -sb`.
+- **Suite:** `python3 -m pytest -q` gives `28 passed, 3 xfailed` in about 0.2 s. The ratchet gives `quality_ratchet:
+  2/2 pass · 0 fail · 0 unmeasured · results 0dc3acde972e · manifest 770382cd43d3`. The gates are `tests-exit`
+  (max 0) and `tests-passed` (min 28).
+- **Dashboard:** 62/100, unchanged, and High+ risk 0. "Test coverage is very thin" (MEDIUM) moved from ratio 0.03 to
+  0.06.
+- **Defects (plan §4):** D2's timeseries half, D3 and D4 now have strict xfails. D1 and D7 get theirs in Phase 3, and
+  D5, D6 and D2's hourly half in Phase 4. All 7 are still unfixed. D1 and D7 hit the serial path the operator is
+  about to use.
 - **No product code has changed** since Session 7's fix (`e5f52e1`).
-- Earlier status: Session 9's is at `git show 7256c91:SESSION_NOTES.md`, Session 8's at `git show 15b0a3f:SESSION_NOTES.md`.
+- Earlier status: Session 10's is at `git show fbacf96:SESSION_NOTES.md`, Session 9's at `git show 7256c91:SESSION_NOTES.md`.
 
 ### Open items — next session picks ONE (1-and-done)
 
-1. **Implement Phase 2 of the test-suite plan (recommended next).** It is plan §5 "Phase 2"
-   (`docs/planning/test-suite-plan.md:299-348`):
-   - files: `tests/test_csv_routes.py` (T2.1–T2.8, plus strict xfails for D2's timeseries half, D3 and D4) and
-     `.quality-gates.json` (tighten `tests-passed` to the new measured count);
-   - three commits: the claim; the tests, the gate and the ledger entry; the close-out;
-   - DONE: the suite exits 0 with exactly 3 xfailed, the ratchet passes 2/2 at the tightened threshold, one red-drive
-     is recorded, and no product file shows in `git diff`.
+1. **Implement Phase 3 of the test-suite plan (recommended next).** It is plan §5 "Phase 3"
+   (`docs/planning/test-suite-plan.md:357-433`):
+   - files: `tests/test_serial_reader.py` (T3.1–T3.7, with D1's strict xfail), `tests/conftest.py` (a `FakeReader`
+     fixture), `tests/test_serial_routes.py` (T3.8–T3.9, with D7's strict xfail) and `.quality-gates.json` (tighten
+     `tests-passed` to the new measured count);
+   - four commits: the claim; `test_serial_reader.py`, `conftest.py` and a ledger entry; `test_serial_routes.py`, the
+     gate and a ledger entry; the close-out;
+   - DONE: the suite exits 0 with exactly 5 xfailed, the ratchet passes 2/2 at the tightened threshold, one red-drive
+     is recorded, the suite still runs well under 10 s, and no product file shows in `git diff`.
 
-   Start on a new branch off `main`. P3 (serial), P4 (API) and the D1–D7 fixes follow in plan order.
+   Start on a new branch off `main`. P4 (API) and the D1–D7 fixes follow in plan order.
 2. **Decide the untracked files.** For each one, commit, gitignore or delete; that's the operator's call.
    - `docs/HARDWARE.html` has been untracked since Session 3. It is an HTML render of `docs/HARDWARE.md` and holds no
      stale hardware copy.
@@ -50,7 +53,17 @@ Next session implements **Phase 2 only**: the no-source contract and the CSV pat
 4. **Make learning #6 a gate (operator's call, one command).** GitHub still allows squash and rebase merges, either of
    which would orphan the SHAs the ledger cites. `gh repo edit rmsharp/airqinodashboard --enable-squash-merge=false
    --enable-rebase-merge=false` makes a merge commit the only option. It changes a public repo's settings, so it needs
-   the operator's go-ahead.
+   the operator's go-ahead. Session 11 explained it at Phase 0 (all three methods are enabled today); the operator
+   picked Phase 2 instead.
+5. **Decide two CSV-path findings (new in Session 11; the operator's call).** Session 11 found both while probing.
+   Neither is in the plan's §4 defect list, and no test pins either:
+   - After an empty upload, `/api/status` returns `source: null` with `has_csv: true`. `app.py:87` checks
+     `_csv_data is not None`, but `active_source()` (`:57`) checks truthiness, and `[]` is falsy. No front-end code
+     calls `/api/status`.
+   - CSV mode ignores `?hours=`. `/api/timeseries` returns the last 500 rows whatever the range (`app.py:203-208`),
+     so the chart's 6h–30d buttons (`templates/dashboard.html:86-91`) change nothing for uploaded data.
+
+   Each could become a new defect with a strict xfail (a plan amendment), or be recorded as intended.
 
 ### Connecting a Live Data Source (updated Session 2)
 The AirQino REV6 board has **NO USB port**. Three paths remain:
@@ -63,13 +76,130 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### Session 10 Handoff Evaluation (by Session 11)
+- **Score: 9/10**
+- **What helped:**
+  - Open item 1 was an exact recipe: the file, the three-commit shape and the DONE list. Its `app.py` citations
+    (`:171`, `:245`, `:261`) all held, and the plan's red-drive (`.lower()` at `:261`) failed T2.4 as described.
+  - The Phase 2 probe (a global set by a route is reset between tests) meant the upload tests needed no cleanup of
+    their own, and "don't copy `planted_leak`" saved a fixture.
+  - Every gotcha got used: `--precommit` by hand, "passed" kept out of `reason=`, files staged by name, an untracked
+    file backed up to the scratchpad before a red-drive, and the 548-line bar for the MEDIUM "thin" (342 now).
+  - The git state matched: `main` = `origin/main` = `fbacf96`, one branch, and the receipt's ratchet citation matched
+    `.quality-gates-results.json`.
+- **What was missing:** that the suite's `client` runs with `TESTING` on, so a route's exception reaches the test and
+  no 500 comes back. The plan's D2 and D3 assertions (`status_code < 500`) assume a 500. That gap is Session 9's plan,
+  not this handoff, and a probe caught it before any test was written.
+- **What was wrong:** one gotcha. "The ratchet's `results` hash changes with each run" isn't so. The hash covers the
+  results, not the run time (`quality_ratchet.py:171`): two green runs minutes apart both gave `0dc3acde972e`.
+  Harmless, since citing the final run is still right.
+- **ROI:** strongly positive. Phase 0 to a green Phase 2 needed no rediscovery.
+
 ### What Session 11 Did
 **Deliverable:** Implement Phase 2 of `docs/planning/test-suite-plan.md` (open item 1): the no-source contract and the
-CSV path (IN PROGRESS)
-**Started:** 2026-09-17 22:29
-**Status:** Session claimed on branch `test/suite-phase2` (off `main` `fbacf96`). The operator picked Phase 2 in the
-Phase 0 picker. Work beginning.
-**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+CSV path — **COMPLETE**
+**Started / Closed:** 2026-09-17 22:29. Claimed on branch `test/suite-phase2` off `main` `fbacf96`. Closed on `main`
+after a fast-forward, and pushed straight after this commit.
+**Governing docs:** `docs/methodology/workstreams/DEVELOPMENT_WORKSTREAM.md`, and plan §5 "Phase 2", the approved
+contract. At the start, `git diff --stat 15b0a3f` over the product files was empty, so the contract still held.
+**Ledger:** 5 `CHANGELOG.md` entries: the claim, the tests (commit 2), the fast-forward and push, the branch deletion,
+and this close-out.
+
+**What was done:**
+- **Phase 0:** before picking, the operator asked what open item 4 means. Answer: GitHub's squash and rebase merges
+  rewrite SHAs, so once the branch is deleted, every ledger, receipt and `git show <sha>:SESSION_NOTES.md` citation
+  of its commits points at nothing. `gh repo view` showed all three methods enabled. Item 4 stays open.
+- **Claim** `7d02af9`.
+- **Probe first** (learning #7), in the scratchpad, against the repo's `app.py` through the test client with
+  `TESTING` on. Every T2.x behaviour the plan claims held. Three findings:
+  - D2 raises `ValueError` and D3 `AttributeError` into the caller; neither returns a 500;
+  - an empty upload leaves `has_csv: true` with `source: null` (open item 5);
+  - CSV mode ignores `?hours=` (open item 5).
+- **Tests** `fa73763`: `tests/test_csv_routes.py` (176 lines), 19 passing tests and 3 strict xfails;
+  `.quality-gates.json` `tests-passed` 9 → 28. **Change from the plan's text:** each xfail names its exception
+  (`raises=ValueError`, `AttributeError`, `AssertionError`), so any other failure reports as FAILED. The plan records
+  this in an "As implemented (Session 11)" note under Phase 2's DONE list.
+- **Red-drives**, in the working tree. `app.py` was backed up to the scratchpad and restored with `git checkout`
+  (shasum `9ede4c1…` before and after):
+  1. `.lower()` removed at `app.py:261`: T2.4 fails (the plan's example);
+  2. `data[-500:]` → `data[:500]`: the last-500 test fails;
+  3. `_csv_data[-1]` → `_csv_data[0]`: the last-row test fails;
+  4. the `;` branch disabled: T2.3's semicolon case fails;
+  5. `utf-8` → `utf-8-sig`, a real D4 fix: `XPASS(strict)` fails the suite, so a fix can't land with its marker on;
+  6. one test hidden from collection: `tests-passed` fails (measured 27). The untracked test file was backed up by
+     explicit path to the scratchpad first and restored byte-identical.
+- **Forward claims probed:** D2's hourly half raises `ValueError` under `TESTING` too, and D1 fails as an
+  `AssertionError` (`_parse_line("co=235;no2=17")` → `{'co': '235;no2=17', 'no2': 17.0}`).
+- **Landing:** the operator picked "fast-forward main + push" in a picker before close-out (learning #8). After a
+  `git fetch`, `origin/main` = `fbacf96` was an ancestor of the branch, and a scan of the added lines found no secrets
+  or local paths. Then `git merge --ff-only` and `git branch -d`, with the push after this commit.
+- **FM #28 reduction:** "Session 8 Handoff Evaluation" and "What Session 9 Did" were archived
+  (`git show fa73763:SESSION_NOTES.md`).
+
+**Verification:**
+- **Plan §5 P2 DONE, every item met:**
+  - `python3 -m pytest -q` and plain `pytest -q` both give `28 passed, 3 xfailed` and exit 0;
+  - the ratchet passes 2/2 at 28 (summary line in ACTIVE TASK), and `--precommit` passed on the staged manifest;
+  - the red-drives are recorded (above);
+  - `git diff --stat main -- app.py airqino_client.py serial_reader.py templates static requirements.txt` is empty.
+- **Runtime (3E):** tests only, so no product runtime behaviour changed. The suite drives every route through Flask's
+  test client with in-memory multipart uploads. The browser's drag-and-drop and `FormData` path
+  (`dashboard.js:407-450`) and real SD-card files stay unverified, as the plan's Phase 2 surface says.
+
+**Key files:**
+- `tests/test_csv_routes.py`:
+  - `:26` (`upload`, the multipart helper), `:37` (`csv_text`);
+  - `:41` (T2.1, the no-source table);
+  - `:101` (`uploaded_501`);
+  - `:159`, `:165` and `:172` (the three xfails).
+- `.quality-gates.json:24-32` (`tests-passed`, min 28; its threshold is at `:27`)
+- `docs/planning/test-suite-plan.md:341` (the "As implemented (Session 11)" note)
+- For Phase 3:
+  - `docs/planning/test-suite-plan.md:357` (Phase 3), `:417` (its red-drive);
+  - `serial_reader.py:62-68` (`_read_loop` and the open failure D7 swallows), `:89` (`_parse_line`; D1 at
+    `:106-117`), `:140` (`_normalize`; the red-drive's `"humidity": "rh"` at `:147`), `:154` (`get_current`), `:158`
+    (`get_history`);
+  - `app.py:38-48` (`get_serial_reader()`, which starts a real thread), `:141-147` (the serial branch of
+    `/api/current`), `:175-183` (the serial branch of `/api/timeseries`).
+
+**Gotchas for the next session:**
+- **Under `TESTING`, a route's exception reaches the test.** Name the exception each xfail expects with `raises=`, as
+  `tests/test_csv_routes.py` does. D1 and D7 both fail on an assertion today (D1 returns a string; D7 answers 200), so
+  both take `raises=AssertionError`.
+- **`isolated` resets `_serial_reader` but stops no thread.** Any test that sets `SERIAL_PORT` and calls a data route
+  starts a real daemon thread through `get_serial_reader()` (`app.py:47`). For D7 the thread ends by itself, because
+  the open failure sets `_running = False` (`serial_reader.py:68`). Elsewhere call `stop()`. Never `join()`.
+- **The plan's own line numbers moved** by 7 after Session 11's note. Its product-code citations didn't. Use the
+  numbers above, or `grep -n`.
+- **Keep "passed" out of `reason=` strings.** The `tests-passed` regex scans the `-ra` output.
+- **The ratchet's `results` hash changes only when a measurement does.** Cite the summary line from the final run.
+- **Stage files by name.** `.quality-gates-results.json`, `.context-budget-history.jsonl`, `dashboard_history.jsonl`
+  and `docs/HARDWARE.html` are still untracked (open item 2).
+- **Back up a new, untracked test module by explicit path to the scratchpad** before a red-drive mutates it.
+  `tests/conftest.py` is tracked, so `git checkout --` restores it.
+- **The MEDIUM "thin" stays until the test files total 548 lines.** They are 342 now. Don't pad.
+
+**Learnings (3C):** none new. The D2/D3 surprise is learning #9 again: Session 9 probed the routes without `TESTING`,
+and its 500s didn't carry over to the suite's `client`, whose setup differs. Probing on the suite's own fixture
+(learning #7) caught it before any test was written.
+
+**Self-assessment:**
+- **Score: 8/10**
+- (+) Every behaviour the tests assert was probed on the suite's own setup first. That surfaced the `TESTING`
+  difference and two findings the plan doesn't have.
+- (+) Six red-drives: each targeted test failed on its own break, a real D4 fix proved the strict-xfail flip, and the
+  tightened gate refused 27.
+- (+) Scope held: no product code, 3 files in commit 2, and the two findings went to open item 5, not into tests.
+- (+) The landing was decided before close-out (learning #8), so this handoff describes the session's real end.
+- (+) The handoff's forward claims (D1's and D2-hourly's failure modes) were probed, not reasoned.
+- (−) Four harness nudges for silence during long runs of tool calls. That repeats a Session 6–10 minus.
+- (−) The first suite run checked `$?` after a pipe, so it reported `tail`'s exit code, not pytest's. The next command
+  re-ran it properly (exit 0), but for one step it was a check that couldn't fail.
+- (−) The first Phase 0 picker described open item 4 by its command, not its consequence, so the operator had to ask
+  what it meant before choosing.
+- (−) A draft of this handoff cited `.quality-gates.json:196`, a line number read off a `cat -n` of three files at
+  once, which numbers them as one listing. The pre-commit re-grep caught it (the gate is at `:24-32`). It's learning
+  #7's failure again: a line number read by eye, not grepped.
 
 ### Session 9 Handoff Evaluation (by Session 10)
 - **Score: 8/10**
@@ -197,146 +327,10 @@ push, the branch deletion, and this close-out.
   plan was right and my `sed` count was wrong. It was fixed before the commit, but it's learning #7's failure again:
   a line number read by eye.
 
-### Session 8 Handoff Evaluation (by Session 9)
-- **Score: 9/10**
-- **What helped:** Open item 1 gave everything a planning session starts from:
-  - the three surfaces with sizes and line ranges (`app.py:64`–`:236`, `active_source()` at `:51`);
-  - the missing pytest in `requirements.txt`;
-  - the first test case (the banner with "Serial Adapter" present and "Arduino" absent), which became T1.1.
-
-  The git state matched exactly (`main` = `origin/main` = `15b0a3f`, no PRs), as did the Issues-count prediction (0)
-  and the health score (54/100). "Start from `main` and branch" and "stage files by name" set up the claim with no
-  lookup.
-- **What was missing:** Toolchain facts that the plan's first decisions rest on. pytest 9.0.2 and pytest-cov were
-  already installed in the base env, and pytest 9 needs Python 3.10 while `README.md:13` says 3.9+. Each took one
-  command to find, and none was Session 8's area of work.
-- **What was wrong:** Nothing found. Every line range, line count and SHA matched.
-- **ROI:** Strongly positive. Orientation to the task took one picker round.
-
-### What Session 9 Did
-**Deliverable:** Plan a test suite (open item 1): `docs/planning/test-suite-plan.md` — **COMPLETE** (the plan; approval
-pending)
-**Started / Closed:** 2026-09-17 20:25 · claimed on branch `docs/test-suite-plan` off `main` `15b0a3f`; closed on `main`
-after the branch was fast-forwarded in, pushed and deleted
-**Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
-`docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md` (research, then the design document). One optional Phase 2B
-picker settled the load-bearing decisions before writing.
-**Ledger:** 6 `CHANGELOG.md` entries: the claim, the plan, the first close-out, the branch landing and push, the branch
-deletion, and this amended close-out.
-
-**What was done:**
-- **Claim** `1177049`: the stub, a pending receipt and an *(in progress)* entry, committed before any research.
-- **Research:**
-  - Read all of `app.py`, `airqino_client.py`, `serial_reader.py`, `templates/dashboard.html` and
-    `static/js/dashboard.js`.
-  - Ran the grep inventory (plan §3): 8 routes, 3 helpers, 15 client methods, 8 `SerialReader` methods, 9 environment
-    variables, 3 module globals and every I/O or clock call.
-  - Found what the dashboard counts as source: 8 files and 5,475 lines, of which the product is 1,063.
-- **Probes** (scratch runs, repo untouched) reproduced **7 defects** (plan §4):
-  - D1 serial `;` `key=value` clobbers the first field;
-  - D2 `hours`/`days=abc` returns 500;
-  - D3 a ragged CSV row returns 500;
-  - D4 a CSV BOM corrupts the first header;
-  - D5 a partial set of API credentials shows "API Connected";
-  - D6 the badge's source order and the routes' source order disagree;
-  - D7 a serial open failure is swallowed as a 200.
-
-  D2's hourly half and D6 were first reasoned from the code, then probed after the plan was written.
-- **Operator decisions** (one four-question picker, the recommended option each time): pytest; strict xfail with fixes
-  later; monkeypatch fakes; Python only.
-- **Spike** (scratchpad, not committed): copies of the app beside a planted `.env`. Results:
-  - the `.env` leak is real, and the `isolated` fixture neutralises it;
-  - `pytest.ini` works with both `python3 -m pytest` and plain `pytest` (5 passed, 2 xfailed);
-  - the pty round trip works with real pyserial on `/dev/ttys008`;
-  - fake-client injection works;
-  - the two ratchet gates pass 2/2;
-  - 3 red-drives: the old banner wording, a fixed D1 as XPASS(strict), and the fixture turned off.
-- **Plan** `d813463` (585 lines): decisions, inventory, defects, 4 phases (tests, commits, DONE, surface, boundary),
-  fix-session protocol, alternatives, out-of-scope list, and the spike's evidence table.
-- **Citation check:** every `file:line` was re-grepped after writing, and 6 were wrong. There were 4 in
-  `dashboard.js`, 1 in `README.md` and 1 range in `methodology_dashboard.py`, all written from memory. They were fixed
-  before the commit.
-- **FM #28 reduction:** "Session 5/6 Handoff Evaluation" and "What Session 6/7 Did" were removed from this file
-  (`git show 15b0a3f:SESSION_NOTES.md`).
-- **First close-out** `f49da64`: the handoff, the receipt and learning #7.
-- **Follow-on actions, directed by the operator after that close-out:**
-  - **Landing and push** (`4973cf7`). `git fetch` first showed `origin/main` = `main` = `15b0a3f`, and
-    `git merge-base --is-ancestor` confirmed a fast-forward was possible. A scan of the added lines found no secrets,
-    home paths or scratchpad paths. `main` was then fast-forwarded to `f49da64` (SHAs unchanged, learning #6), the
-    ledger entry committed, and `main` pushed.
-  - **Branch deletion** (`5cc4ce9`). The branch was confirmed to be an ancestor of `main`, deleted with
-    `git branch -d`, the deletion recorded in the ledger, and `main` pushed after a fresh `git fetch`. That push has
-    no ledger entry of its own, because recording it would need a new commit, which would then need pushing too.
-  - **Amended close-out** (this commit). The operator asked for a Phase 3 close-out at the end of each session. The
-    first close-out ran before the follow-on actions, so this handoff, the receipt and the self-assessment are
-    brought up to the session's real end. Learning #8 records it.
-
-**Verification:**
-- **Deliverable:** the plan satisfies `SESSION_RUNNER.md` §Planning Session Checklist (plan §10). One box stays
-  unticked: whether the deepest reasoning mode was set isn't recorded.
-- **Build:** all 7 root `.py` files compile, and `app` imports with 8 non-static routes (checked at Phase 0). No
-  product file changed: `git diff 15b0a3f -- '*.py' templates static` is empty.
-- **Runtime (3E):** n/a, since the deliverable is docs-only. The spike ran the app's own code in copies.
-
-**Key files:**
-- `docs/planning/test-suite-plan.md`:
-  - `:161-290` — Phase 1, including the `pytest.ini` and `conftest.py` text;
-  - `:122-146` — the defects table;
-  - `:556-574` — the spike evidence.
-- `app.py:12` (`load_dotenv()` at import), `app.py:19-21` (module globals), `app.py:51-59` (`active_source()`)
-- `templates/dashboard.html:33` (badge), `:40` (the HTML comment that also says "no data source"), `:55` (banner
-  text containing "no USB port")
-- `.quality-gates.json` (`"gates": []`, the field Phase 1 fills); `quality_ratchet.py:266-298` (how gates are measured)
-- `README.md:11-23` (Quick start, where "Running tests" goes), `README.md:131-142` (Key files)
-
-**Gotchas for the next session:**
-- **`load_dotenv()` walks up to `/`.** A `.env` in the repo *or any parent directory* leaks into tests at `import app`
-  (python-dotenv 1.2.1 `find_dotenv`). The `isolated` fixture must stay `autouse`. Never set `SERIAL_PORT` in a test
-  without injecting a fake reader or pointing it at a pty: `get_serial_reader()` starts a real thread, which the probe
-  showed.
-- **T1.1's banned-word list must not include "USB port":** the correct banner says "no USB port". "No Data Source"
-  matches twice case-insensitively (the badge and the HTML comment at `:40`), so assert on `>No Data Source<`.
-- **Keep the word "passed" out of xfail `reason=` strings.** The `tests-passed` gate's regex `(\d+) passed` scans
-  output that `-ra` prints them into.
-- **After Phase 1 the dashboard shows MEDIUM "Test coverage is very thin".** That's expected (plan §5, P1): it stays
-  until the test files total 548 lines, because 4,412 of the 5,475 source lines are vendored methodology tooling.
-  Don't pad tests.
-- **Untracked files will pile up:** `.pytest_cache/` (gitignored in Phase 1 commit 3) and
-  `.quality-gates-results.json` (open item 2). Stage files by name.
-- **The base env loads global pytest plugins** (cov, anyio, asyncio, langsmith). They didn't interfere in the spike.
-- **The spike lived in this session's scratchpad and is gone.** The plan carries the fixture text and the evidence.
-- **The first close-out's ledger entry is out of date.** It says the branch "stays local and unpushed", but
-  ledger entries are never edited. The three entries above it supersede it.
-
-**Learnings (3C):**
-- `CLAUDE.md` learning #7: probe the code paths a plan claims about before writing it, and re-grep every citation
-  afterwards.
-- `CLAUDE.md` learning #8: close-out belongs at the end of the session, not the end of the deliverable. If the operator
-  directs more actions after it, run Phase 3 again before stopping.
-
-**Self-assessment:**
-- **Score: 7/10.** The first close-out scored itself 8. One point comes off for the stale close-out below, which the
-  operator had to correct.
-- (+) Research came before the design: every module was read, and the suspicions were probed into 7 reproduced
-  defects with repro strings and `file:line`.
-- (+) The load-bearing decisions were asked before writing (one picker), so there were no stakeholder corrections.
-- (+) The plan's mechanics were measured in a spike, with 3 red-drives, rather than asserted. The post-Phase-1
-  dashboard outcome was computed, not guessed (learning #13).
-- (+) Scope held: no test or product code in the repo; the plan only.
-- (−) 6 line citations were written from memory and were wrong. The post-write check caught them, but grepping while
-  writing would have avoided them (FM #11).
-- (−) One backup copy of the template went to `/tmp` instead of the scratchpad. It was deleted immediately.
-- (−) The harness prompted for status three times, which repeats a Session 6–8 minus.
-- (−) The plan runs 585 lines, and a Phase 1 executor needs about a third of it. The §-structure keeps it navigable.
-- (+) The follow-on git work was checked before each outward step: a fetch, an ancestor check and a secret scan before
-  the push; a merge check before the delete. Each action was recorded in the ledger.
-- (−) **The close-out went stale.** I carried out three operator-directed actions after the first close-out without
-  re-running Phase 3. That left the receipt saying the branch was unpushed and telling the next session to land it,
-  and left no final report. The operator had to ask for the close-out.
-
-### Sessions 1–8 (archived by Sessions 6–10)
+### Sessions 1–9 (archived by Sessions 6–11)
 Removed to keep this mandated read under its ceiling (FM #28). Sessions 1–3, including their handoff evaluations:
 `git show 1402ad4:SESSION_NOTES.md`. "What Session 4 Did": `git show e947798:SESSION_NOTES.md`. "Session 4 Handoff
 Evaluation" and "What Session 5 Did": `git show a31fea6:SESSION_NOTES.md`. "Session 5 Handoff Evaluation", "What
 Session 6 Did", "Session 6 Handoff Evaluation" and "What Session 7 Did": `git show 15b0a3f:SESSION_NOTES.md`.
 "Session 7 Handoff Evaluation" and "What Session 8 Did": `git show 4da62a1:SESSION_NOTES.md`.
+"Session 8 Handoff Evaluation" and "What Session 9 Did": `git show fa73763:SESSION_NOTES.md`.

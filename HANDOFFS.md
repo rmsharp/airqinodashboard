@@ -158,11 +158,27 @@ session need this block to continue the work without re-reading the whole repo?*
 ```handoff
 session: S11
 date: 2026-09-17
-status: pending
-active_task: Implement Phase 2 of docs/planning/test-suite-plan.md (picked by the operator in the Session 11 picker): tests/test_csv_routes.py with T2.1-T2.8 and strict xfails for D2 (timeseries half), D3 and D4, plus a tightened tests-passed gate in .quality-gates.json, on branch test/suite-phase2. In progress.
-what_was_done: pending
-commit: pending
+status: complete
+self_score: 8
+predecessor_score: 9
+active_task: Test suite. docs/planning/test-suite-plan.md is approved, and Phases 1 and 2 are complete on main (Phase 2 is fa73763). Next session implements Phase 3 only (the serial path), on a new branch off main. main is the only branch and is pushed with this close-out. No product code has changed since e5f52e1.
+what_was_done: Claim 7d02af9. Every Phase 2 behaviour was probed in the scratchpad through the test client with TESTING on before any test was written; the probe showed D2 and D3 raise ValueError and AttributeError into the caller instead of answering 500. Tests fa73763: tests/test_csv_routes.py, 19 passing tests (T2.1-T2.8) and 3 strict xfails (D2 timeseries half, D3, D4), each naming the exception it raises today with raises=. tests-passed tightened 9 -> 28. Six red-drives, each restored: .lower() removed at app.py:261 fails T2.4; data[:500] fails the last-500 test; _csv_data[0] fails the last-row test; the ; branch disabled fails T2.3's semicolon case; a real D4 fix (utf-8-sig) gives XPASS(strict) and fails the suite; a hidden test fails tests-passed (27). The plan gains an "As implemented (Session 11)" note. Two findings that the plan doesn't cover went to open item 5 with no tests: has_csv stays true after an empty upload while source is null, and CSV mode ignores ?hours=. At Phase 0 the operator asked what open item 4 means (squash and rebase merges rewrite the SHAs the records cite); it stays open. On the operator's direction (a picker before close-out): a fetch and a secret scan, main fast-forwarded to the branch, the branch deleted, and main pushed with this commit. "Session 8 Handoff Evaluation" and "What Session 9 Did" were archived from SESSION_NOTES.md.
+next_steps: Implement Phase 3 of docs/planning/test-suite-plan.md (section 5, lines 357-433) on a new branch off main: tests/test_serial_reader.py (T3.1-T3.7, strict xfail D1), a FakeReader fixture in tests/conftest.py, tests/test_serial_routes.py (T3.8-T3.9, strict xfail D7), and tighten tests-passed in .quality-gates.json. Four commits: the claim; test_serial_reader.py, conftest.py and a ledger entry; test_serial_routes.py, the gate and a ledger entry; the close-out. DONE: the suite exits 0 with exactly 5 xfailed, the ratchet passes 2/2, one red-drive is recorded (delete the "humidity": "rh" mapping at serial_reader.py:147), the suite runs well under 10 s, and no product file shows in git diff. P4 (API) follows, then the D1-D7 fix sessions, D1 and D7 first.
+key_files: tests/test_csv_routes.py:26, tests/test_csv_routes.py:41, tests/test_csv_routes.py:101, tests/test_csv_routes.py:159, .quality-gates.json:24, docs/planning/test-suite-plan.md:341, docs/planning/test-suite-plan.md:357, serial_reader.py:62, serial_reader.py:89, serial_reader.py:106, serial_reader.py:140, serial_reader.py:147, app.py:38, app.py:141, app.py:175
+gotchas: The client fixture runs with TESTING on, so a route's exception reaches the test and no 500 comes back; name each xfail's exception with raises=. D1 and D7 both fail on an assertion today (probed for D1), so both take raises=AssertionError. The isolated fixture resets _serial_reader but stops no thread: any test that sets SERIAL_PORT and calls a data route starts a real daemon thread through get_serial_reader() (app.py:47). Call stop(), and never join(). The plan's own line numbers moved by 7 after the Session 11 note, but its product-code citations didn't. Keep "passed" out of reason= strings. The ratchet's results hash changes only when a measurement changes; cite the final run. Stage files by name: 4 untracked tool and render outputs remain (open item 2). Back up a new untracked test module by explicit path to the scratchpad before a red-drive mutates it. The MEDIUM "thin coverage" stays until the tests total 548 lines (342 now), so don't pad.
+runtime_smoke: Tests only; no product runtime behaviour changed. python3 -m pytest -q and plain pytest -q: 28 passed, 3 xfailed, exit 0. quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 0dc3acde972e · manifest 770382cd43d3
+changelog_ref: CHANGELOG.md "2026-09-17 · [ad hoc] Session 11 closed out — test-suite Phase 2 complete; main fast-forwarded, pushed with this commit"
+commit: fa73763
 ```
+Session 11 (Claude Opus 5, single-tier) implemented Phase 2 of the test-suite plan. With no data source, every JSON
+route's answer is now pinned, and so is the CSV upload path. The suite gives 28 passed and 3 strict xfails, and the
+ratchet holds tests-passed at 28. It scored Session 10's handoff 9/10: the recipe, citations and gotchas were exact,
+except one gotcha that said the ratchet hash changes every run. It scored itself 8/10. (+) Every asserted behaviour
+was probed on the suite's own setup first, which surfaced the TESTING difference and two new findings. Six
+red-drives covered each targeted test, the strict-xfail flip and the tightened gate. Scope held, and the landing was
+decided before close-out. (−) There were four harness nudges for silence. One pipeline checked tail's exit code
+instead of pytest's. The first picker didn't explain open item 4. A draft of this handoff cited a line number read
+off a multi-file `cat -n`, which the pre-commit re-grep caught.
 
 ```handoff
 session: S10

@@ -15,6 +15,24 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 11 closed out — test-suite Phase 2 complete; main fast-forwarded, pushed with this commit
+- **Change:** `SESSION_NOTES.md` carries the handoff, the Session 10 evaluation (9/10) and the self-assessment (8/10). Phase 3 is recommended next, and open item 5 is new: two CSV-path findings (after an empty upload `has_csv` stays true while `source` is null; CSV mode ignores `?hours=`), left untested for the operator to decide. "Session 8 Handoff Evaluation" and "What Session 9 Did" were archived (`git show fa73763:SESSION_NOTES.md`; FM #28; 342 → 336 lines, under the 400-line ceiling). `docs/planning/test-suite-plan.md` gains an "As implemented (Session 11)" note under Phase 2's DONE list (the `raises=` markers) and a Status line naming both implemented phases. The S11 `HANDOFFS.md` receipt is `status: complete`. No new `CLAUDE.md` learning: the D2/D3 surprise is learning #9 recurring
+- **Commit/PR:** the close-out commit (ships this entry); session commits `7d02af9`, `fa73763`. Pushed to `origin/main` straight after it is made, on the operator's direction
+- **Session:** S11 · **Verified:** `python3 -m pytest -q` gives `28 passed, 3 xfailed`; `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 0dc3acde972e · manifest 770382cd43d3`; every `file:line` in the handoff re-grepped; the receipt's `changelog_ref` matches this heading
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] Local branch `test/suite-phase2` deleted
+- **Change:** on the operator's direction, the fully merged local branch `test/suite-phase2` (tip `fa73763`) was deleted with `git branch -d`. It was never pushed, so there was no remote branch to delete. `main` is again the only branch
+- **Commit/PR:** the close-out commit (ships this entry); branch op, no commit of its own
+- **Session:** S11 · **Verified:** before deletion, `git merge-base --is-ancestor test/suite-phase2 main` succeeded; afterwards `git branch -vv` lists only `main`
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
+### 2026-09-17 · [ad hoc] Phase 2 branch landed — main fast-forwarded to `test/suite-phase2`; push follows the close-out
+- **Change:** the operator chose "fast-forward main + push" in a picker before close-out (learning #8). Local `main` was fast-forwarded from `fbacf96` to `fa73763` with `git merge --ff-only`, so `7d02af9` and `fa73763` keep their SHAs (learning #6). `main` is pushed to `origin/main` straight after the close-out commit, carrying the two Session 11 commits and the close-out
+- **Commit/PR:** the close-out commit (ships this entry); fast-forward to `fa73763`; push to `origin/main`
+- **Session:** S11 · **Verified:** after `git fetch`, `origin/main` = `fbacf96`, and `git merge-base --is-ancestor` confirmed it is an ancestor of the branch. A scan of the lines added in `origin/main..test/suite-phase2` for home paths, scratchpad paths, and secret or token patterns found nothing
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] No-source contract and CSV-path tests — test-suite plan Phase 2, commit 2 of 3
 - **Change:** adds `tests/test_csv_routes.py` with 19 passing tests (T2.1–T2.8) and 3 strict xfails (D2's timeseries half, D3, D4). The breakdown: T2.1 is a 6-route table; T2.2 has 2 tests; T2.3 covers 3 delimiters; T2.4, T2.5, T2.7 and T2.8 have one test each; T2.6 has 4. `.quality-gates.json` tightens `tests-passed` from 9 to 28, the measured count. **Change from the plan's text:** the plan's D2 and D3 assertions are `status_code < 500`, but the `client` fixture runs with `TESTING` on, so Flask raises the route's exception into the test instead of answering 500. Each xfail therefore names the exception it expects today (`raises=ValueError`, `AttributeError`, `AssertionError`), so any other kind of failure still reports as FAILED
 - **Commit/PR:** this commit (ships this entry)
