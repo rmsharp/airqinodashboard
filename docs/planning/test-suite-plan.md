@@ -2,8 +2,8 @@
 
 **Status:** approved as written by the operator, 2026-09-17 (Session 10's Phase 0 picker). Phase 1 was
 implemented in Session 10, Phase 2 in Session 11, Phase 3 in Session 12 and Phase 4 in Session 13. All four
-phases are done. Of the fix sessions (§6), D1 was fixed in Session 14 (`a14ff03`). D7, D3, D4, D6, D5 and D2
-remain.
+phases are done. Of the fix sessions (§6), D1 was fixed in Session 14 (`a14ff03`) and D7 in Session 15
+(`222f02c`, `9698f9c`, `87c7535`). D3, D4, D6, D5 and D2 remain.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.
@@ -136,7 +136,7 @@ phase listed, asserting only the *minimal* correct behaviour, so the fix session
 | D4 | A UTF-8 byte-order mark is kept in the first header (`app.py:245` decodes with `utf-8`, not `utf-8-sig`) | Uploading `﻿timestamp,pm25\n…` → `columns[0] == '﻿timestamp'` | The chart reads `row.timestamp` (`dashboard.js:251`), so a BOM-prefixed CSV plots nothing. Excel's "CSV UTF-8" export writes a BOM. Whether the device's SD card does is unknown. | `columns[0] == "timestamp"` | P2 |
 | D5 | `active_source()` reports `"api"` when only `AIRQINO_CLIENT_ID` is set (`app.py:53`), but `get_api_client()` needs all four credential variables (`:32`) | With only `AIRQINO_CLIENT_ID` set: the badge says "API Connected", the banner is hidden, and `/api/current` returns 503 "No data source configured" | A half-filled `.env` hides the setup help and claims a connection that doesn't exist. | `"API Connected"` not in `GET /` | P4 |
 | D6 | The source order disagrees. `active_source()` is API → serial → CSV (`app.py:53-58`). The data routes use serial → API → CSV (`:141-163`, `:175-208`), and `README.md:27` documents serial → API → CSV. | With both sources configured, the badge says "API Connected" while `/api/current` serves serial data. | The badge contradicts the data shown. | `active_source() == "serial"` with both sources configured | P4 |
-| D7 | A serial port that fails to open sets `latest = {"error": …}` (`serial_reader.py:64-69`), and `/api/current` returns it as data with **200** (`app.py:143-145`) | `SERIAL_PORT=/dev/does-not-exist` → first call 202 "No data received yet", then 200 `{"source": "serial", "data": {"error": "[Errno 2] could not open port …"}}` | The JS only reports errors on non-2xx responses (`dashboard.js:134-140`), so it shows "No readings available" and the port error never reaches the user. That is the first-hookup failure the operator is most likely to hit. | `status_code != 200` once the reader holds an error | P3 |
+| D7 **(fixed, Session 15, `9698f9c`)** | A serial port that fails to open sets `latest = {"error": …}` (`serial_reader.py:64-69`), and `/api/current` returns it as data with **200** (`app.py:143-145`) | `SERIAL_PORT=/dev/does-not-exist` → first call 202 "No data received yet", then 200 `{"source": "serial", "data": {"error": "[Errno 2] could not open port …"}}` | The JS only reports errors on non-2xx responses (`dashboard.js:134-140`), so it shows "No readings available" and the port error never reaches the user. That is the first-hookup failure the operator is most likely to hit. | `status_code != 200` once the reader holds an error | P3 |
 
 **Characterized, not flagged as defects.** These get plain passing tests, each with a comment that it is current
 behaviour and not necessarily intended:
@@ -583,6 +583,21 @@ to 119, not the expected 117: T3.1 gained one xfail-turned-pass row (the repro) 
 case, since a probe found it worth pinning once the regression above was known. Step 5 (learning #5's runtime
 check) ran: a real app process read a real pty over `os.openpty()`, fed the docstring's example line once a
 second, with a before/after headless-Chrome screenshot of the readings grid.
+
+**As implemented (D7, Session 15):** §4's user-impact cell for D7 was wrong about the page. `dashboard.js` does
+not report a non-2xx response; `loadCurrent` only logs it to the console. A probe of a server-only fix (503 with
+the error) turned the xfail green, but a headless-Chrome screenshot showed the page on "Loading readings…"
+indefinitely, which is worse than before. So the operator chose a fix in three commits:
+- the page shows an error that names the serial source in the readings grid, with a hint to check `SERIAL_PORT`
+  and restart (`222f02c`); other errors are still only logged;
+- the reader keeps an open failure in its own `error` field, not in `latest`, and `/api/current` answers 503 with
+  it (`9698f9c`). T3.7 asserted `latest["error"]` and failed on the fix, so it now checks `reader.error`
+  (learning #11);
+- a README paragraph, and `tests-passed` from 119 to 120 (`87c7535`).
+
+`/api/timeseries` still answers 200 with `data: []` in this state. The fix inserted 4 lines into `app.py` at
+`:143-146`, so this plan's `app.py` citations past `:142` are now 4 lower than the code; the tests' own citations
+were updated (`2519647`).
 
 ## 7. Alternatives considered
 

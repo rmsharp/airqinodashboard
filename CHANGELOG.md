@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Test plan records D7 as fixed; BL-1's map-tile citation follows the moved line
+- **Change:** `docs/planning/test-suite-plan.md`: the Status line names D7's three commits and the five defects left (D3, D4, D6, D5, D2); D7's §4 row is tagged fixed (`9698f9c`); an "As implemented (D7, Session 15)" note under §6 records that §4's user-impact cell was wrong about the page (non-2xx responses are only logged, so a server-only fix leaves "Loading readings…" indefinitely), the three-commit fix the operator chose, T3.7's change, and that the plan's `app.py` citations past `:142` now read 4 lower than the code. `BACKLOG.md` BL-1: the map tiles' attribution moved from `static/js/dashboard.js:337` to `:356`
+- **Commit/PR:** this commit
+- **Session:** S15 · **Verified:** `static/js/dashboard.js:356` is the `attribution:` line; each replacement matched exactly once; the three cited commits exist (`git log --oneline -8`)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Test comments and xfail reasons follow the lines D7 moved
 - **Change:** D7's fix inserted 4 lines into `app.py` at `:143-146` and 1 into `serial_reader.py` at `:43`, and part 1 grew `static/js/dashboard.js`. That moved 11 `file:line` citations in 4 test files, and each now points at its line again: `app.py` `:175`→`:179`, `:141-163`→`:141-167`, `:220`→`:224` (D2-hourly's reason), `:178-182`→`:182-186` (twice), `:171`→`:175` (D2-timeseries), `:258-261`→`:262-265` (D3), `:245`→`:249` (D4); `dashboard.js:432`→`:451`; `serial_reader.py` `:65`→`:66` and `:143-148`→`:144-149`. Comments and reason strings only (learning #7: re-grep every `file:line` after an edit)
 - **Commit/PR:** this commit

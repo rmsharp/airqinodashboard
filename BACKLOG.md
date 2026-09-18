@@ -19,7 +19,7 @@
   - **Work:** a root `LICENSE` with the MIT text; a License section in `README.md` naming the carve-out; SPDX headers
     on the project's own source files if wanted; and a check that each dependency's licence is compatible and
     credited. That means `requirements.txt`, the CDN scripts and stylesheet (`templates/dashboard.html:8`, `:137-139`)
-    and the map tiles' attribution (`static/js/dashboard.js:337`). None of those licences has been checked yet.
+    and the map tiles' attribution (`static/js/dashboard.js:356`). None of those licences has been checked yet.
   - **Done when:** GitHub shows MIT for the repo, the dashboard's LOW flag clears, and `README.md` states both the
     licence and the carve-out.
 - **BL-2 · Put `BACKLOG.md` items in a form the dashboard can read.** Added 2026-09-17 at the operator's request
