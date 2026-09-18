@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Serial reader tests — plan Phase 3, T3.1–T3.7 and the D1 strict xfail
+- **Change:** new `tests/test_serial_reader.py`: 26 passing tests and 1 strict xfail. They cover the `_parse_line` table (9 cases), every `_normalize` alias plus key case, `get_current` (empty, and a copy), `get_history` (last N, and the oldest dropped past `history_size`), idempotent `start()`, and the real thread over a pty (T3.6). The pty test writes a noise line and then a reading, and waits for the port to open first, because pyserial flushes input on open. The open-failure test is T3.7. D1 is marked `raises=AssertionError`. `tests/conftest.py` moves to the next commit, where its fixture gets its first user. No product code changed
+- **Commit/PR:** this commit
+- **Session:** S12 · **Verified:** `python3 -m pytest -q` gives `54 passed, 4 xfailed`, exit 0. Seven red-drives on `serial_reader.py` each failed their target and nothing else, among them the plan's deleted `"humidity": "rh"` and a real D1 fix, which gave XPASS(strict). The file was restored byte-identical (shasum `6f355ba…`)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 12 claimed — test-suite Phase 3 begins (in progress)
 - **Change:** the operator picked Phase 3 of `docs/planning/test-suite-plan.md` (the serial path) in the Phase 0 picker. Session claimed on branch `test/suite-phase3` (off `main` `e3e7a0a`)
 - **Commit/PR:** the claim commit (ships this entry)
