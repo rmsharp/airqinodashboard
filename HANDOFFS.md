@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S14
+date: 2026-09-17
+status: pending
+active_task: Fix D1 (picked by the operator in the Session 14 picker; plan section 6's first fix session): remove the strict xfail marker at tests/test_serial_reader.py:154, fix serial_reader.py:106-117 so a ;-joined line is not split on , too, tighten tests-passed from 116 to 117, runtime-check the fix, and red-drive it against the whole suite, on branch fix/d1-serial-delimiter. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S13
 date: 2026-09-17
 status: complete

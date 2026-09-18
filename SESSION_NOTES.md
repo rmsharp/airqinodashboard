@@ -96,6 +96,14 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 14 Did
+**Deliverable:** Fix D1 (open item 1; plan §6's first fix session): a `;`-joined serial line is split on `,` too,
+which overwrites its first key (`serial_reader.py:106-117`) (IN PROGRESS)
+**Started:** 2026-09-17 23:28
+**Status:** Session claimed on branch `fix/d1-serial-delimiter` (off `main` `b5a336c`). The operator picked D1 in the
+Phase 0 picker. Work beginning.
+**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest. Until close-out, this line is the crash breadcrumb for the next session's reconcile.
+
 ### Session 12 Handoff Evaluation (by Session 13)
 - **Score: 9/10**
 - **What helped:**

@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 14 claimed — D1 fix begins (in progress)
+- **Change:** the operator picked the D1 fix (open item 1; `docs/planning/test-suite-plan.md` §6's first fix session) in the Phase 0 picker. D1: a `;`-joined serial line is split on `,` too, which overwrites its first key. Session claimed on branch `fix/d1-serial-delimiter` (off `main` `b5a336c`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S14 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 13 closed out — test-suite Phase 4 complete, the test plan's four phases done; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the handoff, the Session 12 evaluation (9/10) and the self-assessment (8/10). Open item 1 becomes the plan's fix sessions (§6), D1 first and then D7. It records each defect's code and xfail location, and that a real D5 fix also fails Phase 1's T1.5. There are two new open items: a coverage floor (plan §8), and a live API test once credentials arrive, which should settle whether the 30 d chart's `getRange` span passes the API's 30-day cap. "Session 10 Handoff Evaluation" and "What Session 11 Did" were archived (`git show 5084680:SESSION_NOTES.md`; FM #28; 400 lines, at the 400-line ceiling). `docs/planning/test-suite-plan.md` gains an "As implemented (Session 13)" note under Phase 4's DONE list, which records its two stale `README.md` citations, and a Status line saying all four phases are done. `CLAUDE.md` gains learning #11: a real-fix red-drive tests the other tests too. The S13 `HANDOFFS.md` receipt is `status: complete`. On the operator's direction (a picker before close-out), `main` was fast-forwarded from `ace379d` to `5084680` and is pushed to `origin/main` straight after this commit
 - **Commit/PR:** the close-out commit (ships this entry); session commits `5c52bf4`, `0e5ed0d`, `5084680`
