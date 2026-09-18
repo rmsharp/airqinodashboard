@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S18
+date: 2026-09-18
+status: pending
+active_task: Fix D6 (picked by the operator in the Session 18 picker; plan section 6's fifth fix session): remove the strict xfail marker at tests/test_api_routes.py:202, make active_source() (app.py:53-58) and the data routes (app.py:141, :179) agree on which source wins when serial and the API are both configured, probe the header's source badge and the readings on the real page with the current code and each candidate before choosing a design, tighten tests-passed from 124 (by the measured delta), and red-drive the fix against the whole suite with the marker restored, on branch fix/d6-source-order. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S17
 date: 2026-09-18
 status: complete

@@ -145,6 +145,13 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 18 Did
+**Deliverable:** Fix D6 (open item 1; plan §6's fifth fix session): `active_source()` checks the API before serial
+(`app.py:53-58`), but `/api/current` and `/api/timeseries` try serial first (`:141`, `:179`) (IN PROGRESS)
+**Started:** 2026-09-18 14:32, on branch `fix/d6-source-order` off `main` `be44a02`
+**Status:** Session claimed. Work beginning.
+**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest.
+
 ### What Session 17 Did
 **Deliverable:** Fix D4 (open item 1; plan §6's fourth fix session): an upload was decoded as `utf-8`, not
 `utf-8-sig`, so a BOM stayed in the first header (`app.py:249`) — **COMPLETE**

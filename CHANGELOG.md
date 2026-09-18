@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Session 18 claimed — D6 fix begins (in progress)
+- **Change:** the operator picked the D6 fix (open item 1; `docs/planning/test-suite-plan.md` §6's fifth fix session) in the Phase 0 picker. D6: `active_source()` checks the API before serial (`app.py:53-58`), but `/api/current` and `/api/timeseries` try serial first (`:141`, `:179`), so with both configured the header's badge names a source the data doesn't come from. Session claimed on branch `fix/d6-source-order` (off `main` `be44a02`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S18 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Session 17 closed out — D4 fixed, the plan's fourth fix session done; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the Session 16 handoff evaluation (9/10; nothing wrong found; missing only what it had no reason to hit: the Flask reloader's two PIDs, and D4's test holding its BOM as an invisible literal), the full D4 write-up and a 7/10 self-assessment, down from 8 for the false escape claim in `caec75a`'s ledger entry, corrected by `18e94c3`. Open item 1 now recommends D6, with current citations and a probe plan whose no-vendor-traffic premise is labelled as read, not probed. Open item 7 gains the question of whether the API's hourly CSV starts with a BOM. Open items 5 and 8 were re-checked and still hold. New open item 10: make learning #15 a gate. `CLAUDE.md` gains learning #15: an invisible character in a test is a hazard no reader can see; write it as an escape through a script, and check the bytes before claiming it's gone. The S17 `HANDOFFS.md` receipt is `status: complete`. FM #28 reduction: "Session 14 Handoff Evaluation" and "What Session 15 Did" archived (`git show 9812ef3:SESSION_NOTES.md`). On the operator's direction (a picker before close-out), `main` was fast-forwarded from `9995f62` to `9812ef3`, then gained `18e94c3`, and is pushed to `origin/main` straight after this commit
 - **Commit/PR:** the close-out commit (ships this entry); session commits `d63e4f9`, `caec75a`, `9812ef3`, `18e94c3`
