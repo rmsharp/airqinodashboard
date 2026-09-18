@@ -159,26 +159,29 @@ session need this block to continue the work without re-reading the whole repo?*
 session: S9
 date: 2026-09-17
 status: complete
-self_score: 8
+self_score: 7
 predecessor_score: 9
-active_task: Test suite. docs/planning/test-suite-plan.md is written (d813463) and awaits the operator's approval. It has four phases, one session each: P1 harness + setup-banner guard, P2 no-source + CSV, P3 serial, P4 API. Next session implements Phase 1 only. The branch docs/test-suite-plan is local and unpushed; no product code changed.
-what_was_done: Claim 1177049. Read app.py, airqino_client.py, serial_reader.py, the template and dashboard.js, and ran the grep inventory (8 routes, 3 helpers, 15 client methods, 8 SerialReader methods, 9 env vars, 3 globals, every I/O and clock call). Scratch probes reproduced 7 defects, D1-D7 (plan section 4); none fixed. The operator chose pytest, strict xfail, monkeypatch fakes and Python-only scope in one four-question picker. A scratchpad spike verified the .env leak and the isolation fixture, pytest.ini, the pty round trip, fake-client injection and the two ratchet gates (5 passed, 2 xfailed; ratchet 2/2), and drove 3 guards red. Plan committed as d813463; 6 citations were corrected by a post-write re-grep. Close-out added CLAUDE.md learning #7 and archived the Session 5-7 notes from SESSION_NOTES.md.
-next_steps: With the operator's approval, implement Phase 1 of docs/planning/test-suite-plan.md (section 5, lines 161-290): requirements-dev.txt, pytest.ini, tests/conftest.py (text in the plan), tests/test_dashboard_page.py T1.1-T1.7, .gitignore, README.md and two gates in .quality-gates.json, in four commits of 5 files or fewer. First land the plan branch: git merge --ff-only docs/test-suite-plan on main, which keeps SHAs (learning #6). Then P2-P4 and the D1-D7 fixes in plan order, with D1 and D7 first because the serial adapter is next.
-key_files: docs/planning/test-suite-plan.md:161, docs/planning/test-suite-plan.md:122, app.py:12, app.py:19, app.py:51, templates/dashboard.html:33, templates/dashboard.html:55, quality_ratchet.py:266, README.md:11, CLAUDE.md:49
-gotchas: load_dotenv() walks up to / for a .env, so keep the isolated fixture autouse. Never set SERIAL_PORT in a test without a fake reader or a pty, because a real thread starts. Don't ban "USB port" in T1.1: the correct banner says "no USB port". Assert on the badge markup ">No Data Source<", since an HTML comment also matches. Keep "passed" out of xfail reasons, because the gate's regex scans the -ra output. After P1 the dashboard shows MEDIUM "Test coverage is very thin", which is expected: 4,412 of the 5,475 source lines are vendored tooling, so don't pad tests. Stage files by name: .pytest_cache/ and .quality-gates-results.json appear once tests run.
+active_task: Test suite. docs/planning/test-suite-plan.md (d813463) is on main and awaits the operator's approval. It has four phases, one session each: P1 harness + setup-banner guard, P2 no-source + CSV, P3 serial, P4 API. Next session implements Phase 1 only, on a new branch off main. main is the only branch, local and remote. No product code changed.
+what_was_done: Claim 1177049. Read app.py, airqino_client.py, serial_reader.py, the template and dashboard.js, and ran the grep inventory (8 routes, 3 helpers, 15 client methods, 8 SerialReader methods, 9 env vars, 3 globals, every I/O and clock call). Scratch probes reproduced 7 defects, D1-D7 (plan section 4); none fixed. The operator chose pytest, strict xfail, monkeypatch fakes and Python-only scope in one four-question picker. A scratchpad spike verified the .env leak and the isolation fixture, pytest.ini, the pty round trip, fake-client injection and the two ratchet gates (5 passed, 2 xfailed; ratchet 2/2), and drove 3 guards red. Plan committed as d813463; 6 citations were corrected by a post-write re-grep. First close-out f49da64 added CLAUDE.md learning #7 and archived the Session 5-7 notes. On the operator's direction afterwards: main was fast-forwarded to f49da64 and pushed with 4973cf7, after a fetch, an ancestor check and a secret scan; the local branch was deleted with git branch -d, and 5cc4ce9 pushed. This amended close-out brings the handoff and this receipt up to the session's end and adds learning #8.
+next_steps: With the operator's approval, implement Phase 1 of docs/planning/test-suite-plan.md (section 5, lines 161-290) on a new branch off main: requirements-dev.txt, pytest.ini, tests/conftest.py (text in the plan), tests/test_dashboard_page.py T1.1-T1.7, .gitignore, README.md and two gates in .quality-gates.json, in four commits of 5 files or fewer. Then P2-P4 and the D1-D7 fixes in plan order, with D1 and D7 first because the serial adapter is next.
+key_files: docs/planning/test-suite-plan.md:161, docs/planning/test-suite-plan.md:122, app.py:12, app.py:19, app.py:51, templates/dashboard.html:33, templates/dashboard.html:55, quality_ratchet.py:266, README.md:11, CLAUDE.md:49, CLAUDE.md:50
+gotchas: load_dotenv() walks up to / for a .env, so keep the isolated fixture autouse. Never set SERIAL_PORT in a test without a fake reader or a pty, because a real thread starts. Don't ban "USB port" in T1.1: the correct banner says "no USB port". Assert on the badge markup ">No Data Source<", since an HTML comment also matches. Keep "passed" out of xfail reasons, because the gate's regex scans the -ra output. After P1 the dashboard shows MEDIUM "Test coverage is very thin", which is expected: 4,412 of the 5,475 source lines are vendored tooling, so don't pad tests. Stage files by name. The first close-out's ledger entry says the branch "stays local and unpushed"; the later entries supersede it. The amended close-out commit may not be pushed yet, so check git status -sb.
 runtime_smoke: n/a — docs-only. git diff 15b0a3f -- '*.py' templates static is empty. The spike ran the app's own code in scratchpad copies: 5 passed, 2 xfailed, quality_ratchet 2/2 pass.
-changelog_ref: CHANGELOG.md "2026-09-17 · [ad hoc] Session 9 closed out — test-suite plan written, approval pending"
+changelog_ref: CHANGELOG.md "2026-09-17 · [ad hoc] Session 9 close-out amended — follow-on git actions recorded, receipt brought to session end"
 commit: d813463
 ```
 
 Session 9 (Claude Opus 5, single-tier) ran on 2026-09-17. The operator picked "plan a test suite" from the Phase 0
 picker, then chose the recommended option on all four questions in a second, pre-design picker: pytest, strict xfail
-for known defects, monkeypatch fakes, Python only. Actions: the claim commit, the plan commit and the close-out. Probes
-found 7 real defects, 2 of them on the serial path the operator will use next. Self-score 8/10. (+) Probed before
-asserting; the spike measured the plan's mechanics, with red-drives; decisions were made before the design; no product
-code touched. (−) 6 citations were written from memory (caught before the commit); one stray /tmp write; three
-harness prompts for silence. Predecessor (Session 8) scored 9/10: exact surfaces and first test case; it lacked only
-toolchain facts. Full notes are in `SESSION_NOTES.md` under "What Session 9 Did".
+for known defects, monkeypatch fakes, Python only. Actions: the claim, the plan, the first close-out, the plan
+branch fast-forwarded into main and pushed, the local branch deleted, a second push, and this amended close-out. Probes
+found 7 real defects, 2 of them on the serial path the operator will use next. Self-score 7/10, down from the first
+close-out's 8. (+) Probed before asserting; the spike measured the plan's mechanics, with red-drives; decisions were
+made before the design; no product code touched; each git step checked before it went outward. (−) 6 citations were
+written from memory (caught before the commit); one stray /tmp write; three harness prompts for silence; and the
+close-out went stale after the follow-on actions until the operator asked for it (learning #8). Predecessor (Session 8)
+scored 9/10: exact surfaces and first test case; it lacked only toolchain facts. Full notes are in `SESSION_NOTES.md`
+under "What Session 9 Did".
 
 ```handoff
 session: S8

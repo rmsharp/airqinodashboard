@@ -9,11 +9,12 @@
 **Current focus:** Test suite. Session 9 (2026-09-17) wrote `docs/planning/test-suite-plan.md`, which awaits the
 operator's approval. Next session implements **Phase 1 only**, once the plan is approved (or amended).
 **Status:**
-- **Plan: WRITTEN, not approved.** `d813463`, now on `main`. On the operator's direction, `main` was fast-forwarded
-  to `docs/test-suite-plan` (`f49da64`) and pushed to `origin`, and the next commit (this note) was pushed with it.
-  The branch `docs/test-suite-plan` was then deleted locally (it was never pushed). The plan has four phases, one session
-  each: P1 harness + setup-banner guard, P2 no-source + CSV, P3 serial, P4 API. The operator chose pytest, strict
-  xfail for known defects, monkeypatch fakes and Python-only scope (plan §2).
+- **Plan: WRITTEN, not approved.** `d813463` is on `main`. On the operator's direction, `main` was fast-forwarded
+  to the plan branch, and `4973cf7` and `5cc4ce9` were pushed. The branch was then deleted: it was only ever local.
+  `main` is the only branch, local and remote. This amended close-out commit is the one local commit not yet on
+  `origin`; `git status -sb` shows whether it was pushed. The plan has four phases, one session each: P1 harness +
+  setup-banner guard, P2 no-source + CSV, P3 serial, P4 API. The operator chose pytest, strict xfail for known
+  defects, monkeypatch fakes and Python-only scope (plan §2).
 - **7 defects found and reproduced** (plan §4, D1–D7), none fixed. Each becomes a strict-xfail test in its phase, then
   a fix session of its own (plan §6). **D1 and D7 hit the serial path the operator is about to use:** a `;`-separated
   `key=value` line loses its first sensor, and a port that fails to open shows "No readings available" with no error.
@@ -75,11 +76,13 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 ### What Session 9 Did
 **Deliverable:** Plan a test suite (open item 1): `docs/planning/test-suite-plan.md` — **COMPLETE** (the plan; approval
 pending)
-**Started / Closed:** 2026-09-17 20:25 · branch `docs/test-suite-plan` off `main` `15b0a3f` (local, not pushed)
+**Started / Closed:** 2026-09-17 20:25 · claimed on branch `docs/test-suite-plan` off `main` `15b0a3f`; closed on `main`
+after the branch was fast-forwarded in, pushed and deleted
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md` (research, then the design document). One optional Phase 2B
 picker settled the load-bearing decisions before writing.
-**Ledger:** 3 `CHANGELOG.md` entries, one per commit (claim, plan, close-out).
+**Ledger:** 6 `CHANGELOG.md` entries: the claim, the plan, the first close-out, the branch landing and push, the branch
+deletion, and this amended close-out.
 
 **What was done:**
 - **Claim** `1177049`: the stub, a pending receipt and an *(in progress)* entry, committed before any research.
@@ -115,6 +118,18 @@ picker settled the load-bearing decisions before writing.
   before the commit.
 - **FM #28 reduction:** "Session 5/6 Handoff Evaluation" and "What Session 6/7 Did" were removed from this file
   (`git show 15b0a3f:SESSION_NOTES.md`).
+- **First close-out** `f49da64`: the handoff, the receipt and learning #7.
+- **Follow-on actions, directed by the operator after that close-out:**
+  - **Landing and push** (`4973cf7`). `git fetch` first showed `origin/main` = `main` = `15b0a3f`, and
+    `git merge-base --is-ancestor` confirmed a fast-forward was possible. A scan of the added lines found no secrets,
+    home paths or scratchpad paths. `main` was then fast-forwarded to `f49da64` (SHAs unchanged, learning #6), the
+    ledger entry committed, and `main` pushed.
+  - **Branch deletion** (`5cc4ce9`). The branch was confirmed to be an ancestor of `main`, deleted with
+    `git branch -d`, the deletion recorded in the ledger, and `main` pushed after a fresh `git fetch`. That push has
+    no ledger entry of its own, because recording it would need a new commit, which would then need pushing too.
+  - **Amended close-out** (this commit). The operator asked for a Phase 3 close-out at the end of each session. The
+    first close-out ran before the follow-on actions, so this handoff, the receipt and the self-assessment are
+    brought up to the session's real end. Learning #8 records it.
 
 **Verification:**
 - **Deliverable:** the plan satisfies `SESSION_RUNNER.md` §Planning Session Checklist (plan §10). One box stays
@@ -150,12 +165,18 @@ picker settled the load-bearing decisions before writing.
   `.quality-gates-results.json` (open item 2). Stage files by name.
 - **The base env loads global pytest plugins** (cov, anyio, asyncio, langsmith). They didn't interfere in the spike.
 - **The spike lived in this session's scratchpad and is gone.** The plan carries the fixture text and the evidence.
+- **The first close-out's ledger entry is out of date.** It says the branch "stays local and unpushed", but
+  ledger entries are never edited. The three entries above it supersede it.
 
-**Learnings (3C):** `CLAUDE.md` learning #7: probe the code paths a plan claims about before writing it, and re-grep
-every citation afterwards.
+**Learnings (3C):**
+- `CLAUDE.md` learning #7: probe the code paths a plan claims about before writing it, and re-grep every citation
+  afterwards.
+- `CLAUDE.md` learning #8: close-out belongs at the end of the session, not the end of the deliverable. If the operator
+  directs more actions after it, run Phase 3 again before stopping.
 
 **Self-assessment:**
-- **Score: 8/10**
+- **Score: 7/10.** The first close-out scored itself 8. One point comes off for the stale close-out below, which the
+  operator had to correct.
 - (+) Research came before the design: every module was read, and the suspicions were probed into 7 reproduced
   defects with repro strings and `file:line`.
 - (+) The load-bearing decisions were asked before writing (one picker), so there were no stakeholder corrections.
@@ -167,6 +188,11 @@ every citation afterwards.
 - (−) One backup copy of the template went to `/tmp` instead of the scratchpad. It was deleted immediately.
 - (−) The harness prompted for status three times, which repeats a Session 6–8 minus.
 - (−) The plan runs 585 lines, and a Phase 1 executor needs about a third of it. The §-structure keeps it navigable.
+- (+) The follow-on git work was checked before each outward step: a fetch, an ancestor check and a secret scan before
+  the push; a merge check before the delete. Each action was recorded in the ledger.
+- (−) **The close-out went stale.** I carried out three operator-directed actions after the first close-out without
+  re-running Phase 3. That left the receipt saying the branch was unpushed and telling the next session to land it,
+  and left no final report. The operator had to ask for the close-out.
 
 ### Session 7 Handoff Evaluation (by Session 8)
 - **Score: 9/10**

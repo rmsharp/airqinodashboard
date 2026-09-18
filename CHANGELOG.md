@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 9 close-out amended — follow-on git actions recorded, receipt brought to session end
+- **Change:** the operator asked for a Phase 3 close-out at the end of each session. The first close-out (`f49da64`) predated three operator-directed actions (the fast-forward and push, the branch deletion, and a second push). `SESSION_NOTES.md` now records them, and its self-assessment drops from 8/10 to 7/10. The S9 `HANDOFFS.md` receipt is overwritten in place: it no longer calls the branch unpushed or says to land it first, and its `changelog_ref` names this entry. `CLAUDE.md` gains learning #8: close-out belongs at the end of the session, so run Phase 3 again after any follow-on work
+- **Commit/PR:** the amended close-out commit (ships this entry); not pushed unless the operator asks
+- **Session:** S9 · **Verified:** n/a — docs-only; `git diff 15b0a3f -- '*.py' templates static` is empty; the receipt's `changelog_ref` matches this heading
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Local branch `docs/test-suite-plan` deleted
 - **Change:** on the operator's direction, the fully merged local branch `docs/test-suite-plan` (tip `f49da64`) was deleted with `git branch -d`. It was never pushed, so there was no remote branch to delete. `main` is again the only branch. `SESSION_NOTES.md`'s ACTIVE TASK no longer says the branch exists
 - **Commit/PR:** this commit (ships this entry); branch op, no commit of its own
