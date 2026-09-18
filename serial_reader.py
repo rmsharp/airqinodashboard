@@ -40,6 +40,7 @@ class SerialReader:
         self.baud = baud
         self.history = deque(maxlen=history_size)
         self.latest = {}
+        self.error = None  # why the port failed to open; kept out of latest, which holds readings
         self._thread = None
         self._running = False
         self._serial = None
@@ -64,7 +65,7 @@ class SerialReader:
         try:
             self._serial = serial.Serial(self.port, self.baud, timeout=5)
         except Exception as e:
-            self.latest = {"error": str(e)}
+            self.error = str(e)
             self._running = False
             return
 

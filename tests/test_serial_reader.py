@@ -150,8 +150,9 @@ def test_reader_thread_reads_a_real_tty(pty_port):
 def test_open_failure_is_recorded_and_stops_the_reader(tmp_path):
     reader = SerialReader(str(tmp_path / "no-such-port"))
     reader.start()
-    assert poll(lambda: "error" in reader.latest and not reader._running)
-    assert "no-such-port" in reader.latest["error"]
+    assert poll(lambda: reader.error and not reader._running)
+    assert "no-such-port" in reader.error
+    assert reader.get_current() is None  # the error is not a reading (D7)
 
 
 # D1 (plan §4): the parser split a ;-joined line on , as well, and that second pass

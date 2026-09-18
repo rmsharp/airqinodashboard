@@ -140,6 +140,10 @@ def api_current():
     # Try serial first (real-time)
     reader = get_serial_reader()
     if reader:
+        # The port never opened. The reader has stopped and does not retry.
+        if reader.error:
+            return jsonify({"source": "serial", "data": None,
+                            "error": reader.error}), 503
         data = reader.get_current()
         if data:
             return jsonify({"source": "serial", "data": data})

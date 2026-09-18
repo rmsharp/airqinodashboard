@@ -4,9 +4,9 @@ Phase 3 of docs/planning/test-suite-plan.md (T3.8-T3.9). The idle_reader fixture
 (conftest.py) installs a real SerialReader that was never started, so these tests run
 the reader's own get_current/get_history and start no thread.
 
-D7 is a strict xfail (plan §4). It goes through get_serial_reader() (app.py:38-48),
+D7's test (plan §4, fixed in Session 15) goes through get_serial_reader() (app.py:38-48),
 which starts a real thread; the failed open ends that thread by itself
-(serial_reader.py:66-69).
+(serial_reader.py:67-70).
 """
 
 import time
@@ -46,11 +46,7 @@ def test_timeseries_sensor_filter_reshapes_rows_with_that_key(client, idle_reade
         "source": "serial", "data": [{**ROWS[0], "values": {"co": 1.0}}]}
 
 
-# Known defect (plan §4). Keep the word for a green test out of the reason:
-# -ra prints it into the output the tests-passed gate's regex scans.
-@pytest.mark.xfail(raises=AssertionError,
-                   reason="D7: a port that fails to open is served as data with 200 "
-                          "(serial_reader.py:64-69, app.py:143-145)")
+# D7 (plan §4): a port that failed to open was served as data with 200.
 def test_port_open_failure_is_not_a_200(client, monkeypatch, tmp_path):
     monkeypatch.setenv("SERIAL_PORT", str(tmp_path / "no-such-port"))
     deadline = time.monotonic() + 2
@@ -59,5 +55,8 @@ def test_port_open_failure_is_not_a_200(client, monkeypatch, tmp_path):
         time.sleep(0.01)
         resp = client.get("/api/current")
     if resp.status_code == 202:
-        pytest.fail("the reader never reported its open failure")  # FAILED, never XFAIL
-    assert resp.status_code != 200
+        pytest.fail("the reader never reported its open failure")
+    assert resp.status_code == 503
+    body = resp.get_json()
+    assert (body["source"], body["data"]) == ("serial", None)
+    assert "no-such-port" in body["error"]  # dashboard.js shows it in the readings grid
