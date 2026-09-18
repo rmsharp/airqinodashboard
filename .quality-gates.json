@@ -13,5 +13,22 @@
     "extract": "TOTAL\\s+\\d+\\s+\\d+\\s+(\\d+(?:\\.\\d+)?)%",
     "why": "measured 82.5% on 2026-01-01; a floor without a faithfulness check beside it measures effort, not quality — pair it with a mutation spot-check in review"
   },
-  "gates": []
+  "gates": [
+    {
+      "name": "tests-exit",
+      "direction": "max",
+      "threshold": 0,
+      "command": "python3 -m pytest -q",
+      "why": "the suite exits 0 (strict xfails included)"
+    },
+    {
+      "name": "tests-passed",
+      "direction": "min",
+      "threshold": 9,
+      "unit": "tests",
+      "command": "python3 -m pytest -q",
+      "extract": "(\\d+) passed",
+      "why": "measured 9 on 2026-09-17 (Session 10, plan Phase 1); tests cannot be deleted silently, and each later phase and fix session tightens it"
+    }
+  ]
 }

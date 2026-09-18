@@ -22,6 +22,15 @@ Open <http://localhost:5001>.
 
 The dashboard runs with no configuration — it just shows a "Connect Your AirQino" setup banner until you wire up one of the data sources below. The CSV upload path works immediately with no `.env` changes at all.
 
+### Running tests
+
+```bash
+pip install -r requirements-dev.txt
+python3 -m pytest
+```
+
+The tests drive the app through Flask's test client, so they need no device, no credentials and no `.env`. The fixtures remove any `.env` values before each test. The suite is verified on Python 3.10 only: pytest 9 needs 3.10+, and on 3.9 `pytest>=8` installs an untested 8.x. Known defects will be marked strict `xfail`, so a fix that leaves its marker in place fails the suite. `python3 quality_ratchet.py --run` checks the two test gates in `.quality-gates.json`. The phases are in [`docs/planning/test-suite-plan.md`](docs/planning/test-suite-plan.md).
+
 ## Connecting a data source
 
 Configuration lives in `.env` (copy from `.env.example`). The dashboard auto-detects which source is active in this priority order: **serial → API → CSV**.
@@ -138,6 +147,7 @@ Full board identification, internal layout, wiring diagrams, adapter recommendat
 | `templates/dashboard.html` | Dashboard UI template |
 | `static/js/dashboard.js` | Front-end logic: AQI coloring, charts, toggles, map, upload |
 | `static/css/dashboard.css` | Dark theme and AQI color classes |
+| `tests/` | pytest suite; `conftest.py` holds the isolation fixture (see [Running tests](#running-tests)) |
 | `docs/HARDWARE.md` | Hardware connection guide for the REV6 board |
 | `.env.example` | Configuration template |
 

@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Test wire-up — .gitignore, README "Running tests", two quality gates (plan Phase 1, commit 3 of 4)
+- **Change:** `.gitignore` gains `.pytest_cache/`. pytest already writes a `.gitignore` inside that directory, so this line is a backup. `README.md` gains a "Running tests" subsection under Quick start: it says the suite is verified on Python 3.10 only, and adds a `tests/` row in Key files. `.quality-gates.json` declares its first two gates: `tests-exit` (max 0) and `tests-passed` (min 9, the measured count). Both use one `python3 -m pytest -q` command, so the ratchet runs pytest once. `.quality-gates-results.json` stays untracked (open item 2, the operator's call)
+- **Commit/PR:** this commit (ships this entry)
+- **Session:** S10 · **Verified:** `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results b7ff3e55b84d · manifest f394b801e28f`; `--precommit` passes on the staged manifest. Red-drives, each restored: a failing test → `tests-exit` fails (measured 1); one test hidden from collection → `tests-passed` fails (measured 8)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Test harness and the setup-banner guard — test-suite plan Phase 1, commit 2 of 4
 - **Change:** adds `requirements-dev.txt` (`-r requirements.txt`, `pytest>=8`), `pytest.ini` (as in the plan) and `tests/conftest.py` (the plan's `isolated` autouse fixture and the `client` fixture). Also adds `tests/test_dashboard_page.py` with 9 tests: T1.1–T1.6 as planned, and T1.7 as two tests. **Two changes from the plan text:** (1) the module fixture `planted_leak` sets all 8 variables and fills the 3 module globals before `isolated` runs. A probe showed that with `autouse` off, all 9 tests still **passed** on this machine, because no `.env` exists, so the plan's red-drive only worked in the Session 9 spike, which had one. (2) A second T1.7 test scans `app.py` for `os.getenv` names, so a new variable has to join the isolation lists. The unused `import os` in the plan's conftest is left out
 - **Commit/PR:** this commit (ships this entry)
