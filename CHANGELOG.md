@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-17 · [ad hoc] Session 11 claimed — test-suite Phase 2 begins (in progress)
+- **Change:** the operator picked Phase 2 of `docs/planning/test-suite-plan.md` (the no-source contract and the CSV path) in the Phase 0 picker. Session claimed on branch `test/suite-phase2` (off `main` `fbacf96`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S11 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-17 · [ad hoc] Session 10 closed out — test-suite Phase 1 complete; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the handoff, the Session 9 evaluation (8/10) and the self-assessment (8/10). Its open items are renumbered, with Phase 2 recommended next. "Session 7 Handoff Evaluation" and "What Session 8 Did" were archived (`git show 4da62a1:SESSION_NOTES.md`; FM #28; 300 → 334 lines, under the 400-line ceiling). `CLAUDE.md` gains learning #9: plant the hazard a guard test exists to catch. `docs/planning/test-suite-plan.md` gains an "As implemented (Session 10)" note under Phase 1's DONE list. The S10 `HANDOFFS.md` receipt is `status: complete`. A new finding went to open item 3: `context_budget.py` reports `SESSION_NOTES.md` as "instrument-failed", because `.context-budget.json` expects at least 2 `^## ` headings but the synced seed has 1
 - **Commit/PR:** the close-out commit (ships this entry); session commits `02016aa`, `067455f`, `4da62a1`. Pushed to `origin/main` straight after it is made, on the operator's direction
