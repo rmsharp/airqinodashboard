@@ -5,7 +5,8 @@ implemented in Session 10, Phase 2 in Session 11, Phase 3 in Session 12 and Phas
 phases are done. Of the fix sessions (§6), D1 was fixed in Session 14 (`a14ff03`), D7 in Session 15
 (`222f02c`, `9698f9c`, `87c7535`), D3 in Session 16 (`31e50f2`, `5e37cb1`), D4 in Session 17 (`caec75a`)
 and D6 in Session 18 (`5056055`). D8, found by Session 18's probe and added to §4 by the operator in
-Session 19, was fixed in Session 19 (`b53303e`). D5 and D2 remain.
+Session 19, was fixed in Session 19 (`b53303e`). D5 was fixed in Session 20 (`0a3b488`, with a note naming
+the missing credentials in `f9fb312`). D2 remains.
 **Written:** Session 9, 2026-09-17, on branch `docs/test-suite-plan` off `main` `15b0a3f`.
 **Governing docs:** `SESSION_RUNNER.md` §Planning Sessions and
 `docs/methodology/workstreams/ARCHITECTURE_WORKSTREAM.md`.
@@ -136,7 +137,7 @@ phase listed, asserting only the *minimal* correct behaviour, so the fix session
 | D2 | `int()` on a query parameter without validation: `hours` (`app.py:171`) and `days` (`:220`) | `GET /api/timeseries?hours=abc` → 500 `ValueError`, even with no source configured. `/api/hourly?days=abc` returns 500 in API mode. | A crafted or mistyped URL returns 500 instead of 400. | `status_code < 500`, once for timeseries and once for hourly | P2 (timeseries), P4 (hourly) |
 | D3 **(fixed, Session 16, `5e37cb1`)** | A CSV row with more fields than the header. `csv.DictReader` puts the extras under the key `None`, and `k.strip()` fails on it (`app.py:258-261`) | Uploading `a,b\n1,2,3\n` → 500 `AttributeError: 'NoneType' object has no attribute 'strip'` | One ragged row in an SD-card export fails the whole upload with a 500. | `status_code < 500` | P2 |
 | D4 **(fixed, Session 17, `caec75a`)** | A UTF-8 byte-order mark is kept in the first header (`app.py:245` decodes with `utf-8`, not `utf-8-sig`) | Uploading `﻿timestamp,pm25\n…` → `columns[0] == '﻿timestamp'` | The chart reads `row.timestamp` (`dashboard.js:251`), so a BOM-prefixed CSV plots nothing. Excel's "CSV UTF-8" export writes a BOM. Whether the device's SD card does is unknown. | `columns[0] == "timestamp"` | P2 |
-| D5 | `active_source()` reports `"api"` when only `AIRQINO_CLIENT_ID` is set (`app.py:53`), but `get_api_client()` needs all four credential variables (`:32`) | With only `AIRQINO_CLIENT_ID` set: the badge says "API Connected", the banner is hidden, and `/api/current` returns 503 "No data source configured" | A half-filled `.env` hides the setup help and claims a connection that doesn't exist. | `"API Connected"` not in `GET /` | P4 |
+| D5 **(fixed, Session 20, `0a3b488`)** | `active_source()` reports `"api"` when only `AIRQINO_CLIENT_ID` is set (`app.py:53`), but `get_api_client()` needs all four credential variables (`:32`) | With only `AIRQINO_CLIENT_ID` set: the badge says "API Connected", the banner is hidden, and `/api/current` returns 503 "No data source configured" | A half-filled `.env` hides the setup help and claims a connection that doesn't exist. | `"API Connected"` not in `GET /` | P4 |
 | D6 **(fixed, Session 18, `5056055`)** | The source order disagrees. `active_source()` is API → serial → CSV (`app.py:53-58`). The data routes use serial → API → CSV (`:141-163`, `:175-208`), and `README.md:27` documents serial → API → CSV. | With both sources configured, the badge says "API Connected" while `/api/current` serves serial data. | The badge contradicts the data shown. | `active_source() == "serial"` with both sources configured | P4 |
 | D7 **(fixed, Session 15, `9698f9c`)** | A serial port that fails to open sets `latest = {"error": …}` (`serial_reader.py:64-69`), and `/api/current` returns it as data with **200** (`app.py:143-145`) | `SERIAL_PORT=/dev/does-not-exist` → first call 202 "No data received yet", then 200 `{"source": "serial", "data": {"error": "[Errno 2] could not open port …"}}` | The JS only reports errors on non-2xx responses (`dashboard.js:134-140`), so it shows "No readings available" and the port error never reaches the user. That is the first-hookup failure the operator is most likely to hit. | `status_code != 200` once the reader holds an error | P3 |
 | D8 **(fixed, Session 19, `b53303e`; added by the operator in Session 19)** | `get_serial_reader()` checks `_serial_reader`, then builds and starts a `SerialReader`, with no lock (`app.py:38-48` before the fix). The page's first load sends `/api/current` and `/api/timeseries` together (`dashboard.js:484-485`), and Flask's dev server is threaded | Found by Session 18's D6 probe, not Session 9's: two concurrent first requests on a fresh app with `SERIAL_PORT` on a pty → the app holds the pty twice, and readings come back garbled (`no2` as `'1o37'`). Two sequential ones hold it once. | Two reader threads split the port's bytes for as long as the app runs, so the grid shows wrong values or drops a sensor card (CO in Session 19's probe). By reading, pyserial opens a POSIX port without an exclusive lock, so a real adapter would split the same way. | None: it had no xfail. The fix session wrote the test: two concurrent first requests build one reader | — |
@@ -678,6 +679,39 @@ check-then-build shape, but a scratchpad probe found nothing a lock there would 
 constructor slowed by 0.05 s to widen the window, three concurrent first calls built three clients; and one
 shared client, which is what a lock would give, still sent three token requests to a slow fake endpoint,
 because `_get_token` (`airqino_client.py:21-47`) races on its own. The cost is extra token requests at startup.
+
+**As implemented (D5, Session 20):** §4's user impact held, and it was worse on the page than the row says. With
+`AIRQINO_CLIENT_ID` set and any of the other three credentials missing, the badge said "API Connected", the banner was
+hidden, and the grid stayed on "Loading readings..." indefinitely, because every data route answered 503 and
+`loadCurrent` only logs a failed response. The probe found a second symptom: with a CSV uploaded as well, the badge
+said "API Connected" over CSV readings, since the routes skip an API with no client. Three designs were probed in
+scratchpad copies of the app, each on a fresh app per mix of variables (7 mixes, 28 runs with the unfixed code),
+with headless Chrome reading the page and every proxy variable pointed at a closed port. A read the four variables
+in `active_source()`. B had `active_source()` call `get_api_client()`, the routes' own check. C was B plus a note
+naming the missing credentials. A and B matched on every mix, on the page and over HTTP. B went in, so the badge
+can't disagree with the routes (`0a3b488`, now `app.py:67`). The operator picked C, so the note followed (`f9fb312`):
+`missing_api_credentials()` (`app.py:57-60`) returns the unset credentials when 1 to 3 of the four are set, and
+the page shows them in an amber note at the top (`templates/dashboard.html:40-46`), whatever the source.
+
+D5's xfail became five half-filled cases (`AIRQINO_CLIENT_ID` alone, and each 3 of 4) and a CSV case. The
+no-`CLIENT_ID` case passed before the fix too. As the Phase 4 note above predicted, T1.5 set only
+`AIRQINO_CLIENT_ID` and so pinned D5; it now sets all four. With the note's 9 page tests, `tests-passed` went
+from 129 to 144 (135 after the fix, then 144). The red-drives were run against the whole suite. The fix with the
+original marker and T1.5 failed only those two, so nothing else pinned D5. Design A passed. A check of two
+credentials failed the no-`USERNAME` and no-`PASSWORD` cases. A note that also showed with no credentials set
+failed its `none` case, and a note only inside the setup banner failed the CSV and serial cases.
+
+The fix changed one line in place, so the `AIRQINO_CLIENT_ID` check that §4 cites is gone rather than moved. The
+note added 10 lines to `app.py` (9 above `active_source()`, 1 in `dashboard()`), so this plan's `app.py`
+citations from `:54` on now read lower by a further 9, or 10 from the old `:76`. It added 8 lines to the template
+at `:40`, so the Phase 4 note's `templates/dashboard.html:111` is now `:119`. The tests' own citations were
+updated (`06023d8`, `aadb299`).
+
+Outside §4, the probe found D7's shape on the API side. With all four credentials set and the token request
+failing (probed only with the vendor unreachable), every data route answers 502, and the page still says "API
+Connected" over "Loading readings..." because `loadCurrent` only logs the error. By reading, a wrong password takes
+the same path: `_get_token` raises on the refusal (`airqino_client.py:42`), and each route turns it into a 502.
+It has no test.
 
 ## 7. Alternatives considered
 

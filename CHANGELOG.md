@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] The test plan records D5 as fixed, with its note, and an API-side finding
+- **Change:** `docs/planning/test-suite-plan.md`: the Status line names D5 as fixed (`0a3b488`, the note `f9fb312`) and D2 as the one left; §4's D5 row is marked fixed; a new "As implemented (D5, Session 20)" note (`:683`) records the page's real symptom (the grid stuck on "Loading readings..."), the CSV second symptom, the three probed designs and the operator's pick, the tests and red-drives, the citation drift (the check §4 cites is gone rather than moved; `app.py` citations from `:54` read lower by a further 9, or 10 from the old `:76`; the template's `:111` is now `:119`), and a finding outside §4: with all four credentials set and the token request failing, the page says "API Connected" over "Loading readings..." while every data route answers 502 (probed with the vendor unreachable; a wrong password by reading only)
+- **Commit/PR:** this commit
+- **Session:** S20 · **Verified:** each `file:line` in the new text printed against its file (`app.py:67`, `:57-60`; `templates/dashboard.html:40-46`, `:119`; `airqino_client.py:42`); each count taken from the saved probe and test output (28 probe runs over 7 mixes; 129 → 135 → 144)
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] README says the API needs all four credentials; `tests-passed` tightened for the note's tests
 - **Change:** `README.md:60`, in the Cloud API section: the dashboard uses the API only when all four credentials are set, and with some missing it doesn't count the API as a source, and a note at the top of the page names the missing ones. `.quality-gates.json`: `tests-passed` 135 → 144 (measured: the note's 9 page tests from `f9fb312`). The README's 2 new lines move its later lines by 2, so `tests/test_api_routes.py:192`'s citation of the 30-day cap now reads `README.md:112`. The note's 8 template lines (`f9fb312`) moved the template's later lines by 8, so that comment's chart button reads `templates/dashboard.html:99` (was `:91`), and BL-1's CDN scripts in `BACKLOG.md` read `:145-147` (were `:137-139`)
 - **Commit/PR:** this commit
