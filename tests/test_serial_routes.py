@@ -47,7 +47,7 @@ def test_timeseries_returns_the_history(client, idle_reader):
 
 def test_timeseries_sensor_filter_reshapes_rows_with_that_key(client, idle_reader):
     idle_reader.history.extend(ROWS)
-    # Unlike the CSV branch, each kept row gains a "values" dict (app.py:185-189).
+    # Unlike the CSV branch, each kept row gains a "values" dict (app.py:195-199).
     assert client.get("/api/timeseries?sensor=co").get_json() == {
         "source": "serial", "data": [{**ROWS[0], "values": {"co": 1.0}}]}
 

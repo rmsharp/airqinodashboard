@@ -133,7 +133,7 @@ def test_timeseries_returns_the_last_500_rows(client, uploaded_501):
 
 def test_timeseries_sensor_filter_keeps_rows_with_that_key(client):
     upload(client, SMALL_CSV)
-    # Unlike the serial branch (app.py:185-189), CSV rows come back whole, not reshaped.
+    # Unlike the serial branch (app.py:195-199), CSV rows come back whole, not reshaped.
     assert len(client.get("/api/timeseries?sensor=pm25").get_json()["data"]) == 2
     assert client.get("/api/timeseries?sensor=no2").get_json() == {"source": "csv", "data": []}
 
@@ -188,7 +188,7 @@ def test_bom_before_a_sensor_column_keeps_its_readings(client):
 
 # Known defects (plan §4). Keep the word for a green test out of these reasons:
 # -ra prints them into the output the tests-passed gate's regex scans.
-@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?hours= with no validation (app.py:178)")
+@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?hours= with no validation (app.py:188)")
 def test_timeseries_bad_hours_is_a_client_error(client):
     resp = client.get("/api/timeseries?hours=abc")
     assert resp.status_code < 500

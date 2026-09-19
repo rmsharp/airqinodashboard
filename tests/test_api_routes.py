@@ -140,7 +140,7 @@ def test_current_returns_the_api_values(client, fake_client, configured, query, 
     assert fake_client.calls == [("get_current_values", (station,), {})]
 
 
-# README.md:36 documents serial → API → CSV, and the data routes follow it (app.py:144, :182).
+# README.md:36 documents serial → API → CSV, and the data routes follow it (app.py:154, :192).
 @pytest.mark.parametrize("url", ["/api/current", "/api/timeseries"])
 def test_serial_is_served_before_the_api(client, fake_client, idle_reader, configured, url):
     idle_reader.latest = {"co": 9.0}
@@ -257,6 +257,6 @@ def test_half_filled_credentials_leave_csv_as_the_source(client, configured, mon
 # -ra prints them into the output the tests-passed gate's regex scans.
 
 
-@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?days= with no validation (app.py:227)")
+@pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?days= with no validation (app.py:237)")
 def test_hourly_bad_days_is_a_client_error(client, fake_client, configured):
     assert client.get("/api/hourly?days=abc").status_code < 500
