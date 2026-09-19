@@ -55,7 +55,7 @@ def active_source():
     """Return the source the data routes serve: serial, then API, then CSV (README.md:36)."""
     if os.getenv("SERIAL_PORT"):
         return "serial"
-    if os.getenv("AIRQINO_CLIENT_ID"):
+    if get_api_client():  # the routes' own check: all four credentials, not one (D5)
         return "api"
     if _csv_data:
         return "csv"

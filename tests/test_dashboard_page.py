@@ -93,9 +93,10 @@ def test_serial_source_hides_banner(client, monkeypatch):
     assert app_module._serial_reader is None
 
 
-# T1.5
+# T1.5. All four credentials: with AIRQINO_CLIENT_ID alone the API is no source (D5).
 def test_api_source_badge_and_project_row(client, monkeypatch):
-    monkeypatch.setenv("AIRQINO_CLIENT_ID", "test-client-id")
+    for var in ISOLATED_VARS[:4]:  # the four credentials
+        monkeypatch.setenv(var, f"test-{var.lower()}")
     monkeypatch.setenv("AIRQINO_PROJECT_NAME", "TestProject")
     page = get_page(client)
     assert BANNER_HEADING not in page

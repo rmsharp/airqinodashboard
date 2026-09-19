@@ -5,8 +5,8 @@ the plan's inventory (§3.1) assigns to this phase. FakeClient (conftest.py) ans
 the 7 AirQinoClient methods app.py calls and checks each call against the real method's
 signature.
 
-D5 and D2's hourly half are strict xfails (plan §4). The client fixture runs with
-TESTING on, so D2's ValueError reaches the test instead of a 500.
+D2's hourly half is a strict xfail (plan §4). The client fixture runs with TESTING on,
+so D2's ValueError reaches the test instead of a 500.
 """
 
 from datetime import datetime
@@ -211,7 +211,7 @@ def test_hourly_parses_the_semicolon_csv(client, fake_client, configured, frozen
     assert fake_client.calls == [("get_hourly_avg", ("S1", date_from, "2026-09-17"), {"pivot": True})]
 
 
-# T4.15. All four credentials are set: with only AIRQINO_CLIENT_ID this would pin D5.
+# T4.15. All four credentials are set: the API is a source only with all four (D5).
 def test_status_in_api_mode(client, configured, monkeypatch):
     for var, value in CREDS.items():
         monkeypatch.setenv(var, value)
@@ -219,14 +219,42 @@ def test_status_in_api_mode(client, configured, monkeypatch):
         "source": "api", "station_name": "S1", "project_name": "P1", "serial_port": "", "has_csv": False}
 
 
+# D5 (fixed, Session 20): active_source() said api on AIRQINO_CLIENT_ID alone, but the data
+# routes need a client, and get_api_client() builds one only from all four credentials. So a
+# half-filled .env showed "API Connected" over a grid stuck on "Loading readings...", with the
+# setup banner hidden and every route answering 503. The no-CLIENT_ID case passed before the fix.
+HALF_FILLED = [pytest.param({"AIRQINO_CLIENT_ID": "cid"}, id="client-id-only")] + [
+    pytest.param({var: value for var, value in CREDS.items() if var != missing}, id=f"no-{missing}")
+    for missing in CREDS
+]
+
+
+@pytest.mark.parametrize("env", HALF_FILLED)
+def test_half_filled_credentials_are_not_an_api_source(client, configured, monkeypatch, env):
+    for var, value in env.items():
+        monkeypatch.setenv(var, value)
+    assert app_module.active_source() is None
+    page = client.get("/").get_data(as_text=True)
+    assert ">API Connected<" not in page
+    assert ">No Data Source<" in page
+    assert "Connect Your AirQino" in page
+    assert client.get("/api/status").get_json()["source"] is None
+    assert client.get("/api/current").get_json() == {"error": "No data source configured"}
+
+
+# D5's other symptom: with a CSV uploaded too, the badge said "API Connected" over CSV readings.
+def test_half_filled_credentials_leave_csv_as_the_source(client, configured, monkeypatch):
+    monkeypatch.setenv("AIRQINO_CLIENT_ID", "cid")
+    monkeypatch.setattr(app_module, "_csv_data", [{"timestamp": "2026-09-17T00:00:00", "co": 9.0}])
+    assert app_module.active_source() == "csv"
+    assert BADGES["csv"] in client.get("/").get_data(as_text=True)
+    assert client.get("/api/status").get_json()["source"] == "csv"
+    for url in ("/api/current", "/api/timeseries"):
+        assert client.get(url).get_json()["source"] == "csv"
+
+
 # Known defects (plan §4). Keep the word for a green test out of these reasons:
 # -ra prints them into the output the tests-passed gate's regex scans.
-@pytest.mark.xfail(raises=AssertionError,
-                   reason="D5: active_source() says api when only AIRQINO_CLIENT_ID is set, "
-                          "but get_api_client() needs all four credentials (app.py:58, :34)")
-def test_one_credential_is_not_an_api_connection(client, monkeypatch):
-    monkeypatch.setenv("AIRQINO_CLIENT_ID", "cid")
-    assert "API Connected" not in client.get("/").get_data(as_text=True)
 
 
 @pytest.mark.xfail(raises=ValueError, reason="D2: int() on ?days= with no validation (app.py:227)")
