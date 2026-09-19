@@ -156,6 +156,15 @@ session need this block to continue the work without re-reading the whole repo?*
 <!-- Receipts go below, newest on top. Delete the seed-sentinel line above when you add the first one. -->
 
 ```handoff
+session: S20
+date: 2026-09-18
+status: pending
+active_task: Fix D5 (picked by the operator in the Session 20 picker; plan section 4): active_source() reports api when only AIRQINO_CLIENT_ID is set (app.py:58), while get_api_client() needs all four credentials (app.py:34). Remove the xfail marker (tests/test_api_routes.py:224) and watch the test fail on the unfixed code, probe the current code and each candidate fix on the real page before choosing a design, fix, set all four credentials in T1.5 (tests/test_dashboard_page.py:97), tighten tests-passed from 129 by the measured delta, and red-drive the fix against the whole suite, on branch fix/d5-one-credential. In progress.
+what_was_done: pending
+commit: pending
+```
+
+```handoff
 session: S19
 date: 2026-09-18
 status: complete

@@ -143,6 +143,13 @@ The AirQino REV6 board has **NO USB port**. Three paths remain:
 
 *Session history accumulates below this line. Newest session at the top.*
 
+### What Session 20 Did
+**Deliverable:** Fix D5 (open item 1, recommended): `active_source()` reports `api` on `AIRQINO_CLIENT_ID` alone
+(`app.py:58`), but `get_api_client()` needs all four credentials (`:34`) (IN PROGRESS)
+**Started:** 2026-09-18 23:15, on branch `fix/d5-one-credential` off `main` `da040da`
+**Status:** Session claimed. Work beginning.
+**Ledger:** `CHANGELOG: pending` — the claim commit's `CHANGELOG.md` entry says (in progress); Phase 3F records the rest.
+
 ### What Session 19 Did
 **Deliverable:** Fix the serial-reader race (open item 1, found by Session 18's D6 probe): `get_serial_reader()`
 checked, then built and started a reader with no lock, so the page's two concurrent first requests each started a

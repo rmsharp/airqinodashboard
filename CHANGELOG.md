@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] Session 20 claimed — D5 fix begins (in progress)
+- **Change:** the operator picked D5 (open item 1, recommended) in the Phase 0 picker. `active_source()` reports `api` when only `AIRQINO_CLIENT_ID` is set (`app.py:58`), while `get_api_client()` builds a client only with all four credentials (`:34`). Its strict xfail is `tests/test_api_routes.py:227` (marker `:224`). Session claimed on branch `fix/d5-one-credential` (off `main` `da040da`)
+- **Commit/PR:** the claim commit (ships this entry)
+- **Session:** S20 · **Verified:** n/a — docs-only
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] Session 19 closed out — D8, the serial-reader race, fixed and added to the plan; main fast-forwarded, pushed with this commit
 - **Change:** `SESSION_NOTES.md` carries the Session 18 handoff evaluation (9/10; nothing wrong found; missing only where its probe scripts were), the full D8 write-up and a 7/10 self-assessment (a false count, "2 of 15" for 2 of 14, reached `b53303e`'s ledger entry and the operator; `1af2c49`'s entry corrects it). Open item 1 now recommends D5, then D2, with current citations (D5 at `app.py:58`, D2 at `:178` and `:227`). Open item 4 gains a sixth finding: `get_api_client()`'s race, probed, which a lock alone wouldn't help. Every open item's `app.py` citation was moved to the post-fix lines and printed against the file. `CLAUDE.md` gains learning #17: a number added up by eye is a claim; compute it from the saved output with a script before the commit that states it. The S19 `HANDOFFS.md` receipt is `status: complete`. FM #28 reduction: "Session 16 Handoff Evaluation" and "What Session 17 Did" archived (`git show 1af2c49:SESSION_NOTES.md`). On the operator's direction (the landing picker), `main` was fast-forwarded from `34a0a75` to `1af2c49`, and is pushed to `origin/main` straight after this commit
 - **Commit/PR:** the close-out commit (ships this entry); session commits `052cc5a`, `b53303e`, `927dfe8`, `1af2c49`
