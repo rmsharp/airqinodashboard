@@ -119,6 +119,47 @@ def test_header_falls_back_to_device_serial(client):
     assert "Station:" not in text
 
 
+# The missing-credentials note (Session 20, beside D5's fix): when .env sets some but not all
+# of the four API credentials, the page names the missing ones, whatever the source.
+CREDENTIALS = ISOLATED_VARS[:4]
+
+
+def note_text(page):
+    """The note's text with its tags stripped, or None when the page has no note."""
+    note = re.search(r'<div class="config-warning">(.*?)</div>', page, re.S)
+    return visible_text(re.sub(r"<[^>]+>", "", note.group(1))).strip() if note else None
+
+
+@pytest.mark.parametrize("set_vars", [
+    pytest.param((), id="none"),
+    pytest.param(CREDENTIALS, id="all-four"),
+    pytest.param(CREDENTIALS[:1], id="client-id-only"),
+    *[pytest.param(tuple(v for v in CREDENTIALS if v != missing), id=f"no-{missing}")
+      for missing in CREDENTIALS],
+])
+def test_note_names_the_missing_credentials(client, monkeypatch, set_vars):
+    for var in set_vars:
+        monkeypatch.setenv(var, f"test-{var.lower()}")
+    missing = [v for v in CREDENTIALS if v not in set_vars]
+    expected = None
+    if set_vars and missing:
+        expected = "The cloud API needs all four credentials in .env. Missing: " + ", ".join(missing) + "."
+    assert note_text(get_page(client)) == expected
+
+
+@pytest.mark.parametrize("source, badge", [pytest.param("csv", ">CSV Data<", id="csv"),
+                                           pytest.param("serial", ">Serial<", id="serial")])
+def test_note_shows_beside_another_source(client, monkeypatch, source, badge):
+    monkeypatch.setenv("AIRQINO_CLIENT_ID", "test-client-id")
+    if source == "csv":
+        monkeypatch.setattr(app_module, "_csv_data", [{"timestamp": "2026-09-17T00:00:00", "pm25": 7.0}])
+    else:
+        monkeypatch.setenv("SERIAL_PORT", "/dev/tty.not-a-real-port")
+    page = get_page(client)
+    assert badge in page
+    assert note_text(page).endswith("Missing: AIRQINO_CLIENT_SECRET, AIRQINO_USERNAME, AIRQINO_PASSWORD.")
+
+
 # T1.7 — guard the guard
 def test_isolation_fixture_undoes_the_planted_leak():
     leaked = [var for var in ISOLATED_VARS if var in os.environ]

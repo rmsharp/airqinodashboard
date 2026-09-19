@@ -37,6 +37,14 @@
 
 <div class="container">
 
+    <!-- Missing API credentials (shown when .env sets some but not all four) -->
+    {% if missing_credentials %}
+    <div class="config-warning">
+        The cloud API needs all four credentials in <code>.env</code>. Missing:
+        {% for var in missing_credentials %}<code>{{ var }}</code>{{ ", " if not loop.last }}{% endfor %}.
+    </div>
+    {% endif %}
+
     <!-- Setup banner (shown when no data source) -->
     {% if not source %}
     <div class="setup-banner">

@@ -51,6 +51,15 @@ def get_serial_reader():
         return _serial_reader
 
 
+API_CREDENTIALS = ("AIRQINO_CLIENT_ID", "AIRQINO_CLIENT_SECRET", "AIRQINO_USERNAME", "AIRQINO_PASSWORD")
+
+
+def missing_api_credentials():
+    """The credentials .env leaves unset when it sets some but not all of them; else []."""
+    missing = [var for var in API_CREDENTIALS if not os.getenv(var)]
+    return missing if len(missing) < len(API_CREDENTIALS) else []
+
+
 def active_source():
     """Return the source the data routes serve: serial, then API, then CSV (README.md:36)."""
     if os.getenv("SERIAL_PORT"):
@@ -72,7 +81,8 @@ def dashboard():
     return render_template("dashboard.html",
                            station_name=station,
                            project_name=project,
-                           source=source)
+                           source=source,
+                           missing_credentials=missing_api_credentials())
 
 
 @app.route("/api/status")
