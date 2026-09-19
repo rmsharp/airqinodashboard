@@ -15,6 +15,12 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 <!-- Entries go below, newest on top. Delete the seed-sentinel line near the top when you add the first one. -->
 
+### 2026-09-18 · [ad hoc] README says the API needs all four credentials; `tests-passed` tightened for the note's tests
+- **Change:** `README.md:60`, in the Cloud API section: the dashboard uses the API only when all four credentials are set, and with some missing it doesn't count the API as a source, and a note at the top of the page names the missing ones. `.quality-gates.json`: `tests-passed` 135 → 144 (measured: the note's 9 page tests from `f9fb312`). The README's 2 new lines move its later lines by 2, so `tests/test_api_routes.py:192`'s citation of the 30-day cap now reads `README.md:112`. The note's 8 template lines (`f9fb312`) moved the template's later lines by 8, so that comment's chart button reads `templates/dashboard.html:99` (was `:91`), and BL-1's CDN scripts in `BACKLOG.md` read `:145-147` (were `:137-139`)
+- **Commit/PR:** this commit
+- **Session:** S20 · **Verified:** `quality_ratchet: 2/2 pass · 0 fail · 0 unmeasured · results 2993256f954d · manifest 0f1d28b61292` (`tests-passed` measured 144); `--precommit` exit 0 with the manifest staged; `README.md:112` printed, the line that says the API rejects spans over 30 days; `templates/dashboard.html:99` (the 30d button) and `:145-147` (the three CDN scripts) printed against the file
+- **Model:** Claude Opus 5 (claude-opus-5[1m])
+
 ### 2026-09-18 · [ad hoc] The tests' `app.py` citations follow the 10 lines the credentials note added
 - **Change:** `f9fb312` added 9 lines above `active_source()` and 1 inside `dashboard()`, so every route line moved down by 10. Five citations in three test files point at the same code again: `tests/test_api_routes.py` (the data routes' serial checks `:154, :192`, D2's hourly xfail reason `:237`); `tests/test_csv_routes.py` (the serial reshape `:195-199`, D2's timeseries xfail reason `:188`); `tests/test_serial_routes.py` (the serial reshape `:195-199`). The citations above `:54` (`:26-37`, `:28-29`, `:40-51`, `:43-44`) didn't move. Comments and xfail reasons only; no assertion changed. Split from the note's commit to keep each under the 5-file cap
 - **Commit/PR:** this commit

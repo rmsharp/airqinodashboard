@@ -189,7 +189,7 @@ def test_badge_source_is_the_source_the_routes_serve(client, configured, monkeyp
     pytest.param("?hours=13", ("get_range", ("S1", "2026-09-16", "2026-09-17"), {}), id="13h"),
     pytest.param("", ("get_range", ("S1", "2026-09-16", "2026-09-17"), {}), id="default-24h"),
     pytest.param("?hours=48", ("get_range", ("S1", "2026-09-15", "2026-09-17"), {}), id="48h"),
-    # The chart's widest button (templates/dashboard.html:91), at getRange's 30-day cap (README.md:110).
+    # The chart's widest button (templates/dashboard.html:99), at getRange's 30-day cap (README.md:112).
     pytest.param("?hours=720", ("get_range", ("S1", "2026-08-18", "2026-09-17"), {}), id="30d"),
 ])
 def test_timeseries_hours_picks_the_client_call(client, fake_client, configured, frozen, query, call):

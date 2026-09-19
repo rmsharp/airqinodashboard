@@ -24,11 +24,11 @@
     {
       "name": "tests-passed",
       "direction": "min",
-      "threshold": 135,
+      "threshold": 144,
       "unit": "tests",
       "command": "python3 -m pytest -q",
       "extract": "(\\d+) passed",
-      "why": "measured 135 on 2026-09-18 (Session 20, the D5 fix: its xfail became five half-filled-.env cases, one of which passed before the fix, and a CSV case; was 129 after the D8 fix, 128 after the D6 fix, 124 after the D4 fix, 122 after the D3 fix, 120 after the D7 fix, 119 after the D1 fix, 116 after plan Phase 4, 58 after Phase 3, 28 after Phase 2, 9 after Phase 1); tests cannot be deleted silently, and each fix session tightens it"
+      "why": "measured 144 on 2026-09-18 (Session 20, the D5 fix and its note: D5's xfail became five half-filled-.env cases, one of which passed before the fix, and a CSV case, 135; the missing-credentials note added 9 page tests; was 129 after the D8 fix, 128 after the D6 fix, 124 after the D4 fix, 122 after the D3 fix, 120 after the D7 fix, 119 after the D1 fix, 116 after plan Phase 4, 58 after Phase 3, 28 after Phase 2, 9 after Phase 1); tests cannot be deleted silently, and each fix session tightens it"
     }
   ]
 }

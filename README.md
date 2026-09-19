@@ -57,6 +57,8 @@ AIRQINO_STATION_NAME=SMART###
 AIRQINO_PROJECT_NAME=...
 ```
 
+The dashboard uses the API only when all four credentials are set. With some of them missing, it doesn't count the API as a source, and a note at the top of the page names the missing ones.
+
 ### 3. Direct serial (USB-to-TTL adapter)
 
 The REV6 board has no USB port, so a direct connection needs a **USB-to-TTL serial adapter** (CP2102 or FT232RL, set to **3.3V logic**) wired to the board's TX/RX pins, plus female-to-female DuPont jumper wires. Wiring, adapter recommendations, and voltage warnings are in [`docs/HARDWARE.md`](docs/HARDWARE.md).
