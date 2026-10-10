@@ -17,6 +17,10 @@ keeps current. ledger-format: 2 — keep this marker; `bin/status` reads it.
 
 ## 2026-10
 
+### 2026-10-10 · [ad hoc] Layout migration: the methodology files now live under `methodology/` (tier all, 34 files)
+
+`bin/migrate-layout` (KJ5HST/methodology @ 41296a1) moved them in one commit with `git mv`; paths were rewritten in `.gitignore`, `CLAUDE.md`, `methodology/.context-budget.json`, `methodology/.quality-gates.json`. No older entry or shard was edited, so a link in an older entry is relative to the root, where the ledger sat when it was written.
+
 ### 2026-10-10 · [ad hoc] Methodology sync from KJ5HST/methodology @ 41296a1: 21 files updated, `.gitattributes` created
 - **Change:** `bin/sync` (commit mode, no `--force`; it refused nothing) brought the 11 root methodology files and the 12 under `docs/methodology/` to the canonical copies of `v4.2-1701-g41296a1`: 21 updated (the runner 2 versions behind, `BOOTSTRAP.md` 6, `methodology_dashboard.py` 11, `methodology_trim.py` 8, `quality_ratchet.py` 5) and `.gitattributes` created (a `merge=union` seed for `CHANGELOG.md` and the two `.jsonl` histories). The seeds this project owns were left as written (`SESSION_NOTES.md`, `CHANGELOG.md`, `HANDOFFS.md`, `ROADMAP.md` and both configs). The distributed files of the checkout synced from, `41296a1`, are those of `add55f1`: the one change since, `bin/migrate-layout` and its test, is canonical-only. This is the first of two commits of the methodology repository's BL-101 P13 (`docs/planning/methodology-subdirectory-plan.md` section 7.4); the next moves the methodology files under `methodology/`.
 - **Commit/PR:** this commit
